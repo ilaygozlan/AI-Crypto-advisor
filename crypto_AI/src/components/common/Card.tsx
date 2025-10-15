@@ -9,10 +9,11 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   hover?: boolean
 }
 
+// Create MotionCard outside the component to prevent recreation on every render
+const MotionCard = motion(UICard)
+
 export const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ className, title, children, hover = true, ...props }, ref) => {
-    const MotionCard = motion(UICard)
-
     return (
       <MotionCard
         ref={ref}
