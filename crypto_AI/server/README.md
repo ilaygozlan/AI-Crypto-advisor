@@ -222,12 +222,12 @@ VITE_API_BASE_URL=http://localhost:4000
 
 **Build Command:**
 ```bash
-pnpm install --frozen-lockfile && pnpm prisma generate && pnpm build && pnpm migrate:deploy
+npm install --production=false && npx prisma generate && npm run build && npx prisma migrate deploy
 ```
 
 **Start Command:**
 ```bash
-pnpm start
+npm start
 ```
 
 ### Environment Variables
@@ -255,6 +255,8 @@ CORS_ORIGIN=https://<frontend-url>.up.railway.app
 1. Deploy API service first
 2. Note the API URL (e.g., `https://api-production-xxxx.up.railway.app`)
 3. Deploy frontend service with `VITE_API_BASE_URL` set to API URL
+   - **Build Command**: `npm install --production=false && npm run build`
+   - **Start Command**: `npm run serve:static`
 4. Update API `CORS_ORIGIN` to frontend URL
 5. Redeploy API service
 
