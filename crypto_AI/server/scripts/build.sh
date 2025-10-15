@@ -25,12 +25,16 @@ for i in {1..3}; do
   fi
 done
 
+# Generate Prisma client
+echo "🔧 Generating Prisma client..."
+node_modules/.bin/prisma generate
+
 # Build the application
 echo "🔨 Building application..."
 npm run build
 
 # Run database migrations
 echo "🗄️ Running database migrations..."
-npx prisma migrate deploy
+node_modules/.bin/prisma migrate deploy
 
 echo "✅ Build completed successfully!"
