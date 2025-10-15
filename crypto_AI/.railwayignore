@@ -2,6 +2,8 @@
 Dockerfile*
 docker-compose*.yml
 .dockerignore
+**/Dockerfile*
+**/docker-compose*
 
 # Ignore development files
 node_modules/
@@ -15,6 +17,6 @@ dist/
 build/
 *.log
 
-# Ignore any remaining Docker configurations
-**/Dockerfile*
-**/docker-compose*
+# Ignore shell scripts (use nixpacks.toml instead)
+build.sh
+start.sh

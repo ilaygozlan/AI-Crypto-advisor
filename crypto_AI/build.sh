@@ -10,7 +10,7 @@ cd server
 echo "Installing dependencies..."
 npm install --production=false
 
-# Generate Prisma client
+# Generate Prisma client (use npx to avoid permission issues)
 echo "Generating Prisma client..."
 npx prisma generate
 
@@ -18,7 +18,7 @@ npx prisma generate
 echo "Building application..."
 npm run build
 
-# Run migrations
+# Run migrations (use npx to avoid permission issues)
 echo "Running database migrations..."
 npx prisma migrate deploy
 
