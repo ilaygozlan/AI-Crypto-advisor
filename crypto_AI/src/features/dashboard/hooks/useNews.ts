@@ -54,7 +54,7 @@ export function useNews() {
         try {
           // Try the original API first
           const response = await dashboardApi.getNews()
-          return response.data.data
+          return response.data
         } catch (apiError) {
           // Fallback to mock data if both APIs fail
           const mockResponse = await fetch('/mocks/news.json')

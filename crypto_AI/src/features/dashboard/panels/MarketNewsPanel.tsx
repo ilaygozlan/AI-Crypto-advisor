@@ -65,7 +65,7 @@ export default function MarketNewsPanel() {
 
   function sortNewsByDate(newsArray: any) {
     return [...newsArray].sort(
-      (a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)
+      (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     )
   }
   const sortedNews = sortNewsByDate(news)
@@ -83,8 +83,6 @@ return (
       </div>
     </div>
 
-    <PreferencesIndicator />
-
     {/* Render up to 3 latest news */}
     <div className="space-y-6">
       {sortedNews.slice(0, 3).map((item) => (
@@ -100,10 +98,6 @@ return (
             <span className="font-medium">
             {formatDate(item.publishedAt)}
             </span>
-            {item.source && <span>Source - {item.source}</span>}
-          </div>
-
-          <div className="flex justify-end pt-2">
             <VoteButtons
               upVotes={item.votes?.up || 0}
               downVotes={item.votes?.down || 0}
@@ -116,6 +110,8 @@ return (
         </div>
       ))}
     </div>
+
+    <PreferencesIndicator />
   </div>
 )
 

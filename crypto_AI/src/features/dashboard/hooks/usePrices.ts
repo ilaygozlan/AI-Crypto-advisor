@@ -7,7 +7,7 @@ export function usePrices() {
     queryFn: async () => {
       try {
         const response = await dashboardApi.getPrices()
-        return response.data.data
+        return response.data
       } catch (error) {
         // Fallback to mock data if API fails
         const mockResponse = await fetch('/mocks/prices.json')
