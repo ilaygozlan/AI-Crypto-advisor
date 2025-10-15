@@ -28,7 +28,7 @@ export function SignupPage() {
 
             <AuthForm
               type="signup"
-              onSubmit={signup}
+              onSubmit={(data) => signup(data as any)}
               isPending={isPending}
             />
 

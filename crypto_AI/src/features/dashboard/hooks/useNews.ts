@@ -1,21 +1,47 @@
 import { useQuery } from '@tanstack/react-query'
 import { dashboardApi } from '@/lib/api/endpoints'
-import type { NewsItem } from '@/types/dashboard'
+import { cryptoPanicService } from '@/lib/api/cryptopanic'
+import { usePrefsStore } from '@/lib/state/prefs.store'
 
 export function useNews() {
+  const { selectedAssets, investorType, contentTypes } = usePrefsStore()
+
   return useQuery({
-    queryKey: ['news'],
+    queryKey: ['news', selectedAssets, investorType, contentTypes],
     queryFn: async () => {
       try {
-        const response = await dashboardApi.getNews()
-        return response.data.data
+        // Try to get real data from CryptoPanic API
+        const userFilters = cryptoPanicService.getUserFilters({
+          selectedAssets,
+          investorType,
+          contentTypes
+        })
+        
+        const cryptoPanicData = await cryptoPanicService.fetchNews(userFilters)
+        
+        // Transform the data to our app format
+        const transformedData = cryptoPanicData.results
+          .slice(0, 10) // Limit to 10 items
+          .map(item => cryptoPanicService.transformToAppFormat(item))
+        
+        return transformedData
       } catch (error) {
-        // Fallback to mock data if API fails
-        const mockResponse = await fetch('/mocks/news.json')
-        const mockData = await mockResponse.json()
-        return mockData.data
+        console.warn('CryptoPanic API failed, falling back to mock data:', error)
+        
+        try {
+          // Try the original API first
+          const response = await dashboardApi.getNews()
+          return response.data.data
+        } catch (apiError) {
+          // Fallback to mock data if both APIs fail
+          const mockResponse = await fetch('/mocks/news.json')
+          const mockData = await mockResponse.json()
+          return mockData.data
+        }
       }
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchInterval: 10 * 60 * 1000, // 10 minutes
+    retry: 1, // Only retry once to avoid long delays
   })
 }

@@ -37,7 +37,7 @@ export function useVote() {
             item.id === variables.itemId
               ? {
                   ...item,
-                  votes: data.newVoteCount,
+                  votes: (data as any).newVoteCount || item.votes,
                   userVote: variables.vote,
                 }
               : item
@@ -49,7 +49,7 @@ export function useVote() {
             item.id === variables.itemId
               ? {
                   ...item,
-                  votes: data.newVoteCount,
+                  votes: (data as any).newVoteCount || item.votes,
                   userVote: variables.vote,
                 }
               : item
@@ -59,7 +59,7 @@ export function useVote() {
         if (variables.section === 'ai' && oldData.id === variables.itemId) {
           return {
             ...oldData,
-            votes: data.newVoteCount,
+            votes: (data as any).newVoteCount || oldData.votes,
             userVote: variables.vote,
           }
         }
@@ -67,7 +67,7 @@ export function useVote() {
         if (variables.section === 'meme' && oldData.id === variables.itemId) {
           return {
             ...oldData,
-            votes: data.newVoteCount,
+            votes: (data as any).newVoteCount || oldData.votes,
             userVote: variables.vote,
           }
         }

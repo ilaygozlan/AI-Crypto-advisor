@@ -207,7 +207,7 @@ export const mockDelay = (ms: number = 500) =>
 // Mock API client that returns mock data
 export const createMockApiClient = () => {
   return {
-    post: async (url: string, data?: any) => {
+        post: async (url: string, _data?: any) => {
       await mockDelay()
       
       if (url.includes('/auth/signup')) {

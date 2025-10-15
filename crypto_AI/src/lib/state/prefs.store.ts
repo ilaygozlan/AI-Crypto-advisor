@@ -18,7 +18,7 @@ interface PreferencesState {
 
 export const usePrefsStore = create<PreferencesState>()(
   persist(
-    (set, get) => ({
+    (set, _get) => ({
       assets: [],
       investorType: null,
       contentTypes: [],

@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { User, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/lib/state/auth.store'
+import Brand from '@/components/Brand'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,14 +23,7 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 glass-nav">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex h-16 items-center justify-between">
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">M</span>
-            </div>
-            <span className="font-semibold text-lg">
-              {import.meta.env.VITE_APP_NAME || 'Moveo AI Crypto Advisor'}
-            </span>
-          </Link>
+          <Brand />
 
           <div className="flex items-center space-x-4">
             {user ? (

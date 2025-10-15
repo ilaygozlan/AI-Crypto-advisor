@@ -2,8 +2,8 @@ import axios from 'axios'
 import { useAuthStore } from '@/lib/state/auth.store'
 import { createMockApiClient } from './mock'
 
-const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api'
-const isMockMode = import.meta.env.VITE_USE_MOCK_API === 'true'
+const baseURL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:3001/api'
+const isMockMode = (import.meta as any).env?.VITE_USE_MOCK_API === 'true'
 
 // Use mock API client in standalone mode
 export const apiClient = isMockMode 
@@ -64,7 +64,7 @@ if (!isMockMode && apiClient.interceptors) {
           
           // Retry original request with new token
           originalRequest.headers.Authorization = `Bearer ${accessToken}`
-          return apiClient(originalRequest)
+          return axios(originalRequest)
         } catch (refreshError) {
           // Refresh failed, logout user
           useAuthStore.getState().logout()

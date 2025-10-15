@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 import { dashboardApi } from '@/lib/api/endpoints'
-import type { AIInsight } from '@/types/dashboard'
 
 export function useAIInsight() {
   return useQuery({

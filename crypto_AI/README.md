@@ -1,4 +1,4 @@
-# Moveo AI Crypto Advisor
+# AI Crypto Advisor
 
 A production-grade React + TypeScript application for AI-powered cryptocurrency insights and market analysis.
 

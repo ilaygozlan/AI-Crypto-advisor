@@ -20,7 +20,7 @@ export const mockApiClient = {
 
 // Environment-based API client selection
 export const getApiClient = () => {
-  const isMockMode = import.meta.env.VITE_USE_MOCK_API === 'true'
+  const isMockMode = (import.meta as any).env?.VITE_USE_MOCK_API === 'true'
   
   if (isMockMode) {
     console.log('🎭 Using Mock API for development')

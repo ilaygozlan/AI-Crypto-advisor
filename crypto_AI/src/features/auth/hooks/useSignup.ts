@@ -16,15 +16,19 @@ export function useSignup() {
       return response.data
     },
     onSuccess: (response) => {
-      const { user, accessToken } = response.data
-      setUser(user)
-      setToken(accessToken)
-      setHasCompletedOnboarding(user.hasCompletedOnboarding)
-      
-      if (user.hasCompletedOnboarding) {
-        navigate('/dashboard')
-      } else {
-        navigate('/onboarding')
+      if ('data' in response && typeof response.data === 'object' && response.data !== null) {
+        const data = response.data as any
+        if (data.user && data.accessToken) {
+          setUser(data.user)
+          setToken(data.accessToken)
+          setHasCompletedOnboarding(data.user.hasCompletedOnboarding || false)
+          
+          if (data.user.hasCompletedOnboarding) {
+            navigate('/dashboard')
+          } else {
+            navigate('/onboarding')
+          }
+        }
       }
     },
     onError: (error) => {

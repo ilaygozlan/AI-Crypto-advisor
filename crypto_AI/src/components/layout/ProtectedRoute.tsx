@@ -11,7 +11,7 @@ interface ProtectedRouteProps {
  * Ensures users are properly authenticated and have completed onboarding
  */
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated, user } = useAuthStore()
+  const { isAuthenticated } = useAuthStore()
   const { hasCompletedOnboarding } = usePrefsStore()
   const location = useLocation()
 

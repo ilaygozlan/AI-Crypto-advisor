@@ -20,16 +20,20 @@ export function useLogin() {
       return response.data
     },
     onSuccess: (response) => {
-      const { user, accessToken } = response.data
-      setUser(user)
-      setToken(accessToken)
-      setHasCompletedOnboarding(user.hasCompletedOnboarding)
-      
-      // Redirect based on onboarding completion status
-      if (user.hasCompletedOnboarding) {
-        navigate('/dashboard')
-      } else {
-        navigate('/onboarding')
+      if ('data' in response && typeof response.data === 'object' && response.data !== null) {
+        const data = response.data as any
+        if (data.user && data.accessToken) {
+          setUser(data.user)
+          setToken(data.accessToken)
+          setHasCompletedOnboarding(data.user.hasCompletedOnboarding || false)
+          
+          // Redirect based on onboarding completion status
+          if (data.user.hasCompletedOnboarding) {
+            navigate('/dashboard')
+          } else {
+            navigate('/onboarding')
+          }
+        }
       }
     },
     onError: (error) => {
