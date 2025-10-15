@@ -10,7 +10,7 @@ This guide will help you deploy the Moveo AI Crypto Advisor application to Railw
 
 ## Important Note
 
-This project uses **npm** (not pnpm) for package management. The Railway configuration has been set up to use `npm ci` for reliable, reproducible builds. Make sure to run `npm install` locally to generate the `package-lock.json` file before deploying.
+This project uses **npm** (not pnpm) for package management. Railway will auto-detect the Node.js project and use the appropriate build commands. The `package-lock.json` file has been generated and is included in the repository for reliable, reproducible builds.
 
 ## Step-by-Step Deployment
 
@@ -34,6 +34,7 @@ This project uses **npm** (not pnpm) for package management. The Railway configu
 2. Select "GitHub Repo" and choose your repository
 3. **Configure the service**:
    - **Root Directory**: `/server`
+   - Railway will auto-detect Node.js and use the build commands from `railway.json`
    - **Build Command**: `npm ci && npm run build && npm run migrate:deploy`
    - **Start Command**: `npm start`
 
@@ -64,6 +65,7 @@ This project uses **npm** (not pnpm) for package management. The Railway configu
 2. Select "GitHub Repo" and choose your repository
 3. **Configure the service**:
    - **Root Directory**: `/` (root)
+   - Railway will auto-detect Node.js and use the build commands from `railway.json`
    - **Build Command**: `npm ci && npm run build`
    - **Start Command**: `npm run serve:static`
 
@@ -142,7 +144,8 @@ This project uses **npm** (not pnpm) for package management. The Railway configu
 - Check that all environment variables are set
 - Verify Node.js version compatibility (20+)
 - Review build logs for specific error messages
-- **"Cannot install with frozen-lockfile because pnpm-lock.yaml is absent"**: This project uses npm, not pnpm. The Railway configuration has been updated to use `npm ci` instead of `pnpm install --frozen-lockfile`
+- **"Cannot install with frozen-lockfile because pnpm-lock.yaml is absent"**: This project uses npm, not pnpm. Railway will auto-detect the Node.js project and use npm commands.
+- **"undefined variable 'npm'"**: This was caused by incorrect nixpacks configuration. The nixpacks.toml files have been removed to let Railway auto-detect the Node.js project properly.
 
 **Frontend Not Loading**
 - Ensure `VITE_API_BASE_URL` is set correctly
