@@ -1,0 +1,67 @@
+export interface NewsItem {
+  id: string
+  title: string
+  summary: string
+  url: string
+  source: string
+  publishedAt: string
+  votes: {
+    up: number
+    down: number
+  }
+  userVote?: 'up' | 'down'
+}
+
+export interface PriceData {
+  id: string
+  symbol: string
+  name: string
+  currentPrice: number
+  priceChange24h: number
+  priceChangePercentage24h: number
+  sparkline: number[]
+  votes: {
+    up: number
+    down: number
+  }
+  userVote?: 'up' | 'down'
+}
+
+export interface AIInsight {
+  id: string
+  title: string
+  content: string
+  generatedAt: string
+  votes: {
+    up: number
+    down: number
+  }
+  userVote?: 'up' | 'down'
+}
+
+export interface MemeItem {
+  id: string
+  title: string
+  imageUrl: string
+  caption: string
+  source: string
+  votes: {
+    up: number
+    down: number
+  }
+  userVote?: 'up' | 'down'
+}
+
+export interface VoteRequest {
+  section: 'news' | 'prices' | 'ai' | 'meme'
+  itemId: string
+  vote: 'up' | 'down'
+}
+
+export interface VoteResponse {
+  success: boolean
+  newVoteCount: {
+    up: number
+    down: number
+  }
+}

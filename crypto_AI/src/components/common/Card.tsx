@@ -1,0 +1,40 @@
+import { forwardRef } from 'react'
+import { motion } from 'framer-motion'
+import { Card as UICard, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
+
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  title?: string
+  children: React.ReactNode
+  hover?: boolean
+}
+
+export const Card = forwardRef<HTMLDivElement, CardProps>(
+  ({ className, title, children, hover = true, ...props }, ref) => {
+    const MotionCard = motion(UICard)
+
+    return (
+      <MotionCard
+        ref={ref}
+        className={cn(
+          'border-border/50 shadow-sm',
+          hover && 'card-hover',
+          className
+        )}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+        {...props}
+      >
+        {title && (
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg font-semibold">{title}</CardTitle>
+          </CardHeader>
+        )}
+        <CardContent className={title ? 'pt-0' : ''}>{children}</CardContent>
+      </MotionCard>
+    )
+  }
+)
+
+Card.displayName = 'Card'

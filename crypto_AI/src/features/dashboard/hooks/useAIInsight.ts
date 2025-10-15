@@ -1,0 +1,21 @@
+import { useQuery } from '@tanstack/react-query'
+import { dashboardApi } from '@/lib/api/endpoints'
+import type { AIInsight } from '@/types/dashboard'
+
+export function useAIInsight() {
+  return useQuery({
+    queryKey: ['ai-insight'],
+    queryFn: async () => {
+      try {
+        const response = await dashboardApi.getAIInsight()
+        return response.data.data
+      } catch (error) {
+        // Fallback to mock data if API fails
+        const mockResponse = await fetch('/mocks/ai-insight.json')
+        const mockData = await mockResponse.json()
+        return mockData.data
+      }
+    },
+    staleTime: 24 * 60 * 60 * 1000, // 24 hours (daily insight)
+  })
+}

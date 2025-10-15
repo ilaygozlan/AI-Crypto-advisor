@@ -1,0 +1,25 @@
+/* Theme-specific styles */
+.theme-transition {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .theme-transition,
+  .card-hover,
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Apple-like typography */
+.apple-heading {
+  @apply font-semibold tracking-tight;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+.apple-body {
+  @apply leading-relaxed;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
