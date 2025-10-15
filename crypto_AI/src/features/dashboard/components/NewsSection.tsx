@@ -3,7 +3,6 @@ import { Skeleton } from '@/components/common/Skeleton'
 import { VoteButtons } from '@/components/common/VoteButtons'
 import { useNews } from '../hooks/useNews'
 import { useVote } from '../hooks/useVote'
-import { ExternalLink } from 'lucide-react'
 
 export function NewsSection() {
   const { data: news, isLoading, error } = useNews()
@@ -48,43 +47,35 @@ export function NewsSection() {
     )
   }
 
-  const latestNews = news[0]
-
   return (
     <Card title="📰 Market News">
       <div className="space-y-4">
-        <div>
-          <h3 className="font-semibold text-sm mb-2 line-clamp-2">
-            {latestNews.title}
-          </h3>
-          <p className="text-sm text-muted-foreground line-clamp-3">
-            {latestNews.summary}
-          </p>
-        </div>
+        {news.map((newsItem, index) => (
+          <div key={newsItem.id} className={index > 0 ? "pt-4 border-t border-slate-200 dark:border-slate-700" : ""}>
+            <div>
+              <h3 className="font-semibold text-sm mb-2 line-clamp-2">
+                {newsItem.title}
+              </h3>
+              <p className="text-sm text-muted-foreground line-clamp-3">
+                {newsItem.summary}
+              </p>
+            </div>
 
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>{latestNews.source}</span>
-          <span>{new Date(latestNews.publishedAt).toLocaleDateString()}</span>
-        </div>
+            <div className="flex items-center justify-between text-xs text-muted-foreground mt-2">
+              <span>{newsItem.source}</span>
+              <span>{new Date(newsItem.publishedAt).toLocaleDateString()}</span>
+            </div>
 
-        <div className="flex items-center justify-between">
-          <a
-            href={latestNews.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center text-sm text-primary hover:text-primary/80 transition-colors"
-          >
-            Read more
-            <ExternalLink className="ml-1 h-3 w-3" />
-          </a>
-
-          <VoteButtons
-            upVotes={latestNews.votes.up}
-            downVotes={latestNews.votes.down}
-            userVote={latestNews.userVote}
-            onVote={(voteType) => vote({ section: 'news', itemId: latestNews.id, vote: voteType })}
-          />
-        </div>
+            <div className="flex justify-end mt-2">
+              <VoteButtons
+                upVotes={newsItem.votes.up}
+                downVotes={newsItem.votes.down}
+                userVote={newsItem.userVote}
+                onVote={(voteType) => vote({ section: 'news', itemId: newsItem.id, vote: voteType })}
+              />
+            </div>
+          </div>
+        ))}
       </div>
     </Card>
   )

@@ -1,7 +1,6 @@
 import { Skeleton } from '@/components/common/Skeleton'
 import { VoteButtons } from '@/components/common/VoteButtons'
 import { PreferencesIndicator } from '@/components/PreferencesIndicator'
-import { CryptoPanicDemo } from '@/components/CryptoPanicDemo'
 import { useNews } from '../hooks/useNews'
 import { useVote } from '../hooks/useVote'
 import { ExternalLink } from 'lucide-react'
@@ -67,9 +66,6 @@ export default function MarketNewsPanel() {
       </div>
 
       <PreferencesIndicator />
-
-      {/* CryptoPanic API Demo */}
-      <CryptoPanicDemo />
 
       <div className="space-y-4">
         <div>

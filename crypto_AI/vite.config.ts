@@ -10,6 +10,32 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      '/api/cryptopanic': {
+        target: 'https://cryptopanic.com',
+        changeOrigin: true,
+        rewrite: (path) => {
+          const newPath = path.replace(/^\/api\/cryptopanic/, '/api/v1');
+          console.log('Rewriting path:', path, '->', newPath);
+          return newPath;
+        },
+        secure: true,
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, _res) => {
+            console.log('proxy error', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req, _res) => {
+            console.log('Sending Request to the Target:', req.method, req.url);
+            console.log('Target URL:', proxyReq.path);
+          });
+          proxy.on('proxyRes', (proxyRes, req, _res) => {
+            console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
+          });
+        },
+      }
+    }
+  },
   test: {
     globals: true,
     environment: 'jsdom',

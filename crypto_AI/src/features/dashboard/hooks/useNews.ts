@@ -1,32 +1,55 @@
 import { useQuery } from '@tanstack/react-query'
 import { dashboardApi } from '@/lib/api/endpoints'
-import { cryptoPanicService } from '@/lib/api/cryptopanic'
-import { usePrefsStore } from '@/lib/state/prefs.store'
+import { fetchCryptoPanicPosts } from '@/lib/utils/cryptoPanic'
+import { getPreferences } from '@/lib/utils/cryptoPrefs'
+import { onboarding } from '@/app/data/onboarding'
 
 export function useNews() {
-  const { assets, investorType, contentTypes } = usePrefsStore()
-
   return useQuery({
-    queryKey: ['news', assets, investorType, contentTypes],
+    queryKey: ['news'],
     queryFn: async () => {
       try {
-        // Try to get real data from CryptoPanic API
-        const userFilters = cryptoPanicService.getUserFilters({
-          assets,
-          investorType,
-          contentTypes
-        })
+        // Get user preferences
+        const preferences = getPreferences()
         
-        const cryptoPanicData = await cryptoPanicService.fetchNews(userFilters)
+        // Use onboarding assets if preferences are empty
+        const assets = preferences.assets.length > 0 
+          ? preferences.assets 
+          : onboarding.data.selectedAssets.length > 0 
+            ? onboarding.data.selectedAssets 
+            : ['BTC', 'SOL', 'AVAX', 'MATIC'] // Fallback assets
+
+        // Get initial filter based on investor type
+        const filter = preferences.filter || 
+          (onboarding.data.investorType === 'day_trader' ? 'hot' : 'important')
+
+        // Fetch from CryptoPanic API
+        console.log('📰 Fetching news with preferences:', { filter, assets })
+        const response = await fetchCryptoPanicPosts(filter, assets, 1)
         
-        // Transform the data to our app format
-        const transformedData = cryptoPanicData.results
-          .slice(0, 10) // Limit to 10 items
-          .map(item => cryptoPanicService.transformToAppFormat(item))
+        // Transform to app format - show all results
+        const transformedData = response.results.map(item => ({
+          id: item.id,
+          title: item.title,
+          summary: item.description || item.title,
+          content: item.description || item.title,
+          source: item.source?.title || 'Unknown',
+          url: item.url || '#',
+          publishedAt: item.published_at,
+          sentiment: (item.votes?.positive || 0) > (item.votes?.negative || 0) ? 'positive' : 
+                    (item.votes?.negative || 0) > (item.votes?.positive || 0) ? 'negative' : 'neutral',
+          votes: {
+            up: (item.votes?.positive || 0) + (item.votes?.liked || 0),
+            down: (item.votes?.negative || 0) + (item.votes?.disliked || 0)
+          },
+          userVote: null,
+          currencies: item.currencies?.map(c => c.code) || []
+        }))
         
+        console.log('📰 Successfully transformed news data:', { count: transformedData.length })
         return transformedData
       } catch (error) {
-        console.warn('CryptoPanic API failed, falling back to mock data:', error)
+        console.error('❌ CryptoPanic API failed, falling back to mock data:', error)
         
         try {
           // Try the original API first

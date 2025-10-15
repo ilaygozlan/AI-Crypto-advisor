@@ -54,7 +54,7 @@ class CryptoPanicService {
   private apiKey: string
 
   constructor(apiKey?: string) {
-    this.apiKey = apiKey || (import.meta as any).env?.VITE_CRYPTOPANIC_API_KEY || ''
+    this.apiKey = apiKey || (import.meta as any).env?.VITE_CRYPTOPANIC_TOKEN || ''
   }
 
   /**

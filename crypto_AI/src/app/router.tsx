@@ -6,6 +6,7 @@ import { SignupPage } from '@/features/auth/pages/SignupPage'
 import { OnboardingPage } from '@/features/onboarding/pages/OnboardingPage'
 import { DashboardPage } from '@/features/dashboard/pages/DashboardPage'
 import { SettingsPage } from '@/features/settings/pages/SettingsPage'
+import { NewsPage } from '@/features/news/pages/NewsPage'
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +40,10 @@ export const router = createBrowserRouter([
       {
         path: 'settings',
         element: <SettingsPage />,
+      },
+      {
+        path: 'news',
+        element: <NewsPage />,
       },
     ],
   },
