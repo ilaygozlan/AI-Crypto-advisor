@@ -7,6 +7,7 @@ A production-grade React + TypeScript application for AI-powered cryptocurrency 
 - **Modern UI/UX**: Apple-like design with clean aesthetics, smooth animations, and responsive layout
 - **Authentication**: Secure login/signup with JWT token management
 - **Onboarding**: 3-step wizard to personalize user experience
+- **Real-time News**: Integration with [CryptoPanic API](https://cryptopanic.com/developers/api/) for personalized crypto news
 - **Dashboard**: Real-time crypto data with 4 main sections:
   - 📰 Market News
   - 💰 Coin Prices
@@ -131,6 +132,25 @@ src/
 ├── styles/                 # Global styles
 └── test/                   # Test setup
 ```
+
+## 🔗 CryptoPanic API Integration
+
+This app integrates with the [CryptoPanic API](https://cryptopanic.com/developers/api/) to provide real-time cryptocurrency news based on user preferences.
+
+### Setup
+1. Get a free API key from [CryptoPanic Developers](https://cryptopanic.com/developers/api/)
+2. Add it to your environment variables:
+   ```env
+   VITE_CRYPTOPANIC_API_KEY=your_api_key_here
+   ```
+
+### Features
+- **Personalized News**: Filters news based on user's selected cryptocurrencies and investment type
+- **Sentiment Analysis**: Uses CryptoPanic's built-in sentiment scoring
+- **Real-time Updates**: Fetches latest news every 10 minutes
+- **Fallback System**: Gracefully falls back to mock data if API is unavailable
+
+See [CRYPTOPANIC_SETUP.md](./CRYPTOPANIC_SETUP.md) for detailed setup instructions.
 
 ## 🎨 Design System
 

@@ -4,15 +4,15 @@ import { cryptoPanicService } from '@/lib/api/cryptopanic'
 import { usePrefsStore } from '@/lib/state/prefs.store'
 
 export function useNews() {
-  const { selectedAssets, investorType, contentTypes } = usePrefsStore()
+  const { assets, investorType, contentTypes } = usePrefsStore()
 
   return useQuery({
-    queryKey: ['news', selectedAssets, investorType, contentTypes],
+    queryKey: ['news', assets, investorType, contentTypes],
     queryFn: async () => {
       try {
         // Try to get real data from CryptoPanic API
         const userFilters = cryptoPanicService.getUserFilters({
-          selectedAssets,
+          assets,
           investorType,
           contentTypes
         })

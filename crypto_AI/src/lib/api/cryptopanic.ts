@@ -54,7 +54,7 @@ class CryptoPanicService {
   private apiKey: string
 
   constructor(apiKey?: string) {
-    this.apiKey = apiKey || process.env.VITE_CRYPTOPANIC_API_KEY || ''
+    this.apiKey = apiKey || (import.meta as any).env?.VITE_CRYPTOPANIC_API_KEY || ''
   }
 
   /**
@@ -143,8 +143,8 @@ class CryptoPanicService {
    * Get filters based on user preferences
    */
   getUserFilters(userPrefs: {
-    selectedAssets?: string[]
-    investorType?: 'conservative' | 'moderate' | 'aggressive'
+    assets?: string[]
+    investorType?: 'HODLer' | 'Day Trader' | 'NFT Collector' | null
     contentTypes?: string[]
   }): CryptoPanicFilters {
     const filters: CryptoPanicFilters = {
@@ -154,20 +154,20 @@ class CryptoPanicService {
     }
 
     // Add currency filters based on selected assets
-    if (userPrefs.selectedAssets && userPrefs.selectedAssets.length > 0) {
-      filters.currencies = userPrefs.selectedAssets
+    if (userPrefs.assets && userPrefs.assets.length > 0) {
+      filters.currencies = userPrefs.assets
     }
 
     // Add sentiment filter based on investor type
     if (userPrefs.investorType) {
       switch (userPrefs.investorType) {
-        case 'conservative':
+        case 'HODLer':
           filters.filter = 'important'
           break
-        case 'moderate':
+        case 'Day Trader':
           filters.filter = 'hot'
           break
-        case 'aggressive':
+        case 'NFT Collector':
           filters.filter = 'bullish'
           break
       }
