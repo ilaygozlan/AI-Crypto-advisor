@@ -5,6 +5,13 @@ import { createMockApiClient } from './mock'
 const baseURL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:3001/api'
 const isMockMode = (import.meta as any).env?.VITE_USE_MOCK_API === 'true'
 
+console.log('🔧 Environment check:', {
+  VITE_USE_MOCK_API: (import.meta as any).env?.VITE_USE_MOCK_API,
+  isMockMode,
+  baseURL,
+  allEnvVars: (import.meta as any).env
+})
+
 // Use mock API client in standalone mode
 export const apiClient = isMockMode 
   ? createMockApiClient()
@@ -19,6 +26,9 @@ export const apiClient = isMockMode
 
 if (isMockMode) {
   console.log('🎭 Using Mock API for standalone development')
+  console.log('🎭 Mock API Client:', apiClient)
+} else {
+  console.log('🌐 Using Real API:', baseURL)
 }
 
 // Only add interceptors for real axios client (not mock)

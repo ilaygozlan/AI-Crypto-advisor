@@ -16,7 +16,10 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async (data: LoginRequest) => {
+      console.log('🔐 Login attempt with data:', data)
+      console.log('🔐 Using authApi:', authApi)
       const response = await authApi.login(data)
+      console.log('🔐 Login response:', response)
       return response.data
     },
     onSuccess: (response) => {

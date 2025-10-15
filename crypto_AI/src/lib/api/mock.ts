@@ -34,7 +34,7 @@ export const mockApi = {
         },
         accessToken: 'mock-access-token-12345',
       },
-      message: 'Login successful',
+      message: 'Login successful - Mock mode accepts any credentials',
     },
 
     refresh: {
@@ -206,14 +206,18 @@ export const mockDelay = (ms: number = 500) =>
 
 // Mock API client that returns mock data
 export const createMockApiClient = () => {
+  console.log('🎭 Creating Mock API Client')
   return {
         post: async (url: string, _data?: any) => {
+      console.log('🎭 Mock API POST request:', url, _data)
       await mockDelay()
       
       if (url.includes('/auth/signup')) {
+        console.log('🎭 Returning signup response:', mockApi.auth.signup)
         return { data: mockApi.auth.signup }
       }
       if (url.includes('/auth/login')) {
+        console.log('🎭 Returning login response:', mockApi.auth.login)
         return { data: mockApi.auth.login }
       }
       if (url.includes('/auth/refresh')) {
