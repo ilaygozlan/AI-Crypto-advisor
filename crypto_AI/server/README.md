@@ -222,7 +222,7 @@ VITE_API_BASE_URL=http://localhost:4000
 
 **Build Command:**
 ```bash
-npm install --production=false && npx prisma generate && npm run build && npx prisma migrate deploy
+npm install --production=false && npm run build && npx prisma migrate deploy
 ```
 
 **Start Command:**
