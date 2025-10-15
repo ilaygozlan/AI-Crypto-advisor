@@ -121,8 +121,8 @@ The application uses Prisma with PostgreSQL. Key models include:
 
 3) **Add Service → GitHub Repo** pointing to this project.
    - **API Service** (path `/server`)
-     - Build Command: `pnpm install --frozen-lockfile && pnpm build && pnpm migrate:deploy`
-     - Start Command: `pnpm start`
+     - Build Command: `npm ci && npm run build && npm run migrate:deploy`
+     - Start Command: `npm start`
      - Variables:
        - `JWT_ACCESS_SECRET` + `JWT_REFRESH_SECRET` (64+ random chars)
        - `ACCESS_TOKEN_TTL=15m`, `REFRESH_TOKEN_TTL=7d`
@@ -133,8 +133,8 @@ The application uses Prisma with PostgreSQL. Key models include:
 4) **Deploy API** once to obtain its Railway URL: `https://<api>.up.railway.app`.
 
 5) **Frontend Service** (project root):
-   - Build Command: `pnpm install --frozen-lockfile && pnpm build`
-   - Start Command: `pnpm serve:static`
+   - Build Command: `npm ci && npm run build`
+   - Start Command: `npm run serve:static`
    - Variables:
      - `VITE_API_BASE_URL=https://<api>.up.railway.app`
 

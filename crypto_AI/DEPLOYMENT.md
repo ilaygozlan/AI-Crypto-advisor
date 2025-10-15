@@ -8,6 +8,10 @@ This guide will help you deploy the Moveo AI Crypto Advisor application to Railw
 - GitHub repository with this code
 - Basic understanding of environment variables
 
+## Important Note
+
+This project uses **npm** (not pnpm) for package management. The Railway configuration has been set up to use `npm ci` for reliable, reproducible builds. Make sure to run `npm install` locally to generate the `package-lock.json` file before deploying.
+
 ## Step-by-Step Deployment
 
 ### 1. Create Railway Project
@@ -30,8 +34,8 @@ This guide will help you deploy the Moveo AI Crypto Advisor application to Railw
 2. Select "GitHub Repo" and choose your repository
 3. **Configure the service**:
    - **Root Directory**: `/server`
-   - **Build Command**: `pnpm install --frozen-lockfile && pnpm build && pnpm migrate:deploy`
-   - **Start Command**: `pnpm start`
+   - **Build Command**: `npm ci && npm run build && npm run migrate:deploy`
+   - **Start Command**: `npm start`
 
 4. **Add Environment Variables**:
    ```
@@ -60,8 +64,8 @@ This guide will help you deploy the Moveo AI Crypto Advisor application to Railw
 2. Select "GitHub Repo" and choose your repository
 3. **Configure the service**:
    - **Root Directory**: `/` (root)
-   - **Build Command**: `pnpm install --frozen-lockfile && pnpm build`
-   - **Start Command**: `pnpm serve:static`
+   - **Build Command**: `npm ci && npm run build`
+   - **Start Command**: `npm run serve:static`
 
 4. **Add Environment Variables**:
    ```
@@ -138,6 +142,7 @@ This guide will help you deploy the Moveo AI Crypto Advisor application to Railw
 - Check that all environment variables are set
 - Verify Node.js version compatibility (20+)
 - Review build logs for specific error messages
+- **"Cannot install with frozen-lockfile because pnpm-lock.yaml is absent"**: This project uses npm, not pnpm. The Railway configuration has been updated to use `npm ci` instead of `pnpm install --frozen-lockfile`
 
 **Frontend Not Loading**
 - Ensure `VITE_API_BASE_URL` is set correctly

@@ -1,11 +1,11 @@
 [phases.setup]
-nixPkgs = ['nodejs_20', 'pnpm']
+nixPkgs = ['nodejs_20', 'npm']
 
 [phases.install]
-cmds = ['pnpm install --frozen-lockfile']
+cmds = ['npm ci']
 
 [phases.build]
-cmds = ['pnpm build']
+cmds = ['npm run build']
 
 [start]
-cmd = 'pnpm serve:static'
+cmd = 'npm run serve:static'

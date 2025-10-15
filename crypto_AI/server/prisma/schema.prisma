@@ -147,9 +147,6 @@ model NewsItem {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  // Relations
-  votes Vote[]
-
   @@map("news_items")
 }
 
@@ -164,9 +161,6 @@ model Meme {
   featuredDate DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
-  // Relations
-  votes Vote[]
 
   @@map("memes")
 }
@@ -203,9 +197,6 @@ model AIInsight {
   isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-
-  // Relations
-  votes Vote[]
 
   @@map("ai_insights")
 }
