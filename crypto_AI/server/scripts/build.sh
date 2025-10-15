@@ -31,6 +31,6 @@ npm run build
 
 # Run database migrations
 echo "🗄️ Running database migrations..."
-npm run migrate:deploy
+npx prisma migrate deploy
 
 echo "✅ Build completed successfully!"

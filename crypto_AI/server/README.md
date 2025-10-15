@@ -121,7 +121,7 @@ The application uses Prisma with PostgreSQL. Key models include:
 
 3) **Add Service → GitHub Repo** pointing to this project.
    - **API Service** (path `/server`)
-     - Build Command: `npm ci && npm run build && npm run migrate:deploy`
+     - Build Command: `npm install --production=false && npx prisma generate && npm run build && npx prisma migrate deploy`
      - Start Command: `npm start`
      - Variables:
        - `JWT_ACCESS_SECRET` + `JWT_REFRESH_SECRET` (64+ random chars)
