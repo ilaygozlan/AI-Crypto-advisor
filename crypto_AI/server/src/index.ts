@@ -3,15 +3,11 @@ import cors from 'cors'
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import rateLimit from 'express-rate-limit'
-import { config } from 'dotenv'
 import { logger } from './lib/logger.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { authRoutes } from './routes/auth.routes.js'
 import { healthRoutes } from './routes/health.routes.js'
 import { env, isProd } from './config/env.js'
-
-// Load environment variables
-config()
 
 const app = express()
 const PORT = env.PORT
@@ -58,14 +54,8 @@ app.use((req, res, next) => {
 app.use('/auth', authRoutes)
 app.use('/healthz', healthRoutes)
 
-// Health check endpoint
-app.get('/healthz', (req, res) => {
-  res.status(200).json({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
-  })
-})
+// Simple health check endpoint (Railway requirement)
+app.get('/healthz', (_req, res) => res.status(200).send('ok'))
 
 // 404 handler
 app.use('*', (req, res) => {

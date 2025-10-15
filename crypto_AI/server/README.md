@@ -212,10 +212,63 @@ VITE_API_BASE_URL=http://localhost:4000
 - **Build fails**: ensure all environment variables are set in Railway dashboard.
 - **Database connection**: check PostgreSQL plugin is linked to the API service.
 
+## Deploy on Railway
+
+### Prerequisites
+- Railway account and CLI installed
+- PostgreSQL plugin added to your Railway project
+
+### API Service Configuration
+
+**Build Command:**
+```bash
+pnpm install --frozen-lockfile && pnpm prisma generate && pnpm build && pnpm migrate:deploy
+```
+
+**Start Command:**
+```bash
+pnpm start
+```
+
+### Environment Variables
+Set these in Railway dashboard under Variables:
+```
+JWT_ACCESS_SECRET=<64+ random characters>
+JWT_REFRESH_SECRET=<64+ random characters>
+ACCESS_TOKEN_TTL=15m
+REFRESH_TOKEN_TTL=7d
+PORT=4000
+NODE_ENV=production
+CORS_ORIGIN=https://<frontend-url>.up.railway.app
+```
+
+### Database Setup
+1. **Link PostgreSQL Plugin**: Go to Variables → Link → PostgreSQL
+2. This automatically injects `DATABASE_URL` (private: postgres.railway.internal)
+3. Migrations run automatically during build
+
+### Health Check
+- **Path**: `/healthz`
+- **Expected Response**: `200 OK` with "ok" body
+
+### Deployment Steps
+1. Deploy API service first
+2. Note the API URL (e.g., `https://api-production-xxxx.up.railway.app`)
+3. Deploy frontend service with `VITE_API_BASE_URL` set to API URL
+4. Update API `CORS_ORIGIN` to frontend URL
+5. Redeploy API service
+
+### Troubleshooting
+- **Build fails**: Ensure all environment variables are set
+- **Database errors**: Verify PostgreSQL plugin is linked
+- **CORS errors**: Check `CORS_ORIGIN` matches frontend URL exactly
+- **Health check fails**: Check `/healthz` endpoint returns 200
+
 ## Development Notes
 
 - The server uses ES modules (`"type": "module"` in package.json)
 - Prisma client is generated on `postinstall` for Railway deployment
+- Railway uses Nixpacks (no Dockerfile required)
 - Refresh tokens are stored in httpOnly cookies for security
 - CORS is configured for single origin in production
 - All routes are protected except `/auth/signup`, `/auth/login`, and `/healthz`

@@ -2,10 +2,10 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "npm install --production=false && npm run build"
+    "buildCommand": "pnpm install --frozen-lockfile && pnpm build"
   },
   "deploy": {
-    "startCommand": "npm run serve:static",
+    "startCommand": "pnpm serve:static",
     "healthcheckPath": "/",
     "healthcheckTimeout": 100,
     "restartPolicyType": "ON_FAILURE",
