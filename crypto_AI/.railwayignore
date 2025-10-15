@@ -1,5 +1,5 @@
-# Ignore Docker files to force Nixpacks usage
-Dockerfile
+# Force Nixpacks usage - ignore all Docker files
+Dockerfile*
 docker-compose*.yml
 .dockerignore
 
@@ -14,3 +14,7 @@ node_modules/
 dist/
 build/
 *.log
+
+# Ignore any remaining Docker configurations
+**/Dockerfile*
+**/docker-compose*
