@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UserAsset",
+  "description": "User's selected cryptocurrency assets",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique user asset relationship identifier"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Associated user ID"
+    },
+    "assetId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Associated asset ID"
+    },
+    "isActive": {
+      "type": "boolean",
+      "description": "Whether the asset is currently selected by the user"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Selection timestamp"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp"
+    }
+  },
+  "required": ["id", "userId", "assetId", "isActive", "createdAt", "updatedAt"],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "id": "990e8400-e29b-41d4-a716-446655440004",
+      "userId": "550e8400-e29b-41d4-a716-446655440000",
+      "assetId": "770e8400-e29b-41d4-a716-446655440002",
+      "isActive": true,
+      "createdAt": "2024-01-15T10:30:00Z",
+      "updatedAt": "2024-01-15T10:30:00Z"
+    }
+  ]
+}

@@ -2,6 +2,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { dashboardApi } from '@/lib/api/endpoints'
 import type { VoteRequest } from '@/types/dashboard'
 
+/**
+ * Hook for handling user votes on content
+ * Provides optimistic updates for better UX
+ */
 export function useVote() {
   const queryClient = useQueryClient()
 
@@ -11,7 +15,7 @@ export function useVote() {
         const response = await dashboardApi.vote(data)
         return response.data
       } catch (error) {
-        // For demo purposes, simulate a successful vote
+        // Fallback for demo purposes when backend is not available
         console.log('Vote recorded:', data)
         return {
           success: true,
@@ -23,7 +27,7 @@ export function useVote() {
       }
     },
     onSuccess: (data, variables) => {
-      // Optimistically update the UI
+      // Optimistically update the UI with new vote counts
       const queryKey = getQueryKeyForSection(variables.section)
       queryClient.setQueryData(queryKey, (oldData: any) => {
         if (!oldData) return oldData

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Asset",
+  "description": "Cryptocurrency asset definition",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique asset identifier"
+    },
+    "symbol": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 10,
+      "description": "Asset symbol (e.g., BTC, ETH)"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 50,
+      "description": "Full asset name"
+    },
+    "icon": {
+      "type": ["string", "null"],
+      "description": "Unicode icon or emoji for the asset"
+    },
+    "isActive": {
+      "type": "boolean",
+      "description": "Whether the asset is available for selection"
+    },
+    "sortOrder": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Display order for asset selection"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Asset creation timestamp"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp"
+    }
+  },
+  "required": ["id", "symbol", "name", "isActive", "sortOrder", "createdAt", "updatedAt"],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "id": "770e8400-e29b-41d4-a716-446655440002",
+      "symbol": "BTC",
+      "name": "Bitcoin",
+      "icon": "₿",
+      "isActive": true,
+      "sortOrder": 1,
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "880e8400-e29b-41d4-a716-446655440003",
+      "symbol": "ETH",
+      "name": "Ethereum",
+      "icon": "Ξ",
+      "isActive": true,
+      "sortOrder": 2,
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z"
+    }
+  ]
+}

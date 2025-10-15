@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Webhook Event Specification",
+  "description": "Master specification for all webhook events",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique webhook event identifier"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "user.created",
+        "user.updated",
+        "user.deleted",
+        "preference.updated",
+        "news.ingested",
+        "meme.ingested",
+        "price.snapshot",
+        "ai.insight.generated",
+        "vote.created",
+        "interaction.logged",
+        "recommendation.profile.updated",
+        "recommendation.served",
+        "recommendation.outcome"
+      ],
+      "description": "Event type identifier"
+    },
+    "version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Webhook payload version"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the event occurred"
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Retry attempt number"
+    },
+    "data": {
+      "oneOf": [
+        {
+          "title": "User Created Event",
+          "type": "object",
+          "properties": {
+            "user": { "$ref": "../schemas/users.schema.json" }
+          },
+          "required": ["user"]
+        },
+        {
+          "title": "User Updated Event",
+          "type": "object",
+          "properties": {
+            "user": { "$ref": "../schemas/users.schema.json" },
+            "changes": {
+              "type": "object",
+              "description": "Fields that were changed"
+            }
+          },
+          "required": ["user", "changes"]
+        },
+        {
+          "title": "User Deleted Event",
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "deletedAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": ["userId", "deletedAt"]
+        },
+        {
+          "title": "Preference Updated Event",
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "preferences": {
+              "type": "object",
+              "properties": {
+                "assets": {
+                  "type": "array",
+                  "items": { "$ref": "../schemas/user_assets.schema.json" }
+                },
+                "contentTypes": {
+                  "type": "array",
+                  "items": { "$ref": "../schemas/user_content_types.schema.json" }
+                },
+                "investorProfile": { "$ref": "../schemas/user_investor_profile.schema.json" }
+              }
+            }
+          },
+          "required": ["userId", "preferences"]
+        },
+        {
+          "title": "News Ingested Event",
+          "type": "object",
+          "properties": {
+            "newsItem": { "$ref": "../schemas/news_items.schema.json" }
+          },
+          "required": ["newsItem"]
+        },
+        {
+          "title": "Meme Ingested Event",
+          "type": "object",
+          "properties": {
+            "meme": { "$ref": "../schemas/memes.schema.json" }
+          },
+          "required": ["meme"]
+        },
+        {
+          "title": "Price Snapshot Event",
+          "type": "object",
+          "properties": {
+            "priceSnapshot": { "$ref": "../schemas/price_snapshots.schema.json" }
+          },
+          "required": ["priceSnapshot"]
+        },
+        {
+          "title": "AI Insight Generated Event",
+          "type": "object",
+          "properties": {
+            "aiInsight": { "$ref": "../schemas/ai_insights.schema.json" }
+          },
+          "required": ["aiInsight"]
+        },
+        {
+          "title": "Vote Created Event",
+          "type": "object",
+          "properties": {
+            "vote": { "$ref": "../schemas/votes.schema.json" }
+          },
+          "required": ["vote"]
+        },
+        {
+          "title": "Interaction Logged Event",
+          "type": "object",
+          "properties": {
+            "interaction": { "$ref": "../schemas/interactions.schema.json" }
+          },
+          "required": ["interaction"]
+        },
+        {
+          "title": "Recommendation Profile Updated Event",
+          "type": "object",
+          "properties": {
+            "recommendationProfile": { "$ref": "../schemas/recommendation_profile.schema.json" }
+          },
+          "required": ["recommendationProfile"]
+        },
+        {
+          "title": "Recommendation Served Event",
+          "type": "object",
+          "properties": {
+            "recommendation": { "$ref": "../schemas/user_recommendations.schema.json" }
+          },
+          "required": ["recommendation"]
+        },
+        {
+          "title": "Recommendation Outcome Event",
+          "type": "object",
+          "properties": {
+            "recommendationEvent": { "$ref": "../schemas/recommendation_events.schema.json" }
+          },
+          "required": ["recommendationEvent"]
+        }
+      ]
+    }
+  },
+  "required": ["id", "type", "version", "created_at", "attempt", "data"],
+  "additionalProperties": false
+}

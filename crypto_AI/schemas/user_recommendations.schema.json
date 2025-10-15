@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UserRecommendation",
+  "description": "Personalized recommendation for a user",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique recommendation identifier"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "User receiving the recommendation"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["news", "price_alert", "ai_insight", "meme", "asset_suggestion"],
+      "description": "Type of recommendation"
+    },
+    "itemId": {
+      "type": "string",
+      "description": "ID of the recommended item"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Recommendation title"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Recommendation description"
+    },
+    "relevanceScore": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "AI-calculated relevance score"
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "Explanation for why this was recommended"
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "urgent"],
+      "description": "Recommendation priority level"
+    },
+    "isRead": {
+      "type": "boolean",
+      "description": "Whether the user has read the recommendation"
+    },
+    "isDismissed": {
+      "type": "boolean",
+      "description": "Whether the user has dismissed the recommendation"
+    },
+    "expiresAt": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the recommendation expires"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Recommendation creation timestamp"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp"
+    }
+  },
+  "required": ["id", "userId", "type", "itemId", "title", "relevanceScore", "priority", "isRead", "isDismissed", "createdAt", "updatedAt"],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "id": "660e8400-e29b-41d4-a716-446655440016",
+      "userId": "550e8400-e29b-41d4-a716-446655440000",
+      "type": "news",
+      "itemId": "ee0e8400-e29b-41d4-a716-446655440009",
+      "title": "Bitcoin Analysis: Strong Buy Signal",
+      "description": "Based on your HODLer profile and BTC holdings, this news suggests a strong buying opportunity.",
+      "relevanceScore": 0.92,
+      "reason": "Matches your BTC preference and HODLer investment style",
+      "priority": "high",
+      "isRead": false,
+      "isDismissed": false,
+      "expiresAt": "2024-01-16T14:30:00Z",
+      "createdAt": "2024-01-15T14:30:00Z",
+      "updatedAt": "2024-01-15T14:30:00Z"
+    }
+  ]
+}

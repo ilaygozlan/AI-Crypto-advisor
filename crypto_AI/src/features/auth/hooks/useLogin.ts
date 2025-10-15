@@ -5,6 +5,10 @@ import { useAuthStore } from '@/lib/state/auth.store'
 import { usePrefsStore } from '@/lib/state/prefs.store'
 import type { LoginRequest } from '@/types/auth'
 
+/**
+ * Hook for handling user login
+ * Manages authentication state and redirects based on onboarding status
+ */
 export function useLogin() {
   const navigate = useNavigate()
   const { setUser, setToken } = useAuthStore()
@@ -21,6 +25,7 @@ export function useLogin() {
       setToken(accessToken)
       setHasCompletedOnboarding(user.hasCompletedOnboarding)
       
+      // Redirect based on onboarding completion status
       if (user.hasCompletedOnboarding) {
         navigate('/dashboard')
       } else {

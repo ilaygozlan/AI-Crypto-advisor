@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RecommendationProfile",
+  "description": "AI recommendation system profile and settings",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique recommendation profile identifier"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Associated user ID"
+    },
+    "algorithm": {
+      "type": "string",
+      "enum": ["collaborative", "content_based", "hybrid", "deep_learning"],
+      "description": "Recommendation algorithm being used"
+    },
+    "preferences": {
+      "type": "object",
+      "description": "User preference weights for recommendations",
+      "properties": {
+        "newsWeight": { "type": "number", "minimum": 0, "maximum": 1 },
+        "priceWeight": { "type": "number", "minimum": 0, "maximum": 1 },
+        "aiWeight": { "type": "number", "minimum": 0, "maximum": 1 },
+        "memeWeight": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "filters": {
+      "type": "object",
+      "description": "Content filtering preferences",
+      "properties": {
+        "minRelevanceScore": { "type": "number", "minimum": 0, "maximum": 1 },
+        "maxContentAge": { "type": "integer", "minimum": 1, "description": "Maximum content age in hours" },
+        "excludedSources": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Sources to exclude from recommendations"
+        }
+      }
+    },
+    "isActive": {
+      "type": "boolean",
+      "description": "Whether the recommendation profile is active"
+    },
+    "lastTrainedAt": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the model was last trained on user data"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Profile creation timestamp"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp"
+    }
+  },
+  "required": ["id", "userId", "algorithm", "isActive", "createdAt", "updatedAt"],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440015",
+      "userId": "550e8400-e29b-41d4-a716-446655440000",
+      "algorithm": "hybrid",
+      "preferences": {
+        "newsWeight": 0.4,
+        "priceWeight": 0.3,
+        "aiWeight": 0.2,
+        "memeWeight": 0.1
+      },
+      "filters": {
+        "minRelevanceScore": 0.7,
+        "maxContentAge": 24,
+        "excludedSources": ["spam-news.com"]
+      },
+      "isActive": true,
+      "lastTrainedAt": "2024-01-15T08:00:00Z",
+      "createdAt": "2024-01-15T10:30:00Z",
+      "updatedAt": "2024-01-15T14:30:00Z"
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RecommendationEvent",
+  "description": "User interaction with recommendations for ML training",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique recommendation event identifier"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "User who interacted with the recommendation"
+    },
+    "recommendationId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Associated recommendation ID"
+    },
+    "eventType": {
+      "type": "string",
+      "enum": ["served", "clicked", "dismissed", "ignored", "shared", "bookmarked"],
+      "description": "Type of interaction event"
+    },
+    "context": {
+      "type": "object",
+      "description": "Contextual information about the event",
+      "properties": {
+        "sessionId": { "type": "string" },
+        "page": { "type": "string" },
+        "timeOfDay": { "type": "string", "format": "time" },
+        "dayOfWeek": { "type": "string", "enum": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] },
+        "deviceType": { "type": "string", "enum": ["desktop", "mobile", "tablet"] }
+      }
+    },
+    "feedback": {
+      "type": "object",
+      "description": "User feedback on the recommendation",
+      "properties": {
+        "rating": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "comment": { "type": "string", "maxLength": 500 },
+        "wasHelpful": { "type": "boolean" }
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event timestamp"
+    }
+  },
+  "required": ["id", "userId", "recommendationId", "eventType", "createdAt"],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "id": "770e8400-e29b-41d4-a716-446655440017",
+      "userId": "550e8400-e29b-41d4-a716-446655440000",
+      "recommendationId": "660e8400-e29b-41d4-a716-446655440016",
+      "eventType": "clicked",
+      "context": {
+        "sessionId": "session_123",
+        "page": "dashboard",
+        "timeOfDay": "14:30:00",
+        "dayOfWeek": "monday",
+        "deviceType": "desktop"
+      },
+      "feedback": {
+        "rating": 4,
+        "wasHelpful": true
+      },
+      "createdAt": "2024-01-15T14:30:00Z"
+    }
+  ]
+}

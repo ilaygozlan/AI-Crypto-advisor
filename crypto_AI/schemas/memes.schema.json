@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Meme",
+  "description": "Daily cryptocurrency meme content",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique meme identifier"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Meme title or caption"
+    },
+    "imageUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to the meme image"
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Meme description or caption"
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Meme source or creator"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 50
+      },
+      "description": "Meme tags for categorization"
+    },
+    "isActive": {
+      "type": "boolean",
+      "description": "Whether the meme is active and visible"
+    },
+    "featuredDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when the meme was featured"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Meme creation timestamp"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp"
+    }
+  },
+  "required": ["id", "title", "imageUrl", "caption", "source", "isActive", "featuredDate", "createdAt", "updatedAt"],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "id": "ff0e8400-e29b-41d4-a716-446655440010",
+      "title": "When You Check Your Portfolio After a Good Day",
+      "imageUrl": "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&h=300&fit=crop",
+      "caption": "That feeling when your crypto portfolio is in the green and you're feeling like a financial genius! 📈",
+      "source": "CryptoMemes Daily",
+      "tags": ["portfolio", "gains", "mood"],
+      "isActive": true,
+      "featuredDate": "2024-01-15",
+      "createdAt": "2024-01-15T08:00:00Z",
+      "updatedAt": "2024-01-15T08:00:00Z"
+    }
+  ]
+}

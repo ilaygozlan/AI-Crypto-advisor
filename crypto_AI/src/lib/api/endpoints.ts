@@ -4,7 +4,10 @@ import type { ApiResponse } from '@/types/common'
 import type { NewsItem, PriceData, AIInsight, MemeItem, VoteRequest, VoteResponse } from '@/types/dashboard'
 import type { Asset, InvestorType, ContentType } from '@/lib/state/prefs.store'
 
-// Auth endpoints
+/**
+ * Authentication API endpoints
+ * Handles user login, signup, and session management
+ */
 export const authApi = {
   login: (data: LoginRequest) =>
     apiClient.post<ApiResponse<AuthResponse>>('/auth/login', data),
@@ -13,7 +16,10 @@ export const authApi = {
     apiClient.post<ApiResponse<AuthResponse>>('/auth/signup', data),
 }
 
-// Onboarding endpoints
+/**
+ * Onboarding API endpoints
+ * Handles user preference setup and onboarding completion
+ */
 export const onboardingApi = {
   save: (data: {
     assets: Asset[]
@@ -23,7 +29,10 @@ export const onboardingApi = {
     apiClient.post<ApiResponse<{ success: boolean }>>('/onboarding', data),
 }
 
-// Dashboard endpoints
+/**
+ * Dashboard API endpoints
+ * Provides content for the main dashboard including news, prices, AI insights, and memes
+ */
 export const dashboardApi = {
   getNews: () =>
     apiClient.get<ApiResponse<NewsItem[]>>('/dashboard/news'),

@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Interaction",
+  "description": "User interaction and engagement tracking",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique interaction identifier"
+    },
+    "userId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "User who performed the interaction"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["view", "click", "hover", "scroll", "share", "bookmark", "dwell"],
+      "description": "Type of interaction"
+    },
+    "section": {
+      "type": "string",
+      "enum": ["news", "prices", "ai", "meme", "dashboard", "settings"],
+      "description": "Section where interaction occurred"
+    },
+    "itemId": {
+      "type": ["string", "null"],
+      "description": "ID of the specific item interacted with"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional interaction metadata",
+      "properties": {
+        "duration": {
+          "type": "number",
+          "description": "Interaction duration in milliseconds"
+        },
+        "position": {
+          "type": "object",
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" }
+          }
+        },
+        "referrer": {
+          "type": "string",
+          "description": "Page or section that led to this interaction"
+        }
+      }
+    },
+    "userAgent": {
+      "type": ["string", "null"],
+      "description": "Client user agent string"
+    },
+    "ipAddress": {
+      "type": ["string", "null"],
+      "format": "ipv4",
+      "description": "Client IP address"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Interaction timestamp"
+    }
+  },
+  "required": ["id", "userId", "type", "section", "createdAt"],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "id": "440e8400-e29b-41d4-a716-446655440014",
+      "userId": "550e8400-e29b-41d4-a716-446655440000",
+      "type": "view",
+      "section": "news",
+      "itemId": "ee0e8400-e29b-41d4-a716-446655440009",
+      "metadata": {
+        "duration": 15000,
+        "position": { "x": 100, "y": 200 },
+        "referrer": "dashboard"
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      "ipAddress": "192.168.1.100",
+      "createdAt": "2024-01-15T14:30:00Z"
+    }
+  ]
+}
