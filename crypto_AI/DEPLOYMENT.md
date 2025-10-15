@@ -35,7 +35,7 @@ This project uses **npm** (not pnpm) for package management. Railway will auto-d
 3. **Configure the service**:
    - **Root Directory**: `/server`
    - Railway will auto-detect Node.js and use the build commands from `railway.json`
-   - **Build Command**: `npm ci && npm run build && npm run migrate:deploy`
+   - **Build Command**: `npm install --production=false && npm run build && npm run migrate:deploy`
    - **Start Command**: `npm start`
 
 4. **Add Environment Variables**:
@@ -66,7 +66,7 @@ This project uses **npm** (not pnpm) for package management. Railway will auto-d
 3. **Configure the service**:
    - **Root Directory**: `/` (root)
    - Railway will auto-detect Node.js and use the build commands from `railway.json`
-   - **Build Command**: `npm ci && npm run build`
+   - **Build Command**: `npm install --production=false && npm run build`
    - **Start Command**: `npm run serve:static`
 
 4. **Add Environment Variables**:
@@ -146,6 +146,7 @@ This project uses **npm** (not pnpm) for package management. Railway will auto-d
 - Review build logs for specific error messages
 - **"Cannot install with frozen-lockfile because pnpm-lock.yaml is absent"**: This project uses npm, not pnpm. Railway will auto-detect the Node.js project and use npm commands.
 - **"undefined variable 'npm'"**: This was caused by incorrect nixpacks configuration. The nixpacks.toml files have been removed to let Railway auto-detect the Node.js project properly.
+- **"EBUSY: resource busy or locked, rmdir '/app/node_modules/.cache'"**: This is a Docker cache conflict. The build commands have been updated to use `npm install --production=false` instead of `npm ci` to avoid cache conflicts.
 
 **Frontend Not Loading**
 - Ensure `VITE_API_BASE_URL` is set correctly
