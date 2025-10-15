@@ -1,7 +1,7 @@
 # --- deps ---
 FROM node:20-bookworm-slim AS deps
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY server/package.json server/package-lock.json ./
 RUN npm ci
 
 # --- build ---
@@ -9,7 +9,7 @@ FROM node:20-bookworm-slim AS build
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY server/ .
 # generate prisma client explicitly (no postinstall!)
 RUN npx prisma generate
 RUN npm run build

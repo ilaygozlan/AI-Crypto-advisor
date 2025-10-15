@@ -221,7 +221,7 @@ VITE_API_BASE_URL=http://localhost:4000
 ### API Service Configuration (Docker Build)
 
 **Railway Settings:**
-- **Root Directory:** `server`
+- **Root Directory:** `crypto_AI` (project root)
 - **Dockerfile Path:** `Dockerfile` (uses Debian-based multi-stage build)
 - **No custom Build/Start commands needed** (defined in Dockerfile)
 
