@@ -218,17 +218,27 @@ VITE_API_BASE_URL=http://localhost:4000
 - Railway account and CLI installed
 - PostgreSQL plugin added to your Railway project
 
-### API Service Configuration
+### API Service Configuration (Docker Build)
 
-**Build Command:**
-```bash
-npm install --production=false && npm run build && npm run migrate:deploy
-```
+**Railway Settings:**
+- **Root Directory:** `server`
+- **Dockerfile Path:** `Dockerfile` (uses Debian-based multi-stage build)
+- **No custom Build/Start commands needed** (defined in Dockerfile)
 
-**Start Command:**
-```bash
-npm start
-```
+**Dockerfile Features:**
+- **Debian-based** (node:20-bookworm-slim) - avoids Alpine/musl binary issues
+- **Multi-stage build** - optimized for production
+- **Explicit Prisma generation** - no postinstall conflicts
+- **Automatic migrations** - runs at container startup
+
+### Alternative: Nixpacks (No Dockerfile)
+
+If you prefer to avoid Docker entirely, remove the Dockerfile and use:
+
+**Railway Settings:**
+- **Root Directory:** `server`
+- **Build Command:** `npm install --production=false && npx prisma generate && npm run build && npx prisma migrate deploy`
+- **Start Command:** `npm start`
 
 ### Environment Variables
 Set these in Railway dashboard under Variables:
