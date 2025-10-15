@@ -218,27 +218,27 @@ VITE_API_BASE_URL=http://localhost:4000
 - Railway account and CLI installed
 - PostgreSQL plugin added to your Railway project
 
-### API Service Configuration (Docker Build)
+### API Service Configuration (Nixpacks - Recommended)
 
 **Railway Settings:**
 - **Root Directory:** `crypto_AI` (project root)
-- **Dockerfile Path:** `Dockerfile` (uses Debian-based multi-stage build)
-- **No custom Build/Start commands needed** (defined in Dockerfile)
+- **Build Command:** `cd server && npm install --production=false && npx prisma generate && npm run build && npx prisma migrate deploy`
+- **Start Command:** `cd server && npm start`
 
-**Dockerfile Features:**
-- **Debian-based** (node:20-bookworm-slim) - avoids Alpine/musl binary issues
-- **Multi-stage build** - optimized for production
+**Nixpacks Features:**
+- **Auto-detects Node.js** - no Dockerfile needed
 - **Explicit Prisma generation** - no postinstall conflicts
-- **Automatic migrations** - runs at container startup
+- **Automatic migrations** - runs during build
+- **Faster builds** - optimized for Node.js applications
 
-### Alternative: Nixpacks (No Dockerfile)
+### Alternative: Docker Build
 
-If you prefer to avoid Docker entirely, remove the Dockerfile and use:
+If you prefer Docker, you can use the included Dockerfile:
 
 **Railway Settings:**
-- **Root Directory:** `server`
-- **Build Command:** `npm install --production=false && npx prisma generate && npm run build && npx prisma migrate deploy`
-- **Start Command:** `npm start`
+- **Root Directory:** `crypto_AI` (project root)
+- **Dockerfile Path:** `Dockerfile`
+- **No custom Build/Start commands needed** (defined in Dockerfile)
 
 ### Environment Variables
 Set these in Railway dashboard under Variables:
