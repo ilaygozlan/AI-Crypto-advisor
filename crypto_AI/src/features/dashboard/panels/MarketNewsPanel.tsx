@@ -3,7 +3,6 @@ import { VoteButtons } from '@/components/common/VoteButtons'
 import { PreferencesIndicator } from '@/components/PreferencesIndicator'
 import { useNews } from '../hooks/useNews'
 import { useVote } from '../hooks/useVote'
-import { ExternalLink } from 'lucide-react'
 
 export default function MarketNewsPanel() {
   const { data: news, isLoading, error } = useNews()
@@ -50,57 +49,74 @@ export default function MarketNewsPanel() {
       </div>
     )
   }
+  function formatDate(isoString: string) {
+    const date = new Date(isoString)
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const year = date.getFullYear()
+  
+    const hours = date.getHours()
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    const ampm = hours >= 12 ? 'PM' : 'AM'
+    const formattedHour = hours % 12 || 12
+  
+    return `${day}.${month}.${year} AT ${formattedHour}:${minutes} ${ampm}`
+  }
 
-  const latestNews = news[0]
+  function sortNewsByDate(newsArray: any) {
+    return [...newsArray].sort(
+      (a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)
+    )
+  }
+  const sortedNews = sortNewsByDate(news)
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="h-8 w-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-          <span className="text-blue-600 dark:text-blue-400 text-lg">📰</span>
-        </div>
-        <div>
-          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Market News</h2>
-          <p className="text-sm text-slate-600 dark:text-slate-400">Latest crypto market updates</p>
-        </div>
+console.log(news)
+return (
+  <div className="space-y-6">
+    <div className="flex items-center gap-3">
+      <div className="h-8 w-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+        <span className="text-blue-600 dark:text-blue-400 text-lg">📰</span>
       </div>
-
-      <PreferencesIndicator />
-
-      <div className="space-y-4">
-        <div>
-          <h3 className="font-semibold text-lg mb-3 line-clamp-2">
-            {latestNews.title}
-          </h3>
-          <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-            {latestNews.summary}
-          </p>
-        </div>
-
-        <div className="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">
-          <span className="font-medium">{latestNews.source}</span>
-          <span>{new Date(latestNews.publishedAt).toLocaleDateString()}</span>
-        </div>
-
-        <div className="flex items-center justify-between pt-4">
-          <a
-            href={latestNews.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors font-medium"
-          >
-            Read full article
-            <ExternalLink className="ml-2 h-4 w-4" />
-          </a>
-
-          <VoteButtons
-            upVotes={latestNews.votes.up}
-            downVotes={latestNews.votes.down}
-            userVote={latestNews.userVote}
-            onVote={(voteType) => vote({ section: 'news', itemId: latestNews.id, vote: voteType })}
-          />
-        </div>
+      <div>
+        <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Market News</h2>
+        <p className="text-sm text-slate-600 dark:text-slate-400">Latest crypto market updates</p>
       </div>
     </div>
-  )
+
+    <PreferencesIndicator />
+
+    {/* Render up to 3 latest news */}
+    <div className="space-y-6">
+      {sortedNews.slice(0, 3).map((item) => (
+        <div key={item.id} className="space-y-4 border-b pb-4 last:border-0 last:pb-0">
+          <div>
+            <h3 className="font-semibold text-lg mb-2 line-clamp-2">{item.title}</h3>
+            <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
+              {item.summary || item.description}
+            </p>
+          </div>
+
+          <div className="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">
+            <span className="font-medium">
+            {formatDate(item.publishedAt)}
+            </span>
+            {item.source && <span>Source - {item.source}</span>}
+          </div>
+
+          <div className="flex justify-end pt-2">
+            <VoteButtons
+              upVotes={item.votes?.up || 0}
+              downVotes={item.votes?.down || 0}
+              userVote={item.userVote}
+              onVote={(voteType) =>
+                vote({ section: 'news', itemId: item.id, vote: voteType })
+              }
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)
+
 }

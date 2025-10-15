@@ -23,20 +23,28 @@ export function useLogin() {
       return response.data
     },
     onSuccess: (response) => {
-      if ('data' in response && typeof response.data === 'object' && response.data !== null) {
-        const data = response.data as any
+      console.log('🔐 onSuccess called with response:', response)
+      if (response && typeof response === 'object' && response !== null) {
+        const data = response as any
         if (data.user && data.accessToken) {
+          console.log('🔐 Setting user and token, redirecting...')
           setUser(data.user)
           setToken(data.accessToken)
           setHasCompletedOnboarding(data.user.hasCompletedOnboarding || false)
           
           // Redirect based on onboarding completion status
           if (data.user.hasCompletedOnboarding) {
+            console.log('🔐 Redirecting to dashboard')
             navigate('/dashboard')
           } else {
+            console.log('🔐 Redirecting to onboarding')
             navigate('/onboarding')
           }
+        } else {
+          console.log('🔐 Missing user or accessToken in response:', data)
         }
+      } else {
+        console.log('🔐 Invalid response structure:', response)
       }
     },
     onError: (error) => {

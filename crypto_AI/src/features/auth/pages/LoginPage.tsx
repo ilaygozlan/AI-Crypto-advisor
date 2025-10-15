@@ -24,6 +24,14 @@ export function LoginPage() {
               <p className="apple-body mt-4 text-lg text-muted-foreground">
                 Sign in to your account to continue
               </p>
+              <div className="mt-4 p-3 bg-muted/50 rounded-lg border border-muted">
+                <p className="text-sm text-muted-foreground">
+                  <strong>Demo Mode:</strong> Use any email and password to login
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Example: demo@example.com / password123
+                </p>
+              </div>
             </div>
 
             <AuthForm

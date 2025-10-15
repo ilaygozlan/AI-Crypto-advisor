@@ -5,6 +5,7 @@ export const mockApi = {
     id: '1',
     email: 'demo@example.com',
     name: 'Demo User',
+    hasCompletedOnboarding: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -18,6 +19,7 @@ export const mockApi = {
           id: '1',
           email: 'demo@example.com',
           name: 'Demo User',
+          hasCompletedOnboarding: false,
         },
         accessToken: 'mock-access-token-12345',
       },
@@ -31,6 +33,7 @@ export const mockApi = {
           id: '1',
           email: 'demo@example.com',
           name: 'Demo User',
+          hasCompletedOnboarding: false,
         },
         accessToken: 'mock-access-token-12345',
       },
@@ -50,6 +53,7 @@ export const mockApi = {
         id: '1',
         email: 'demo@example.com',
         name: 'Demo User',
+        hasCompletedOnboarding: false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       },
@@ -214,20 +218,20 @@ export const createMockApiClient = () => {
       
       if (url.includes('/auth/signup')) {
         console.log('🎭 Returning signup response:', mockApi.auth.signup)
-        return { data: mockApi.auth.signup }
+        return { data: mockApi.auth.signup.data }
       }
       if (url.includes('/auth/login')) {
         console.log('🎭 Returning login response:', mockApi.auth.login)
-        return { data: mockApi.auth.login }
+        return { data: mockApi.auth.login.data }
       }
       if (url.includes('/auth/refresh')) {
-        return { data: mockApi.auth.refresh }
+        return { data: mockApi.auth.refresh.data }
       }
       if (url.includes('/vote')) {
-        return { data: mockApi.vote }
+        return { data: mockApi.vote.data }
       }
       if (url.includes('/onboarding')) {
-        return { data: mockApi.onboarding }
+        return { data: mockApi.onboarding.data }
       }
       
       throw new Error(`Mock API: POST ${url} not implemented`)
@@ -237,19 +241,19 @@ export const createMockApiClient = () => {
       await mockDelay()
       
       if (url.includes('/me')) {
-        return { data: mockApi.auth.me }
+        return { data: mockApi.auth.me.data }
       }
       if (url.includes('/dashboard/news')) {
-        return { data: mockApi.dashboard.news }
+        return { data: mockApi.dashboard.news.data }
       }
       if (url.includes('/dashboard/prices')) {
-        return { data: mockApi.dashboard.prices }
+        return { data: mockApi.dashboard.prices.data }
       }
       if (url.includes('/dashboard/ai-insight')) {
-        return { data: mockApi.dashboard.aiInsight }
+        return { data: mockApi.dashboard.aiInsight.data }
       }
       if (url.includes('/dashboard/meme')) {
-        return { data: mockApi.dashboard.meme }
+        return { data: mockApi.dashboard.meme.data }
       }
       
       throw new Error(`Mock API: GET ${url} not implemented`)
