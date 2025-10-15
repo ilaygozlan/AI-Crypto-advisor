@@ -64,18 +64,32 @@ export const mockApi = {
         {
           id: '1',
           title: 'Bitcoin Reaches New All-Time High',
+          summary: 'Bitcoin has reached a new all-time high of $100,000, driven by institutional adoption and positive market sentiment.',
           content: 'Bitcoin has reached a new all-time high of $100,000...',
           source: 'CoinDesk',
+          url: 'https://coindesk.com/bitcoin-all-time-high',
           publishedAt: new Date().toISOString(),
           sentiment: 'positive',
+          votes: {
+            up: 1250,
+            down: 45
+          },
+          userVote: null
         },
         {
           id: '2',
           title: 'Ethereum 2.0 Upgrade Complete',
+          summary: 'The Ethereum network has successfully completed its 2.0 upgrade, improving scalability and reducing energy consumption.',
           content: 'The Ethereum network has successfully completed its 2.0 upgrade...',
           source: 'Ethereum Foundation',
+          url: 'https://ethereum.org/eth2-upgrade',
           publishedAt: new Date(Date.now() - 86400000).toISOString(),
           sentiment: 'positive',
+          votes: {
+            up: 890,
+            down: 23
+          },
+          userVote: null
         },
       ],
     },
@@ -87,19 +101,40 @@ export const mockApi = {
           id: '1',
           symbol: 'BTC',
           name: 'Bitcoin',
-          price: 100000,
-          change24h: 5.2,
+          currentPrice: 100000,
+          priceChangePercentage24h: 5.2,
           marketCap: 2000000000000,
           volume24h: 50000000000,
+          votes: {
+            up: 2100,
+            down: 89
+          }
         },
         {
           id: '2',
           symbol: 'ETH',
           name: 'Ethereum',
-          price: 3500,
-          change24h: -2.1,
+          currentPrice: 3500,
+          priceChangePercentage24h: -2.1,
           marketCap: 420000000000,
           volume24h: 20000000000,
+          votes: {
+            up: 1800,
+            down: 67
+          }
+        },
+        {
+          id: '3',
+          symbol: 'ADA',
+          name: 'Cardano',
+          currentPrice: 0.45,
+          priceChangePercentage24h: 3.8,
+          marketCap: 15000000000,
+          volume24h: 800000000,
+          votes: {
+            up: 950,
+            down: 34
+          }
         },
       ],
     },
@@ -109,9 +144,14 @@ export const mockApi = {
       data: {
         id: '1',
         title: 'Market Analysis: Bullish Trend Expected',
-        content: 'Based on current market indicators and sentiment analysis, we expect a bullish trend in the coming weeks...',
+        content: 'Based on current market indicators and sentiment analysis, we expect a bullish trend in the coming weeks. The recent institutional adoption and positive regulatory developments suggest strong fundamentals for major cryptocurrencies.',
         confidence: 85,
-        createdAt: new Date().toISOString(),
+        generatedAt: new Date().toISOString(),
+        votes: {
+          up: 1560,
+          down: 78
+        },
+        userVote: null
       },
     },
 
@@ -120,9 +160,14 @@ export const mockApi = {
       data: {
         id: '1',
         title: 'HODL Strong 💎🙌',
+        caption: 'When the market dips but you know the fundamentals are solid',
         imageUrl: 'https://via.placeholder.com/400x300/1f2937/ffffff?text=HODL+Strong',
-        upvotes: 1250,
-        downvotes: 45,
+        source: 'r/cryptocurrency',
+        votes: {
+          up: 1250,
+          down: 45
+        },
+        userVote: null,
         createdAt: new Date().toISOString(),
       },
     },
@@ -138,6 +183,20 @@ export const mockApi = {
       vote: 'up',
       createdAt: new Date().toISOString(),
     },
+  },
+
+  // Mock onboarding data
+  onboarding: {
+    success: true,
+    data: {
+      id: '1',
+      userId: '1',
+      investorType: 'conservative',
+      selectedAssets: ['BTC', 'ETH'],
+      selectedContentTypes: ['news', 'prices'],
+      completedAt: new Date().toISOString(),
+    },
+    message: 'Onboarding completed successfully',
   },
 }
 
@@ -163,6 +222,9 @@ export const createMockApiClient = () => {
       if (url.includes('/vote')) {
         return { data: mockApi.vote }
       }
+      if (url.includes('/onboarding')) {
+        return { data: mockApi.onboarding }
+      }
       
       throw new Error(`Mock API: POST ${url} not implemented`)
     },
@@ -187,6 +249,16 @@ export const createMockApiClient = () => {
       }
       
       throw new Error(`Mock API: GET ${url} not implemented`)
+    },
+
+    // Add interceptors property to match axios interface
+    interceptors: {
+      request: {
+        use: () => {}, // No-op for mock
+      },
+      response: {
+        use: () => {}, // No-op for mock
+      },
     },
   }
 }

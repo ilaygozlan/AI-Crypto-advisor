@@ -1,13 +1,13 @@
-import { Card } from '@/components/common/Card'
-import { Skeleton } from '@/components/common/Skeleton'
-import { VoteButtons } from '@/components/common/VoteButtons'
-import { useMeme } from '../hooks/useMeme'
-import { useVote } from '../hooks/useVote'
-import { ExternalLink } from 'lucide-react'
+import { Card } from "@/components/common/Card";
+import { Skeleton } from "@/components/common/Skeleton";
+import { VoteButtons } from "@/components/common/VoteButtons";
+import { useMeme } from "../hooks/useMeme";
+import { useVote } from "../hooks/useVote";
+import { ExternalLink } from "lucide-react";
 
 export function MemeSection() {
-  const { data: meme, isLoading, error } = useMeme()
-  const { mutate: vote } = useVote()
+  const { data: meme, isLoading, error } = useMeme();
+  const { mutate: vote } = useVote();
 
   if (isLoading) {
     return (
@@ -27,7 +27,7 @@ export function MemeSection() {
           </div>
         </div>
       </Card>
-    )
+    );
   }
 
   if (error) {
@@ -37,7 +37,7 @@ export function MemeSection() {
           <p className="text-muted-foreground">Failed to load meme</p>
         </div>
       </Card>
-    )
+    );
   }
 
   if (!meme) {
@@ -47,7 +47,7 @@ export function MemeSection() {
           <p className="text-muted-foreground">No meme available</p>
         </div>
       </Card>
-    )
+    );
   }
 
   return (
@@ -86,13 +86,15 @@ export function MemeSection() {
           </span>
 
           <VoteButtons
-            upVotes={meme.votes.up}
-            downVotes={meme.votes.down}
+            upVotes={meme?.votes?.up ?? 0}
+            downVotes={meme?.votes?.down ?? 0}
             userVote={meme.userVote}
-            onVote={(voteType) => vote({ section: 'meme', itemId: meme.id, vote: voteType })}
+            onVote={(voteType) =>
+              vote({ section: "meme", itemId: meme.id, vote: voteType })
+            }
           />
         </div>
       </div>
     </Card>
-  )
+  );
 }
