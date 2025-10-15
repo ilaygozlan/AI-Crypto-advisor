@@ -1,14 +1,11 @@
 import jwt from 'jsonwebtoken'
 import { logger } from './logger.js'
+import { env } from '../config/env.js'
 
-const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET
-const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET
-const ACCESS_TTL = process.env.ACCESS_TOKEN_TTL || '15m'
-const REFRESH_TTL = process.env.REFRESH_TOKEN_TTL || '7d'
-
-if (!ACCESS_SECRET || !REFRESH_SECRET) {
-  throw new Error('JWT secrets must be provided')
-}
+const ACCESS_SECRET = env.JWT_ACCESS_SECRET
+const REFRESH_SECRET = env.JWT_REFRESH_SECRET
+const ACCESS_TTL = env.ACCESS_TOKEN_TTL
+const REFRESH_TTL = env.REFRESH_TOKEN_TTL
 
 export interface JWTPayload {
   userId: string

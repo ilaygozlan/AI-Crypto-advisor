@@ -10,7 +10,6 @@ import { logger } from '../lib/logger.js'
 
 const router = Router()
 const prisma = new PrismaClient()
-const isProduction = process.env.NODE_ENV === 'production'
 
 // Validation schemas
 const signupSchema = z.object({
@@ -67,7 +66,7 @@ router.post('/signup', async (req, res, next) => {
     const { accessToken, refreshToken } = generateTokenPair(user.id, user.email)
     
     // Set refresh token cookie
-    setRefreshTokenCookie(res, refreshToken, isProduction)
+    setRefreshTokenCookie(res, refreshToken)
     
     // Store session
     await prisma.session.create({
@@ -134,7 +133,7 @@ router.post('/login', async (req, res, next) => {
     const { accessToken, refreshToken } = generateTokenPair(user.id, user.email)
     
     // Set refresh token cookie
-    setRefreshTokenCookie(res, refreshToken, isProduction)
+    setRefreshTokenCookie(res, refreshToken)
     
     // Store session
     await prisma.session.create({
@@ -205,7 +204,7 @@ router.post('/refresh', async (req, res, next) => {
     const { accessToken, refreshToken: newRefreshToken } = generateTokenPair(user.id, user.email)
     
     // Set new refresh token cookie
-    setRefreshTokenCookie(res, newRefreshToken, isProduction)
+    setRefreshTokenCookie(res, newRefreshToken)
     
     // Update session
     await prisma.session.updateMany({
@@ -226,7 +225,7 @@ router.post('/refresh', async (req, res, next) => {
     })
   } catch (error) {
     // Clear invalid refresh token cookie
-    clearRefreshTokenCookie(res, isProduction)
+    clearRefreshTokenCookie(res)
     next(error)
   }
 })
@@ -248,7 +247,7 @@ router.post('/logout', authenticateToken, async (req: AuthenticatedRequest, res,
     }
     
     // Clear refresh token cookie
-    clearRefreshTokenCookie(res, isProduction)
+    clearRefreshTokenCookie(res)
     
     res.json({
       message: 'Logout successful',

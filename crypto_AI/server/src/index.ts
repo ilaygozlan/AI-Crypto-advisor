@@ -8,17 +8,17 @@ import { logger } from './lib/logger.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { authRoutes } from './routes/auth.routes.js'
 import { healthRoutes } from './routes/health.routes.js'
+import { env, isProd } from './config/env.js'
 
 // Load environment variables
 config()
 
 const app = express()
-const PORT = process.env.PORT || 4000
-const isProduction = process.env.NODE_ENV === 'production'
+const PORT = env.PORT
 
 // Security middleware
 app.use(helmet({
-  contentSecurityPolicy: isProduction ? undefined : false,
+  contentSecurityPolicy: isProd ? undefined : false,
   crossOriginEmbedderPolicy: false
 }))
 
@@ -34,7 +34,7 @@ app.use(limiter)
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: env.CORS_ORIGIN,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -81,8 +81,8 @@ app.use(errorHandler)
 // Start server
 app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`, {
-    environment: process.env.NODE_ENV || 'development',
-    corsOrigin: process.env.CORS_ORIGIN
+    environment: env.NODE_ENV,
+    corsOrigin: env.CORS_ORIGIN
   })
 })
 

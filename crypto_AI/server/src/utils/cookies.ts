@@ -1,35 +1,34 @@
 import { Response } from 'express'
+import { isProd, env } from '../config/env.js'
 
-/**
- * Get cookie options for refresh tokens
- * Secure cookies in production (Railway provides HTTPS)
- */
-export function getCookieOptions(isProduction: boolean, maxAgeMs: number) {
+export const refreshCookieName = "refresh_token"
+
+export function refreshCookieOptions(maxAgeMs: number) {
   return {
     httpOnly: true,
-    sameSite: 'lax' as const,
-    secure: isProduction, // Railway is HTTPS so true in production
+    sameSite: "lax" as const,
+    secure: isProd,                // true on Railway HTTPS
     maxAge: maxAgeMs,
-    path: '/'
+    path: "/",
   }
 }
 
 /**
  * Set refresh token cookie
  */
-export function setRefreshTokenCookie(res: Response, token: string, isProduction: boolean) {
-  const maxAgeMs = parseTTLToMs(process.env.REFRESH_TOKEN_TTL || '7d')
-  const options = getCookieOptions(isProduction, maxAgeMs)
+export function setRefreshTokenCookie(res: Response, token: string) {
+  const maxAgeMs = parseTTLToMs(env.REFRESH_TOKEN_TTL)
+  const options = refreshCookieOptions(maxAgeMs)
   
-  res.cookie('refresh_token', token, options)
+  res.cookie(refreshCookieName, token, options)
 }
 
 /**
  * Clear refresh token cookie
  */
-export function clearRefreshTokenCookie(res: Response, isProduction: boolean) {
-  const options = getCookieOptions(isProduction, 0)
-  res.clearCookie('refresh_token', options)
+export function clearRefreshTokenCookie(res: Response) {
+  const options = refreshCookieOptions(0)
+  res.clearCookie(refreshCookieName, options)
 }
 
 /**

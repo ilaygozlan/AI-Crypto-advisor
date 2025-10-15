@@ -113,40 +113,97 @@ The application uses Prisma with PostgreSQL. Key models include:
 - `pnpm lint` - Run ESLint
 - `pnpm lint:fix` - Fix ESLint issues
 
-## Railway Deploy Checklist
+## Dev → Prod Quick Guide
 
-1) In Railway, create a **New Project**.
+### Development (local, free)
+1) Start DB:
+   ```bash
+   docker compose -f docker-compose.dev.yml up -d
+   ```
 
-2) **Add Plugin → PostgreSQL** (Railway will inject `DATABASE_URL` for connected services).
+2) Copy env:
+   ```bash
+   cd server && cp env.example .env
+   ```
 
-3) **Add Service → GitHub Repo** pointing to this project.
-   - **API Service** (path `/server`)
-     - Build Command: `npm install --production=false && node_modules/.bin/prisma generate && npm run build && node_modules/.bin/prisma migrate deploy`
-     - Start Command: `npm start`
-     - Variables:
-       - `JWT_ACCESS_SECRET` + `JWT_REFRESH_SECRET` (64+ random chars)
-       - `ACCESS_TOKEN_TTL=15m`, `REFRESH_TOKEN_TTL=7d`
-       - `PORT=4000`, `NODE_ENV=production`
-       - `CORS_ORIGIN=https://<YOUR-FRONTEND>.up.railway.app`
-     - Link the **PostgreSQL plugin** to this service so `DATABASE_URL` is available.
+3) Run migrations:
+   ```bash
+   npm run migrate:dev
+   ```
 
-4) **Deploy API** once to obtain its Railway URL: `https://<api>.up.railway.app`.
+4) Start API:
+   ```bash
+   npm run dev
+   ```
 
-5) **Frontend Service** (project root):
-   - Build Command: `npm ci && npm run build`
-   - Start Command: `npm run serve:static`
+5) Start Frontend (new terminal):
+   ```bash
+   cd .. && npm run dev
+   ```
+
+6) Test:
+   - API: http://localhost:4000/healthz
+   - Frontend: http://localhost:5173
+   - DB: `npm run studio` (Prisma Studio)
+
+### Production (Railway)
+
+1) **Create Railway Project**:
+   - New Project → GitHub Repo
+   - Add PostgreSQL Plugin
+
+2) **Deploy API Service**:
+   - Service Path: `/server`
+   - Build: `npm install --production=false && node_modules/.bin/prisma generate && npm run build && node_modules/.bin/prisma migrate deploy`
+   - Start: `npm start`
    - Variables:
-     - `VITE_API_BASE_URL=https://<api>.up.railway.app`
+     ```
+     JWT_ACCESS_SECRET=<64+ chars>
+     JWT_REFRESH_SECRET=<64+ chars>
+     ACCESS_TOKEN_TTL=15m
+     REFRESH_TOKEN_TTL=7d
+     PORT=4000
+     NODE_ENV=production
+     CORS_ORIGIN=https://<frontend-url>.up.railway.app
+     ```
+   - Link PostgreSQL plugin
 
-6) Update API `CORS_ORIGIN` with the actual frontend URL: `https://<frontend>.up.railway.app`, then redeploy API.
+3) **Deploy Frontend Service**:
+   - Service Path: `/` (root)
+   - Build: `npm install --production=false && npm run build`
+   - Start: `npm run serve:static`
+   - Variables:
+     ```
+     VITE_API_BASE_URL=https://<api-url>.up.railway.app
+     ```
 
-7) Test:
-   - Open `<frontend>.up.railway.app`
-   - Signup/Login → should set httpOnly `refresh_token` cookie and return accessToken
-   - `/me` with Bearer → OK
-   - Refresh page → silent `/auth/refresh` works (cookie).
+4) **Update CORS**:
+   - Copy frontend URL to API's `CORS_ORIGIN`
+   - Redeploy API
 
-## Troubleshooting
+5) **Test Production**:
+   - Frontend loads → Login → Cookie set → API calls work
+
+### Environment Files
+
+**Development** (`server/.env`):
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/moveo?schema=public"
+JWT_ACCESS_SECRET=dev_access_replace_with_64_chars
+JWT_REFRESH_SECRET=dev_refresh_replace_with_64_chars
+ACCESS_TOKEN_TTL=15m
+REFRESH_TOKEN_TTL=7d
+PORT=4000
+CORS_ORIGIN=http://localhost:5173
+NODE_ENV=development
+```
+
+**Frontend Development** (`env.development`):
+```env
+VITE_API_BASE_URL=http://localhost:4000
+```
+
+### Troubleshooting
 
 - **CORS 403/blocked**: ensure exact `CORS_ORIGIN` (HTTPS, no trailing slash).
 - **401 on /me**: accessToken missing in Authorization header.
