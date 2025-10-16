@@ -62,9 +62,15 @@ if (req.body.data) {
       user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName }
     });
   } catch (err) {
-    console.error('signup error', err);
-    return res.status(500).json({ error: 'signup_failed' });
-  }
+  console.error('signup error:', {
+    message: err?.message,
+    code: err?.code,
+    detail: err?.detail,
+    stack: err?.stack
+  });
+  return res.status(500).json({ error: 'signup_failed', reason: err?.message, code: err?.code });
+}
+
 });
 
 // POST /auth/login

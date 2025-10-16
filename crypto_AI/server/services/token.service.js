@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import ms from 'ms'; // optional helper; if not installed, parse durations manually
-// If you don't want another dep, remove ms and use fixed numbers in seconds.
+import { randomTokenBase64Url, sha256Base64 } from '../utils/crypto.js';
+
 let accessTtl = process.env.JWT_ACCESS_TTL || '15m';
 let refreshTtl = process.env.JWT_REFRESH_TTL || '7d';
 
