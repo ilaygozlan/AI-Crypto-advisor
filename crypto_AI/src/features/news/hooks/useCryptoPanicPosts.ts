@@ -14,7 +14,7 @@ import {
   sortPostsByScore,
   type ScoredPost 
 } from '@/lib/utils/scoring'
-import { onboarding } from '@/app/data/onboarding'
+import { useAuth } from '@/contexts/AuthContext'
 
 // Debounce utility
 function useDebounce<T extends (...args: any[]) => void>(callback: T, delay: number): T {
@@ -29,6 +29,7 @@ function useDebounce<T extends (...args: any[]) => void>(callback: T, delay: num
 }
 
 export function useCryptoPanicPosts() {
+  const { user } = useAuth()
   const queryClient = useQueryClient()
   const abortControllerRef = useRef<AbortController>()
 
@@ -36,15 +37,15 @@ export function useCryptoPanicPosts() {
   const preferences = getPreferences()
   const reactions = getReactions()
   
-  // Initialize with onboarding data if needed
+  // Initialize with user preferences if available
   const initialAssets = preferences.assets.length > 0 
     ? preferences.assets 
-    : onboarding.data.selectedAssets.length > 0 
-      ? onboarding.data.selectedAssets 
+    : user?.preferences?.selectedAssets && user.preferences.selectedAssets.length > 0
+      ? user.preferences.selectedAssets 
       : ['BTC', 'SOL', 'AVAX', 'MATIC'] // Fallback assets
 
   const initialFilter = preferences.filter || 
-    (onboarding.data.investorType === 'day_trader' ? 'hot' : 'important')
+    (user?.preferences?.investorType === 'day_trader' ? 'hot' : 'important')
 
   // Update preferences if they were initialized
   if (preferences.assets.length === 0) {
@@ -79,9 +80,9 @@ export function useCryptoPanicPosts() {
             post,
             preferences.weights,
             userReaction,
-            onboarding.data.selectedAssets,
+            user?.preferences?.selectedAssets || ['BTC', 'ETH', 'SOL'],
             preferences.filter,
-            onboarding.data.investorType
+            user?.preferences?.investorType || 'investor'
           )
 
           return {
@@ -151,13 +152,13 @@ export function useCryptoPanicPosts() {
     queryClient.invalidateQueries({ queryKey: ['crypto-panic-posts'] })
   }, 500)
 
-  // Reset to onboarding defaults
+  // Reset to user preferences or defaults
   const resetToDefaults = useCallback(() => {
-    const defaultAssets = onboarding.data.selectedAssets.length > 0 
-      ? onboarding.data.selectedAssets 
+    const defaultAssets = user?.preferences?.selectedAssets && user.preferences.selectedAssets.length > 0 
+      ? user.preferences.selectedAssets 
       : ['BTC', 'SOL', 'AVAX', 'MATIC']
     
-    const defaultFilter = onboarding.data.investorType === 'day_trader' ? 'hot' : 'important'
+    const defaultFilter = user?.preferences?.investorType === 'day_trader' ? 'hot' : 'important'
     
     setPreferences({ 
       assets: defaultAssets, 
@@ -166,7 +167,7 @@ export function useCryptoPanicPosts() {
     })
     
     queryClient.invalidateQueries({ queryKey: ['crypto-panic-posts'] })
-  }, [queryClient])
+  }, [queryClient, user])
 
   return {
     posts: postsQuery.data || [],

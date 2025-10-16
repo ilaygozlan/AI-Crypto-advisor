@@ -8,7 +8,7 @@ import { EmptyState } from '@/components/common/EmptyState'
 import { NewsCard } from './NewsCard'
 import { useCryptoPanicPosts } from '../hooks/useCryptoPanicPosts'
 import { Filter, Settings, RotateCcw, RefreshCw, AlertCircle } from 'lucide-react'
-import { onboarding } from '@/app/data/onboarding'
+import { useAuth } from '@/contexts/AuthContext'
 import type { FilterType } from '@/lib/utils/cryptoPrefs'
 
 const AVAILABLE_ASSETS = [
@@ -17,6 +17,7 @@ const AVAILABLE_ASSETS = [
 ]
 
 export function NewsFeed() {
+  const { user } = useAuth()
   const {
     posts,
     isLoading,
@@ -35,7 +36,8 @@ export function NewsFeed() {
 
   // Get available filters based on investor type
   const getAvailableFilters = (): Array<{ value: FilterType; label: string }> => {
-    if (onboarding.data.investorType === 'day_trader') {
+    const investorType = user?.preferences?.investorType
+    if (investorType === 'day_trader') {
       return [
         { value: 'hot', label: 'Hot' },
         { value: 'rising', label: 'Rising' }
@@ -61,8 +63,8 @@ export function NewsFeed() {
 
   const handleReset = () => {
     resetToDefaults()
-    const defaultAssets = onboarding.data.selectedAssets.length > 0 
-      ? onboarding.data.selectedAssets 
+    const defaultAssets = user?.preferences?.selectedAssets && user.preferences.selectedAssets.length > 0 
+      ? user.preferences.selectedAssets 
       : ['BTC', 'SOL', 'AVAX', 'MATIC']
     setTempAssets(defaultAssets)
   }

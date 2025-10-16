@@ -89,7 +89,6 @@ export function LoginPage() {
             </div>
 
             <AuthForm
-              type="login"
               onSubmit={handleLogin}
               isPending={isLoading}
               disabled={isDisabled}

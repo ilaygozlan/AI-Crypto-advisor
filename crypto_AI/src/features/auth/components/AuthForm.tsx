@@ -4,21 +4,19 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card } from '@/components/common/Card'
-import type { LoginRequest, SignupRequest } from '@/types/auth'
+import type { LoginRequest } from '@/types/auth'
 
 interface AuthFormProps {
-  type: 'login' | 'signup'
-  onSubmit: (data: LoginRequest | SignupRequest) => void
+  onSubmit: (data: LoginRequest) => void
   isPending: boolean
   disabled?: boolean
 }
 
-export function AuthForm({ type, onSubmit, isPending, disabled = false }: AuthFormProps) {
+export function AuthForm({ onSubmit, isPending, disabled = false }: AuthFormProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    name: '',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -37,10 +35,6 @@ export function AuthForm({ type, onSubmit, isPending, disabled = false }: AuthFo
       newErrors.password = 'Password must be at least 8 characters'
     }
 
-    if (type === 'signup' && !formData.name) {
-      newErrors.name = 'Name is required'
-    }
-
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -48,18 +42,10 @@ export function AuthForm({ type, onSubmit, isPending, disabled = false }: AuthFo
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (validateForm()) {
-      if (type === 'login') {
-        onSubmit({
-          email: formData.email,
-          password: formData.password,
-        })
-      } else {
-        onSubmit({
-          email: formData.email,
-          password: formData.password,
-          name: formData.name,
-        })
-      }
+      onSubmit({
+        email: formData.email,
+        password: formData.password,
+      })
     }
   }
 
@@ -86,36 +72,11 @@ export function AuthForm({ type, onSubmit, isPending, disabled = false }: AuthFo
         setErrors(prev => ({ ...prev, password: '' }))
       }
     }
-    
-    if (field === 'name' && value) {
-      if (value.length < 2) {
-        setErrors(prev => ({ ...prev, name: 'Name must be at least 2 characters' }))
-      } else {
-        setErrors(prev => ({ ...prev, name: '' }))
-      }
-    }
   }
 
   return (
     <Card className="w-full">
       <form onSubmit={handleSubmit} className="space-y-6">
-        {type === 'signup' && (
-          <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
-            <Input
-              id="name"
-              type="text"
-              value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
-              className={errors.name ? 'border-destructive' : ''}
-              placeholder="Enter your full name"
-            />
-            {errors.name && (
-              <p className="text-sm text-destructive">{errors.name}</p>
-            )}
-          </div>
-        )}
-
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -166,7 +127,7 @@ export function AuthForm({ type, onSubmit, isPending, disabled = false }: AuthFo
           className="w-full"
           disabled={isPending || disabled}
         >
-          {isPending ? 'Loading...' : type === 'login' ? 'Sign In' : 'Create Account'}
+          {isPending ? 'Loading...' : 'Sign In'}
         </Button>
       </form>
     </Card>

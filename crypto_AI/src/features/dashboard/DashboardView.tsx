@@ -12,8 +12,8 @@ import MemePanel from './panels/MemePanel';
 const CONTENT_TYPE_MAPPING = {
   'Market News': 'news',
   'articles': 'news',
-  'social': 'prices', 
-  'ai': 'ai',
+  'charts': 'prices', 
+  'social': 'ai',
   'Fun': 'meme'
 } as const;
 

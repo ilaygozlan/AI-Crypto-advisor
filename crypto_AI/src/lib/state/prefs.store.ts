@@ -12,8 +12,6 @@ interface PreferencesState {
   setAssets: (assets: Asset[]) => void
   setInvestorType: (type: InvestorType) => void
   setContentTypes: (types: ContentType[]) => void
-  hasCompletedOnboarding: boolean
-  setHasCompletedOnboarding: (completed: boolean) => void
 }
 
 export const usePrefsStore = create<PreferencesState>()(
@@ -22,11 +20,9 @@ export const usePrefsStore = create<PreferencesState>()(
       assets: [],
       investorType: null,
       contentTypes: [],
-      hasCompletedOnboarding: false,
       setAssets: (assets) => set({ assets }),
       setInvestorType: (investorType) => set({ investorType }),
       setContentTypes: (contentTypes) => set({ contentTypes }),
-      setHasCompletedOnboarding: (hasCompletedOnboarding) => set({ hasCompletedOnboarding }),
     }),
     {
       name: 'prefs-storage',

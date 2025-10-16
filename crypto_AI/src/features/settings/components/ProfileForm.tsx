@@ -34,16 +34,19 @@ export function ProfileForm() {
   return (
     <Card title="👤 Profile">
       <div className="space-y-6">
+        {/* Display Name (Editable) */}
         <div className="space-y-2">
-          <Label htmlFor="name">Full Name</Label>
+          <Label htmlFor="name">Display Name</Label>
           <Input
             id="name"
             value={formData.name}
             onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
             disabled={!isEditing}
+            placeholder="Enter your display name"
           />
         </div>
 
+        {/* Email */}
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -58,6 +61,16 @@ export function ProfileForm() {
           </p>
         </div>
 
+        {/* Account Status */}
+        <div className="space-y-2">
+          <Label>Account Status</Label>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <span className="text-sm text-muted-foreground">Active</span>
+          </div>
+        </div>
+
+        {/* Edit Controls */}
         <div className="flex space-x-2">
           {isEditing ? (
             <>
@@ -75,6 +88,7 @@ export function ProfileForm() {
           )}
         </div>
 
+        {/* Logout */}
         <div className="pt-6 border-t border-border">
           <Button variant="destructive" onClick={handleLogout} size="sm">
             Logout

@@ -1,18 +1,16 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
-import { usePrefsStore } from '@/lib/state/prefs.store'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
 }
 
 /**
- * Route guard component that handles authentication and onboarding redirects
- * Ensures users are properly authenticated and have completed onboarding
+ * Route guard component that handles authentication
+ * Ensures users are properly authenticated
  */
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading } = useAuth()
-  const { hasCompletedOnboarding } = usePrefsStore()
   const location = useLocation()
 
   // Show loading while checking authentication
@@ -30,16 +28,6 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   // Redirect to login if not authenticated
   if (!user) {
     return <Navigate to="/auth/login" state={{ from: location }} replace />
-  }
-
-  // Redirect to onboarding if not completed
-  if (!hasCompletedOnboarding && location.pathname !== '/onboarding') {
-    return <Navigate to="/onboarding" replace />
-  }
-
-  // Redirect to dashboard if onboarding is complete but user is on onboarding page
-  if (hasCompletedOnboarding && location.pathname === '/onboarding') {
-    return <Navigate to="/dashboard" replace />
   }
 
   return <>{children}</>
