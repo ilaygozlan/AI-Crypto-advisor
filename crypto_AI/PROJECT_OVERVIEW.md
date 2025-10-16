@@ -5,28 +5,39 @@
 The **AI Crypto Advisor** is a full-stack web application that provides personalized cryptocurrency investment insights and real-time market data. The application combines real-time crypto market data from CoinGecko with AI-powered insights to help users make informed investment decisions.
 
 ### Key Features
-- **User Authentication**: Secure JWT-based login/signup system
-- **Real-time Crypto Data**: Live prices, charts, and market data via CoinGecko API
-- **AI Insights**: Daily AI-generated market analysis and recommendations
-- **Personalized Dashboard**: Customizable crypto portfolio tracking
-- **User Preferences**: Investment type selection and asset preferences
+- **User Authentication**: Secure JWT-based login/signup system with rate limiting and lockout protection
+- **Enhanced Onboarding**: 3-step wizard for user preferences (investor type, assets, content types)
+- **Real-time Crypto Data**: Live prices, charts, and market data via CoinGecko API with Pro API support
+- **CryptoPanic News Integration**: Real-time cryptocurrency news with personalized filtering and sentiment analysis
+- **AI Insights**: Daily AI-generated market analysis and recommendations with regeneration capability
+- **Interactive Voting System**: Like/dislike functionality for all content with optimistic updates
+- **Personalized Dashboard**: Customizable crypto portfolio tracking with user preference-based content filtering
+- **Settings Management**: Profile editing and preference viewing with secure logout
+- **Dark Mode Support**: System preference detection with manual toggle
+- **Responsive Design**: Mobile-first design with smooth animations and transitions
+- **Content Personalization**: ML-based scoring system for news relevance based on user behavior
 
 ### Technology Stack
 - **Backend**: Node.js, Express.js, PostgreSQL
 - **Frontend**: React 18, TypeScript, Vite
-- **Authentication**: JWT tokens with httpOnly cookies
-- **Database**: PostgreSQL with connection pooling
-- **External APIs**: CoinGecko API, OpenRouter AI
-- **UI Framework**: Tailwind CSS, Shadcn/ui components
-- **State Management**: React Context, TanStack Query
-- **Security**: Helmet, CORS, Rate limiting
+- **Authentication**: JWT tokens with httpOnly cookies, bcrypt password hashing
+- **Database**: PostgreSQL with connection pooling and automatic migrations
+- **External APIs**: CoinGecko API (Free & Pro), CryptoPanic API, OpenRouter AI
+- **UI Framework**: Tailwind CSS, Shadcn/ui components, Framer Motion animations
+- **State Management**: React Context, TanStack Query (React Query), Zustand for preferences
+- **Security**: Helmet, CORS, Rate limiting, Input validation with Joi
+- **Development Tools**: ESLint, Prettier, Vitest for testing
+- **Icons**: Lucide React icon library
+- **HTTP Client**: Custom fetch-based API client with retry logic
 
 ### Workflow
-1. User registers/logs in with email and password
-2. User sets investment preferences (investor type, selected assets)
-3. Dashboard displays personalized crypto data and AI insights
-4. Real-time price updates and market analysis
-5. User can vote on insights and track portfolio performance
+1. User registers/logs in with email and password (with rate limiting protection)
+2. New users complete 3-step onboarding: personal info, investor type selection, asset preferences, content type selection
+3. Dashboard displays personalized content based on user preferences with tabbed interface
+4. Real-time crypto prices, news from CryptoPanic, AI insights, and fun memes
+5. Users can vote on all content (news, prices, insights, memes) with optimistic UI updates
+6. Content personalization improves over time based on user voting behavior
+7. Settings page allows profile management and preference viewing
 
 ## Project Structure
 
@@ -37,53 +48,153 @@ crypto_AI/
 │   ├── DB.js                        # PostgreSQL connection and initialization
 │   ├── package.json                 # Backend dependencies
 │   ├── routes/                      # API route definitions
-│   │   ├── auth.js                  # Authentication endpoints
-│   │   └── me.js                    # User data endpoints
+│   │   ├── auth.js                  # Authentication endpoints (login, signup, refresh, logout)
+│   │   └── me.js                    # User data endpoints (/me, /me/data)
 │   ├── services/                    # Business logic layer
 │   │   ├── user.service.js          # User CRUD operations
 │   │   ├── userData.service.js      # User preferences management
 │   │   └── token.service.js         # JWT token handling
 │   ├── middlewares/                 # Express middleware
 │   │   └── auth.js                  # JWT authentication middleware
+│   ├── security/                    # Security utilities
+│   │   └── rateLimit.js             # Rate limiting configuration
+│   ├── repos/                       # Data access layer
+│   │   └── refresh-token.repo.js    # Refresh token repository
 │   └── utils/                       # Backend utilities
 │       └── crypto.js                # Cryptographic helpers
 ├── src/                             # Frontend React application
 │   ├── app/                         # Main app configuration
 │   │   ├── App.tsx                  # Root component
 │   │   ├── main.tsx                 # React entry point
-│   │   ├── providers.tsx            # Context providers
-│   │   └── router.tsx               # React Router configuration
+│   │   ├── providers.tsx            # Context providers (QueryClient, Auth)
+│   │   ├── router.tsx               # React Router configuration
+│   │   └── data/                    # Mock data for development
 │   ├── components/                  # Reusable UI components
 │   │   ├── layout/                  # Layout components
 │   │   │   ├── AppLayout.tsx        # Main app layout
-│   │   │   ├── Navbar.tsx           # Navigation bar
+│   │   │   ├── Navbar.tsx           # Navigation bar with dark mode toggle
 │   │   │   ├── Footer.tsx           # Footer component
 │   │   │   └── ProtectedRoute.tsx   # Route protection
 │   │   ├── ui/                      # Shadcn/ui components
-│   │   └── common/                  # Common components
+│   │   │   ├── button.tsx           # Button component
+│   │   │   ├── card.tsx             # Card components
+│   │   │   ├── input.tsx            # Input component
+│   │   │   ├── select.tsx           # Select component
+│   │   │   ├── toast.tsx            # Toast notifications
+│   │   │   ├── IconTabs.tsx         # Custom tab component
+│   │   │   └── ...                  # Other UI components
+│   │   ├── common/                  # Common components
+│   │   │   ├── Card.tsx             # Custom card wrapper
+│   │   │   ├── Skeleton.tsx         # Loading skeletons
+│   │   │   ├── EmptyState.tsx       # Empty state component
+│   │   │   ├── VoteButtons.tsx      # Voting interface
+│   │   │   └── SectionHeader.tsx    # Section headers
+│   │   ├── Brand.tsx                # Brand/logo component
+│   │   ├── Protected.tsx            # Protected content wrapper
+│   │   └── PreferencesIndicator.tsx # User preferences display
 │   ├── features/                    # Feature-based modules
 │   │   ├── auth/                    # Authentication features
 │   │   │   ├── components/          # Auth components
-│   │   │   ├── pages/               # Auth pages
-│   │   │   └── hooks/               # Auth hooks
+│   │   │   │   ├── AuthForm.tsx     # Login form
+│   │   │   │   └── EnhancedSignupForm.tsx # 3-step signup wizard
+│   │   │   └── pages/               # Auth pages
+│   │   │       ├── LoginPage.tsx    # Login page
+│   │   │       └── SignupPage.tsx   # Signup page
 │   │   ├── dashboard/               # Dashboard features
+│   │   │   ├── DashboardView.tsx    # Main dashboard view with tabs
 │   │   │   ├── components/          # Dashboard components
+│   │   │   │   ├── AIInsightSection.tsx # AI insights display
+│   │   │   │   ├── CoinChart.tsx    # Price charts
+│   │   │   │   ├── MemeSection.tsx  # Meme display
+│   │   │   │   ├── NewsSection.tsx  # News display
+│   │   │   │   ├── PricesSection.tsx # Prices display
+│   │   │   │   └── PriceRow.tsx     # Individual price row
 │   │   │   ├── hooks/               # Data fetching hooks
-│   │   │   └── panels/              # Dashboard panels
+│   │   │   │   ├── useAIInsight.ts  # AI insights hook
+│   │   │   │   ├── useChart.ts      # Chart data hook
+│   │   │   │   ├── useMeme.ts       # Meme data hook
+│   │   │   │   ├── useNews.ts       # News data hook
+│   │   │   │   ├── usePrices.ts     # Prices data hook
+│   │   │   │   └── useVote.ts       # Voting hook
+│   │   │   ├── panels/              # Dashboard panels
+│   │   │   │   ├── AiInsightPanel.tsx # AI insights panel
+│   │   │   │   ├── CoinPricesPanel.tsx # Prices panel
+│   │   │   │   ├── MarketNewsPanel.tsx # News panel
+│   │   │   │   └── MemePanel.tsx    # Meme panel
+│   │   │   └── pages/               # Dashboard pages
+│   │   │       └── DashboardPage.tsx # Dashboard page wrapper
 │   │   ├── news/                    # News features
+│   │   │   ├── components/          # News components
+│   │   │   │   ├── NewsCard.tsx     # Individual news card
+│   │   │   │   └── NewsFeed.tsx     # News feed with filtering
+│   │   │   ├── hooks/               # News hooks
+│   │   │   │   └── useCryptoPanicPosts.ts # CryptoPanic integration
+│   │   │   └── pages/               # News pages
+│   │   │       └── NewsPage.tsx     # News page
+│   │   ├── onboarding/              # Onboarding features (future)
+│   │   │   ├── components/          # Onboarding components
+│   │   │   └── pages/               # Onboarding pages
 │   │   └── settings/                # Settings features
+│   │       ├── components/          # Settings components
+│   │       │   ├── PreferencesForm.tsx # Preferences display
+│   │       │   └── ProfileForm.tsx  # Profile management
+│   │       └── pages/               # Settings pages
+│   │           └── SettingsPage.tsx # Settings page
 │   ├── lib/                         # Frontend utilities
 │   │   ├── api/                     # API client and endpoints
+│   │   │   ├── api.ts               # Main API client
+│   │   │   ├── coinGecko.ts         # CoinGecko API integration
+│   │   │   ├── cryptopanic.ts       # CryptoPanic API service
+│   │   │   └── newEndpoints.ts      # New API endpoints
 │   │   ├── query/                   # TanStack Query configuration
+│   │   │   └── queryClient.ts       # Query client setup
 │   │   ├── state/                   # State management
+│   │   │   └── prefs.store.ts       # Preferences store
+│   │   ├── services/                # Frontend services
 │   │   └── utils/                   # Frontend utilities
+│   │       ├── coinMapping.ts       # Coin ID mapping
+│   │       ├── cryptoPanic.ts       # CryptoPanic utilities
+│   │       ├── cryptoPrefs.ts       # Crypto preferences
+│   │       ├── format.ts            # Formatting utilities
+│   │       ├── guards.ts            # Type guards
+│   │       ├── scoring.ts           # Content scoring algorithm
+│   │       └── utils.ts             # General utilities
+│   ├── contexts/                    # React contexts
+│   │   └── AuthContext.tsx          # Authentication context
+│   ├── hooks/                       # Custom hooks
+│   │   ├── useAuthLockout.ts        # Authentication lockout hook
+│   │   └── useToast.ts              # Toast notifications hook
+│   ├── state/                       # State management
+│   │   └── useAuth.ts               # Authentication state
 │   ├── types/                       # TypeScript type definitions
-│   └── styles/                      # Global styles
+│   │   ├── auth.ts                  # Authentication types
+│   │   ├── common.ts                # Common types
+│   │   └── dashboard.ts             # Dashboard types
+│   ├── styles/                      # Global styles
+│   │   └── globals.css              # Global CSS with Tailwind
+│   └── vite-env.d.ts                # Vite environment types
 ├── public/                          # Static assets
+│   ├── favicon.svg                  # Favicon
+│   └── vite.svg                     # Vite logo
+├── dist/                            # Build output
+│   ├── assets/                      # Bundled assets
+│   ├── mocks/                       # Mock data files
+│   └── index.html                   # Built HTML
 ├── package.json                     # Frontend dependencies
 ├── vite.config.ts                   # Vite configuration
 ├── tailwind.config.ts               # Tailwind CSS configuration
-└── tsconfig.json                    # TypeScript configuration
+├── tsconfig.json                    # TypeScript configuration
+├── components.json                  # Shadcn/ui configuration
+├── postcss.config.js                # PostCSS configuration
+├── env.development                  # Development environment
+├── env.production                   # Production environment
+├── env.example                      # Environment template
+├── docker-compose.dev.yml           # Docker development setup
+├── railway.json                     # Railway deployment config
+├── nixpacks.toml                    # Nixpacks configuration
+├── CRYPTOPANIC_SETUP.md             # CryptoPanic setup guide
+├── BACKEND_INTEGRATION.md           # Backend integration guide
+└── PROJECT_OVERVIEW.md              # This file
 ```
 
 ### Folder Responsibilities
@@ -102,18 +213,46 @@ crypto_AI/
 
 ## API Documentation
 
+### Authentication Endpoints
+
 | Endpoint | Method | Auth | Description |
 |----------|--------|------|-------------|
-| `/auth/login` | POST | No | User login with email/password, returns JWT |
-| `/auth/signup` | POST | No | New user registration with preferences |
-| `/auth/refresh` | POST | No | Refresh expired JWT token |
-| `/auth/logout` | POST | Yes | Logout and invalidate tokens |
-| `/me` | GET | Yes | Returns logged-in user information |
-| `/me/data` | GET | Yes | Returns user investment preferences |
-| `/health` | GET | No | Server health check |
+| `/auth/login` | POST | No | User login with email/password, returns JWT tokens |
+| `/auth/signup` | POST | No | New user registration with preferences (3-step onboarding) |
+| `/auth/refresh` | POST | No | Refresh expired JWT token using refresh token |
+| `/auth/logout` | POST | Yes | Logout and invalidate all tokens |
+
+### User Data Endpoints
+
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/me` | GET | Yes | Returns logged-in user basic information |
+| `/me/data` | GET | Yes | Returns user investment preferences and onboarding data |
+| `/db/debug` | GET | Yes | Database debug endpoint (development only) |
+
+### External API Proxies
+
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
 | `/api/coinGecko/prices` | GET | Yes | Fetches crypto prices via backend proxy |
 | `/api/coinGecko/markets` | GET | Yes | Fetches market data via backend proxy |
 | `/api/coinGecko/chart/:coinId` | GET | Yes | Fetches chart data for specific coin |
+
+### Dashboard API Endpoints
+
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/dashboard/news` | GET | Yes | Fetches personalized news feed |
+| `/dashboard/prices` | GET | Yes | Fetches user's selected crypto prices |
+| `/dashboard/ai-insight` | GET | Yes | Fetches AI-generated market insights |
+| `/dashboard/meme` | GET | Yes | Fetches daily crypto meme |
+| `/dashboard/vote` | POST | Yes | Submit vote for content (like/dislike) |
+
+### System Endpoints
+
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/health` | GET | No | Server health check |
 
 ### Authentication Flow
 1. **Login/Signup**: Client sends credentials to `/auth/login` or `/auth/signup`
@@ -150,11 +289,13 @@ Client Request → Express Middleware → Route Handler → Service Layer → Da
 - **Rate Limiting**: Protection against API abuse
 
 #### 4. Security Features
-- **Helmet**: Security headers (CSP, HSTS)
-- **CORS**: Restrictive cross-origin resource sharing
-- **Rate Limiting**: Authentication endpoint protection (3 attempts/15min)
-- **Input Validation**: Joi schema validation for all inputs
-- **Error Sanitization**: Production-safe error logging
+- **Helmet**: Security headers (CSP, HSTS, X-Frame-Options)
+- **CORS**: Restrictive cross-origin resource sharing with environment-based origins
+- **Rate Limiting**: Authentication endpoint protection (3 attempts/15min) with lockout system
+- **Input Validation**: Joi schema validation for all inputs with sanitization
+- **Error Sanitization**: Production-safe error logging with detailed development logging
+- **Password Security**: bcrypt hashing with salt rounds
+- **Token Security**: JWT tokens with expiration, rotation, and secure storage
 
 ## Frontend Overview
 
@@ -173,21 +314,73 @@ Client Request → Express Middleware → Route Handler → Service Layer → Da
 - **Login/Signup Forms**: Real-time validation and error handling
 
 #### 2. Dashboard Layout
-- **AppLayout**: Main application layout with navigation
-- **Coin Prices Panel**: Real-time crypto price display with charts
-- **AI Insight Section**: Daily AI-generated market analysis
-- **User Preferences**: Investment type and asset selection
+- **AppLayout**: Main application layout with navigation and dark mode toggle
+- **DashboardView**: Tabbed interface with personalized content filtering
+- **Coin Prices Panel**: Real-time crypto price display with charts and voting
+- **AI Insight Section**: Daily AI-generated market analysis with regeneration
+- **News Panel**: CryptoPanic integration with personalized filtering and sentiment analysis
+- **Meme Panel**: Daily crypto memes with community voting
+- **User Preferences**: Investment type and asset selection with 3-step onboarding
 
 #### 3. State Management
 - **React Context**: Global state for authentication and user data
-- **TanStack Query**: Server state caching and synchronization
+- **TanStack Query**: Server state caching and synchronization with optimistic updates
+- **Zustand**: Preferences and local state management
 - **Local State**: Component-level state with useState/useReducer
+- **Custom Hooks**: Specialized hooks for data fetching and business logic
 
 #### 4. API Integration
-- **Fetch-based Client**: Custom API client with automatic retry
-- **Error Handling**: Centralized error handling with user-friendly messages
-- **Loading States**: Skeleton loaders and loading indicators
-- **Real-time Updates**: Polling for live data updates
+- **Fetch-based Client**: Custom API client with automatic retry and error handling
+- **CoinGecko Integration**: Direct API integration with Pro API support
+- **CryptoPanic Integration**: Real-time news with filtering and personalization
+- **Error Handling**: Centralized error handling with user-friendly messages and fallbacks
+- **Loading States**: Skeleton loaders, loading indicators, and empty states
+- **Real-time Updates**: Polling for live data updates with stale-while-revalidate strategy
+
+## Advanced Features
+
+### CryptoPanic News Integration
+- **Real-time News**: Integration with CryptoPanic API for live cryptocurrency news
+- **Personalized Filtering**: News filtered based on user's selected cryptocurrencies and investment type
+- **Sentiment Analysis**: Uses CryptoPanic's built-in sentiment scoring for content relevance
+- **Smart Filtering**: 
+  - Conservative investors see "important" news (reliable, high-impact stories)
+  - Day traders see "hot" and "rising" news (trending, popular stories)
+  - Moderate investors see "important" and "hot" news
+- **Fallback System**: Graceful degradation to mock data if API is unavailable
+- **Rate Limiting**: Respects API rate limits with proper error handling
+
+### Content Personalization System
+- **ML-based Scoring**: Algorithm that scores news relevance based on user behavior
+- **Vote-based Learning**: System learns from user votes to improve content recommendations
+- **Weight Adjustment**: Dynamic weight adjustment based on user preferences and voting patterns
+- **Asset Relevance**: Content scoring considers user's selected cryptocurrency assets
+- **Investor Type Matching**: Content filtered and scored based on user's investment style
+- **Persistent Learning**: User preferences and voting history stored for continuous improvement
+
+### Interactive Voting System
+- **Universal Voting**: Like/dislike functionality for all content types (news, prices, insights, memes)
+- **Optimistic Updates**: Immediate UI feedback with server synchronization
+- **Vote Persistence**: Votes saved to backend with user association
+- **Visual Feedback**: Active states, vote counts, and hover effects
+- **Accessibility**: Keyboard navigation and screen reader support
+- **Real-time Sync**: Vote counts updated across all users in real-time
+
+### Enhanced Authentication & Security
+- **Rate Limiting**: Login attempt limiting with progressive lockout (3 attempts/15min)
+- **Lockout Protection**: Automatic lockout system with countdown timer
+- **Token Rotation**: Refresh tokens rotated on each use for enhanced security
+- **Secure Storage**: httpOnly cookies for token storage, not accessible via JavaScript
+- **Input Validation**: Real-time form validation with user-friendly error messages
+- **Error Handling**: Professional error messages with appropriate retry logic
+
+### Dark Mode & UI/UX
+- **System Detection**: Automatically detects user's system preference
+- **Manual Toggle**: User-controlled theme switching with persistent storage
+- **Smooth Transitions**: Animated theme changes with Framer Motion
+- **Responsive Design**: Mobile-first design with breakpoint optimization
+- **Accessibility**: WCAG compliant with proper contrast ratios and focus states
+- **Loading States**: Comprehensive skeleton loaders and loading indicators
 
 ## Environment & Deployment
 
@@ -213,10 +406,17 @@ FRONTEND_URL=http://localhost:5173
 ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
 ```
 
-#### Frontend (.env.local)
+#### Frontend (env.development / env.production)
 ```bash
 # Server Configuration
 VITE_SERVER_URL=http://localhost:3000
+
+# CryptoPanic API
+VITE_CRYPTOPANIC_API_KEY=your_cryptopanic_api_key
+
+# App Configuration
+VITE_APP_NAME=AI Crypto Advisor
+VITE_API_BASE_URL=https://api.example.com
 ```
 
 ### Local Development Setup
@@ -235,11 +435,14 @@ npm start
 ```
 
 ### Deployment
-- **Backend**: Deploy to Render, Railway, or AWS
-- **Frontend**: Deploy to Vercel, Netlify, or static hosting
-- **Database**: Use managed PostgreSQL (Render, Railway, AWS RDS)
-- **Environment**: Set production environment variables
-- **Domain**: Configure CORS for production domains
+- **Backend**: Deploy to Render, Railway, or AWS with automatic database migrations
+- **Frontend**: Deploy to Vercel, Netlify, or static hosting with environment variables
+- **Database**: Use managed PostgreSQL (Render, Railway, AWS RDS) with connection pooling
+- **Environment**: Set production environment variables for all services
+- **Domain**: Configure CORS for production domains and SSL certificates
+- **Docker**: Docker Compose setup available for containerized deployment
+- **Railway**: Pre-configured with railway.json and nixpacks.toml for easy deployment
+- **Monitoring**: Health check endpoints and error logging for production monitoring
 
 ## How to Rebuild This Project from Scratch
 
@@ -367,4 +570,38 @@ CREATE TABLE refresh_tokens (
 - **Testing**: Add unit tests for critical functionality
 - **Documentation**: Maintain API documentation and code comments
 
-This architecture provides a solid foundation for a production-ready crypto advisor application with proper security, scalability, and maintainability.
+## Current Implementation Status
+
+### ✅ Completed Features
+- **Authentication System**: Complete JWT-based auth with rate limiting and lockout protection
+- **User Onboarding**: 3-step wizard for preferences (investor type, assets, content types)
+- **Dashboard Interface**: Tabbed interface with personalized content filtering
+- **CryptoPanic Integration**: Real-time news with personalized filtering and sentiment analysis
+- **CoinGecko Integration**: Real-time crypto prices with Pro API support
+- **AI Insights**: Daily AI-generated market analysis with regeneration capability
+- **Voting System**: Universal like/dislike functionality for all content types
+- **Content Personalization**: ML-based scoring system for news relevance
+- **Settings Management**: Profile editing and preference viewing
+- **Dark Mode**: System detection with manual toggle and smooth transitions
+- **Responsive Design**: Mobile-first design with comprehensive loading states
+- **Security**: Rate limiting, input validation, secure token storage, and error handling
+
+### 🔄 In Progress / Future Enhancements
+- **Onboarding Flow**: Dedicated onboarding pages (currently integrated in signup)
+- **Advanced Charts**: Interactive price charts with technical indicators
+- **Portfolio Tracking**: User portfolio management and performance tracking
+- **Push Notifications**: Real-time alerts for price movements and news
+- **Social Features**: User profiles, following, and community features
+- **Advanced AI**: More sophisticated AI insights with market predictions
+- **Mobile App**: React Native mobile application
+- **Analytics**: User behavior analytics and content performance metrics
+
+### 🛠 Technical Debt & Improvements
+- **Testing**: Comprehensive unit and integration test coverage
+- **Performance**: Code splitting, lazy loading, and bundle optimization
+- **Accessibility**: Enhanced WCAG compliance and screen reader support
+- **Internationalization**: Multi-language support
+- **Offline Support**: Service worker for offline functionality
+- **Real-time Updates**: WebSocket integration for live data updates
+
+This architecture provides a solid foundation for a production-ready crypto advisor application with proper security, scalability, and maintainability. The current implementation includes all core features with room for future enhancements and scaling.
