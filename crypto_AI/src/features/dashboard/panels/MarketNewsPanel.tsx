@@ -85,7 +85,7 @@ return (
 
     {/* Render up to 3 latest news */}
     <div className="space-y-6">
-      {sortedNews.slice(0, 3).map((item) => (
+      {sortedNews.slice(0, 4).map((item) => (
         <div key={item.id} className="space-y-4 border-b pb-4 last:border-0 last:pb-0">
           <div>
             <h3 className="font-semibold text-lg mb-2 line-clamp-2">{item.title}</h3>
