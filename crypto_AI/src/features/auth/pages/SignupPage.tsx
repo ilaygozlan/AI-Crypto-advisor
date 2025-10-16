@@ -1,8 +1,100 @@
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
-import { EnhancedSignupForm } from '../components/EnhancedSignupForm'
+import { Link, useNavigate } from 'react-router-dom'
+import { AuthForm } from '../components/AuthForm'
+import { useAuth } from '@/contexts/AuthContext'
+import { useToast } from '@/hooks/useToast'
+import { useAuthLockout } from '@/hooks/useAuthLockout'
+import { registerFailedAttempt, registerSuccess, shouldIncrementAttempt } from '@/lib/authLockout'
+import { useState } from 'react'
+import type { SignupRequest, LoginRequest } from '@/types/auth'
 
 export function SignupPage() {
+  const navigate = useNavigate()
+  const { doSignup } = useAuth()
+  const { toast } = useToast()
+  const { lockout, isDisabled, formattedTime, updateLockoutState } = useAuthLockout()
+  const [isLoading, setIsLoading] = useState(false)
+
+
+  const handleSignup = async (data: SignupRequest | LoginRequest) => {
+    setIsLoading(true)
+    try {
+      // Type guard to ensure we have a SignupRequest
+      if (!('name' in data)) {
+        throw new Error('Invalid signup data: name is required')
+      }
+      
+      // Split name into firstName and lastName
+      const nameParts = data.name.trim().split(' ')
+      const firstName = nameParts[0] || ''
+      const lastName = nameParts.slice(1).join(' ') || ''
+
+      // Create signup payload with default preferences
+      const signupPayload = {
+        email: data.email,
+        password: data.password,
+        firstName,
+        lastName,
+        data: {
+          investorType: 'investor', // Default investor type
+          selectedAssets: ['BTC', 'ETH', 'SOL'], // Default assets
+          selectedContentTypes: ['articles', 'charts'], // Default content types
+          completedAt: new Date().toISOString()
+        }
+      }
+
+      await doSignup(signupPayload)
+      
+      // Reset lockout on successful signup
+      registerSuccess()
+      updateLockoutState()
+      
+      // Show success message
+      toast({
+        title: 'Account created successfully!',
+        description: 'Welcome to AI Crypto Advisor. You can update your preferences in settings.',
+      })
+      
+      navigate('/dashboard')
+    } catch (error: any) {
+      console.error('Signup failed:', error)
+      
+      // Check if it's a rate limit error (HTTP 429)
+      if (error?.status === 429) {
+        registerFailedAttempt()
+        updateLockoutState()
+        
+        toast({
+          variant: 'destructive',
+          title: '🛑 Signup Attempts Exceeded',
+          description: "You've reached the maximum of 3 signup attempts. Please wait 15 minutes before trying again.",
+        })
+      } else if (shouldIncrementAttempt(error)) {
+        // Increment attempt counter for 4xx errors (client errors)
+        registerFailedAttempt()
+        updateLockoutState()
+        
+        // Show professional error alert with actual server message
+        const errorMessage = error instanceof Error ? error.message : 'Signup failed'
+        
+        toast({
+          variant: 'destructive',
+          title: 'Signup Failed',
+          description: errorMessage,
+        })
+      } else {
+        // Don't increment for 5xx errors (server errors)
+        toast({
+          variant: 'destructive',
+          title: 'Signup Failed',
+          description: "Server error. Please try again later.",
+        })
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background flex">
       <div className="flex-1 flex">
@@ -23,7 +115,31 @@ export function SignupPage() {
               </p>
             </div>
 
-            <EnhancedSignupForm />
+            <AuthForm
+              type="signup"
+              onSubmit={handleSignup}
+              isPending={isLoading}
+              disabled={isDisabled}
+            />
+
+            {/* Signup attempts counter */}
+            {lockout.count > 0 && (
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">
+                  {lockout.count} / 3 signup attempts used
+                </p>
+                {isDisabled && (
+                  <p className="text-xs text-destructive mt-1">
+                    Locked for: {formattedTime}
+                  </p>
+                )}
+                {!isDisabled && lockout.count >= 3 && (
+                  <p className="text-xs text-green-600 mt-1">
+                    You can now try signing up again
+                  </p>
+                )}
+              </div>
+            )}
 
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
