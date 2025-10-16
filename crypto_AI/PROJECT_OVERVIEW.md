@@ -231,7 +231,7 @@ npm run dev
 #### Frontend
 ```bash
 npm install
-npm run dev
+npm start
 ```
 
 ### Deployment
