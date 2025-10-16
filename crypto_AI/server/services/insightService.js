@@ -20,13 +20,11 @@ function normalizeSources(src) {
 
 function getILDateKey() {
   const fmt = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Jerusalem',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+    timeZone: 'Asia/Jerusalem', year: 'numeric', month: '2-digit', day: '2-digit'
   });
-  return fmt.format(new Date()); // YYYY-MM-DD
+  return fmt.format(new Date()); // 'YYYY-MM-DD'
 }
+const today = getILDateKey();
 
 export async function getOrCreateTodayInsight(user_id) {
   const today = getILDateKey();
