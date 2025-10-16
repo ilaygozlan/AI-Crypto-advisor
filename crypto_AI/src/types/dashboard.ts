@@ -65,3 +65,40 @@ export interface VoteResponse {
     down: number
   }
 }
+
+export interface InsightSource {
+  title?: string
+  source_name?: string
+  url: string
+}
+
+export interface InsightActionable {
+  what: string
+  why: string
+  url: string
+}
+
+export interface InsightContentJson {
+  title: string
+  tl_dr: string
+  detail_bullets: string[]
+  actionable: InsightActionable[]
+  sources: InsightSource[]
+}
+
+export interface TodayInsight {
+  id: string
+  user_id: string
+  date_key: string
+  provider: string
+  model: string
+  prompt_tokens: number | null
+  completion_tokens: number | null
+  title: string
+  tl_dr: string | null
+  content_md: string
+  content_json: InsightContentJson
+  sources: InsightSource[]
+  created_at: string
+  updated_at: string
+}

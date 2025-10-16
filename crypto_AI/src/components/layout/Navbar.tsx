@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { User, LogOut, Home, TrendingUp } from 'lucide-react'
+import { User, LogOut, Home } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/contexts/AuthContext'
 import Brand from '@/components/Brand'
