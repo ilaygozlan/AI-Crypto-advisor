@@ -36,3 +36,18 @@ export async function getUserDataByUserId(userId) {
   );
   return rows;
 }
+
+export async function getAllUserData() {
+  const { rows } = await pool.query(
+    `SELECT 
+       id,
+       user_id AS "userId",
+       investor_type AS "investorType",
+       selected_assets AS "selectedAssets",
+       selected_content_types AS "selectedContentTypes",
+       completed_at AS "completedAt"
+     FROM user_data
+     ORDER BY completed_at DESC`
+  );
+  return rows;
+}
