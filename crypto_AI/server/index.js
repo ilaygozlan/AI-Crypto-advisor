@@ -6,6 +6,8 @@ import cookieParser from 'cookie-parser';
 import { initDb } from './DB.js';
 import authRoutes from './routes/auth.js';
 import meRoutes from './routes/me.js';
+import insightsRouter from './routes/insights.js';
+
 
 const app = express();
 
@@ -24,6 +26,10 @@ app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 // routes
 app.use('/auth', authRoutes);
 app.use('/', meRoutes);
+
+// AI
+app.use('/api/insights', insightsRouter);
+
 
 // start
 const PORT = process.env.PORT || 3000;
