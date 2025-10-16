@@ -118,18 +118,56 @@ export function EnhancedSignupForm() {
 
     setIsLoading(true)
     try {
-      await doSignup({
+      // Map display values to backend-expected values
+      const mapInvestorType = (displayType: string | null) => {
+        switch (displayType) {
+          case 'Day Trader': return 'day_trader'
+          case 'HODLer': return 'investor'
+          case 'NFT Collector': return 'conservative'
+          default: return 'investor'
+        }
+      }
+
+      const mapContentTypes = (displayTypes: string[]) => {
+        return displayTypes.map(type => {
+          switch (type) {
+            case 'Market News': return 'articles'
+            case 'Charts': return 'charts'
+            case 'Social': return 'social'
+            case 'Fun': return 'memes'
+            default: return type.toLowerCase()
+          }
+        })
+      }
+
+      const signupData = {
         email: formData.email,
         password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
         data: {
-          investorType: localInvestorType || 'HODLer',
+          investorType: mapInvestorType(localInvestorType),
           selectedAssets: assets,
-          selectedContentTypes: selectedContentTypes,
+          selectedContentTypes: mapContentTypes(selectedContentTypes),
           completedAt: new Date().toISOString()
         }
+      }
+      
+      console.log('Signup data being sent:', signupData)
+      await doSignup(signupData)
+      
+      // Clear form data after successful signup
+      setFormData({
+        email: '',
+        password: '',
+        firstName: '',
+        lastName: ''
       })
+      setLocalInvestorType(null)
+      setAssets([])
+      setContentTypes([])
+      setErrors({})
+      setCurrentStep(0)
       
       // Show success message
       toast({
@@ -142,17 +180,11 @@ export function EnhancedSignupForm() {
       console.error('Signup failed:', error)
       const errorMessage = error instanceof Error ? error.message : 'Signup failed. Please try again.'
       
-      // Show professional error alert
+      // Show professional error alert with actual server message
       toast({
         variant: 'destructive',
         title: 'Signup Failed',
-        description: errorMessage.includes('409') || errorMessage.includes('already exists')
-          ? 'An account with this email already exists. Please try logging in instead.'
-          : errorMessage.includes('400') || errorMessage.includes('validation')
-          ? 'Please check your information and try again. Make sure all fields are filled correctly.'
-          : errorMessage.includes('network') || errorMessage.includes('fetch')
-          ? 'Unable to connect to the server. Please check your internet connection.'
-          : 'An unexpected error occurred. Please try again.',
+        description: errorMessage,
       })
       
       setErrors({ submit: errorMessage })
@@ -421,27 +453,28 @@ export function EnhancedSignupForm() {
 
   return (
     <Card className="w-full">
-      <div className="space-y-6">
-        {/* Progress indicator */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold">{steps[currentStep].title}</h3>
-            <p className="text-sm text-muted-foreground">{steps[currentStep].description}</p>
+      <form onSubmit={(e) => e.preventDefault()}>
+        <div className="space-y-6">
+          {/* Progress indicator */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold">{steps[currentStep].title}</h3>
+              <p className="text-sm text-muted-foreground">{steps[currentStep].description}</p>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {currentStep + 1} of {steps.length}
+            </div>
           </div>
-          <div className="text-sm text-muted-foreground">
-            {currentStep + 1} of {steps.length}
+
+          <div className="w-full bg-muted rounded-full h-2">
+            <div
+              className="bg-primary h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
           </div>
-        </div>
 
-        <div className="w-full bg-muted rounded-full h-2">
-          <div
-            className="bg-primary h-2 rounded-full transition-all duration-300"
-            style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-          />
-        </div>
-
-        {/* Step content */}
-        {renderStep()}
+          {/* Step content */}
+          {renderStep()}
 
         {/* Navigation buttons */}
         <div className="flex justify-between">
@@ -467,10 +500,8 @@ export function EnhancedSignupForm() {
           )}
         </div>
 
-        {errors.submit && (
-          <p className="text-sm text-destructive text-center">{errors.submit}</p>
-        )}
-      </div>
+        </div>
+      </form>
     </Card>
   )
 }

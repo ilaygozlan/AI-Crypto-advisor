@@ -26,17 +26,13 @@ export function LoginPage() {
     } catch (error) {
       console.error('Login failed:', error)
       
-      // Show professional error alert
+      // Show professional error alert with actual server message
       const errorMessage = error instanceof Error ? error.message : 'Login failed'
       
       toast({
         variant: 'destructive',
         title: 'Login Failed',
-        description: errorMessage.includes('401') || errorMessage.includes('unauthorized') 
-          ? 'Invalid email or password. Please check your credentials and try again.'
-          : errorMessage.includes('network') || errorMessage.includes('fetch')
-          ? 'Unable to connect to the server. Please check your internet connection.'
-          : 'An unexpected error occurred. Please try again.',
+        description: "Wrong email or password",
       })
     } finally {
       setIsLoading(false)

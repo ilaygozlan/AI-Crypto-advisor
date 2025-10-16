@@ -78,20 +78,34 @@ export function useAuthController() {
     const { user } = await apiLogin({ email, password });
     const userData = user as User;
     
+    console.log('Login successful, user data:', userData);
+    
     // Fetch user preferences
     try {
       const userDataResponse = await getMyData();
+      console.log('User preferences response:', userDataResponse);
+      
       if (userDataResponse.data && userDataResponse.data.length > 0) {
         const latestData = userDataResponse.data[0];
+        console.log('Latest user data:', latestData);
+        
         userData.preferences = {
           investorType: latestData.investorType,
           selectedAssets: latestData.selectedAssets,
           selectedContentTypes: latestData.selectedContentTypes,
           completedAt: latestData.completedAt
         };
+        
+        console.log('User data with preferences:', userData);
+      } else {
+        console.log('No user data found in response');
       }
     } catch (prefError) {
-      console.log('No preferences found for user');
+      console.log('Error fetching user preferences:', prefError);
+      // If it's a 404, the user might not have preferences saved yet
+      if (prefError instanceof Error && prefError.message.includes('404')) {
+        console.log('User has no saved preferences yet');
+      }
     }
     
     setUser(userData);
