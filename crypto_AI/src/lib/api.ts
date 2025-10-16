@@ -49,7 +49,10 @@ export async function request<T>(
     let errJson: any = null;
     try { errJson = await res.json(); } catch {}
     const errorMessage = errJson?.error || errJson?.message || errJson?.details || `HTTP ${res.status}`;
-    throw new Error(errorMessage);
+    const error = new Error(errorMessage);
+    (error as any).status = res.status;
+    (error as any).response = errJson;
+    throw error;
   }
   return res.json() as Promise<T>;
 }

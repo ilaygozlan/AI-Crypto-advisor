@@ -10,9 +10,10 @@ interface AuthFormProps {
   type: 'login' | 'signup'
   onSubmit: (data: LoginRequest | SignupRequest) => void
   isPending: boolean
+  disabled?: boolean
 }
 
-export function AuthForm({ type, onSubmit, isPending }: AuthFormProps) {
+export function AuthForm({ type, onSubmit, isPending, disabled = false }: AuthFormProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
@@ -163,7 +164,7 @@ export function AuthForm({ type, onSubmit, isPending }: AuthFormProps) {
         <Button
           type="submit"
           className="w-full"
-          disabled={isPending}
+          disabled={isPending || disabled}
         >
           {isPending ? 'Loading...' : type === 'login' ? 'Sign In' : 'Create Account'}
         </Button>
