@@ -23,7 +23,7 @@ const startServer = async (): Promise<void> => {
         port: config.server.port,
         host: config.server.host,
         nodeEnv: env.NODE_ENV,
-        version: process.env['npm_package_version'] || '1.0.0',
+        version: process.env['npm_package_version'] ?? '1.0.0',
       });
     });
   } catch (error) {
@@ -35,18 +35,18 @@ const startServer = async (): Promise<void> => {
 const gracefulShutdown = async (signal: string): Promise<void> => {
   logger.info(`Received ${signal}, starting graceful shutdown...`);
 
-  server.close(async () => {
+  server.close(() => {
     logger.info('HTTP server closed');
-
-    try {
-      await pool.end();
-      logger.info('Database pool closed');
-    } catch (error) {
-      logger.error('Error closing database pool:', error);
-    }
-
-    logger.info('Graceful shutdown completed');
-    process.exit(0);
+    void (async () => {
+      try {
+        await pool.end();
+        logger.info('Database pool closed');
+      } catch (error) {
+        logger.error('Error closing database pool:', error);
+      }
+      logger.info('Graceful shutdown completed');
+      process.exit(0);
+    })();
   });
 
   // Force close after 30 seconds
@@ -57,13 +57,8 @@ const gracefulShutdown = async (signal: string): Promise<void> => {
 };
 
 // Handle shutdown signals
-process.on('SIGINT', () => {
-  void gracefulShutdown('SIGINT');
-});
-
-process.on('SIGTERM', () => {
-  void gracefulShutdown('SIGTERM');
-});
+process.on('SIGINT', () => { void gracefulShutdown('SIGINT'); });
+process.on('SIGTERM', () => { void gracefulShutdown('SIGTERM'); });
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (error: Error) => {

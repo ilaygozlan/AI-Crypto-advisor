@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 import { config } from './config';
 import { router } from './routes';
 import { errorHandler } from './middlewares/errorHandler';
@@ -22,6 +23,7 @@ export const createApp = (): express.Application => {
 
   // Body parsing middleware
   app.use(express.json({ limit: '1mb' }));
+  app.use(cookieParser());
 
   // Logging middleware (development only)
   if (
