@@ -1,28 +1,36 @@
-import express from 'express';   // or: const express = require('express');
-import dotenv from 'dotenv';
-import cors from 'cors';
+import 'dotenv/config';
+import express from 'express';
 import helmet from 'helmet';
-import morgan from 'morgan';
-
-dotenv.config(); // load .env file
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import { initDb } from './DB.js';
+import authRoutes from './routes/auth.js';
+import meRoutes from './routes/me.js';
 
 const app = express();
 
-// middleware
+// middlewares
 app.use(helmet());
-app.use(cors());
-app.use(morgan('dev'));
-app.use(express.json()); // parse JSON bodies
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true
+}));
+app.use(cookieParser());
+app.use(express.json());
 
-// simple route
-app.get('/', (req, res) => {
-  res.json({ message: 'Server is running!' });
-});
+// basic health
+app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
-// choose port
+// routes
+app.use('/auth', authRoutes);
+app.use('/', meRoutes);
+
+// start
 const PORT = process.env.PORT || 3000;
 
-// start the server
-app.listen(PORT, () => {
-  console.log(`✅ Server listening on http://localhost:${PORT}`);
-});
+(async () => {
+  await initDb(); // ensure tables exist
+  app.listen(PORT, () => {
+    console.log(`✅ Server running on http://localhost:${PORT}`);
+  });
+})();
