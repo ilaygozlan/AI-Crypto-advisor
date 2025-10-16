@@ -13,7 +13,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 const MotionCard = motion(UICard)
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ className, title, children, hover = true }, ref) => {
+  ({ className, title, children, hover = true, ...props }, ref) => {
     return (
       <MotionCard
         ref={ref}
@@ -25,6 +25,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2 }}
+        {...props}
       >
         {title && (
           <CardHeader className="pb-4">

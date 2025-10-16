@@ -1,9 +1,13 @@
-import { usePrefsStore } from '@/lib/state/prefs.store'
+import { useAuth } from '@/contexts/AuthContext'
 import { Badge } from '@/components/ui/badge'
 import { TrendingUp, Shield, Zap } from 'lucide-react'
 
 export function PreferencesIndicator() {
-  const { assets, investorType, contentTypes } = usePrefsStore()
+  const { user } = useAuth()
+  
+  const assets = user?.preferences?.selectedAssets || []
+  const investorType = user?.preferences?.investorType || null
+  const contentTypes = user?.preferences?.selectedContentTypes || []
 
   const getInvestorTypeIcon = (type: string | null) => {
     switch (type) {

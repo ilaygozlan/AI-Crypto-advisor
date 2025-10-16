@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { User, LogOut, Home, TrendingUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useAuthStore } from '@/lib/state/auth.store'
+import { useAuth } from '@/contexts/AuthContext'
 import Brand from '@/components/Brand'
 import {
   DropdownMenu,
@@ -11,11 +11,11 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 export function Navbar() {
-  const { user, logout } = useAuthStore()
+  const { user, doLogout } = useAuth()
   const navigate = useNavigate()
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await doLogout()
     navigate('/auth/login')
   }
 

@@ -1,18 +1,15 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { AuthForm } from '../components/AuthForm'
-import { useSignup } from '../hooks/useSignup'
+import { EnhancedSignupForm } from '../components/EnhancedSignupForm'
 
 export function SignupPage() {
-  const { mutate: signup, isPending } = useSignup()
-
   return (
     <div className="min-h-screen bg-background flex">
       <div className="flex-1 flex">
         {/* Left side - Content */}
         <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-20 xl:px-24">
           <motion.div
-            className="max-w-md w-full space-y-8"
+            className="max-w-2xl w-full space-y-8"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
@@ -26,11 +23,7 @@ export function SignupPage() {
               </p>
             </div>
 
-            <AuthForm
-              type="signup"
-              onSubmit={(data) => signup(data as any)}
-              isPending={isPending}
-            />
+            <EnhancedSignupForm />
 
             <div className="text-center">
               <p className="text-sm text-muted-foreground">

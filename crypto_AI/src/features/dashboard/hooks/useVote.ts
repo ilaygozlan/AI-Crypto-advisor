@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { dashboardApi } from '@/lib/api/endpoints'
+import { newDashboardApi } from '@/lib/api/newEndpoints'
 import type { VoteRequest } from '@/types/dashboard'
 
 /**
@@ -11,20 +11,7 @@ export function useVote() {
 
   return useMutation({
     mutationFn: async (data: VoteRequest) => {
-      try {
-        const response = await dashboardApi.vote(data)
-        return response.data
-      } catch (error) {
-        // Fallback for demo purposes when backend is not available
-        console.log('Vote recorded:', data)
-        return {
-          success: true,
-          newVoteCount: {
-            up: Math.floor(Math.random() * 100) + 10,
-            down: Math.floor(Math.random() * 50) + 5,
-          },
-        }
-      }
+      return await newDashboardApi.vote(data)
     },
     onSuccess: (data, variables) => {
       // Optimistically update the UI with new vote counts

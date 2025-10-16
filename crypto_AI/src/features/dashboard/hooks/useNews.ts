@@ -1,27 +1,22 @@
 import { useQuery } from '@tanstack/react-query'
-import { dashboardApi } from '@/lib/api/endpoints'
+import { newDashboardApi } from '@/lib/api/newEndpoints'
 import { fetchCryptoPanicPosts } from '@/lib/utils/cryptoPanic'
-import { getPreferences } from '@/lib/utils/cryptoPrefs'
-import { onboarding } from '@/app/data/onboarding'
+import { useAuth } from '@/contexts/AuthContext'
 
 export function useNews() {
+  const { user } = useAuth()
+  
   return useQuery({
-    queryKey: ['news'],
+    queryKey: ['news', user?.preferences],
     queryFn: async () => {
       try {
-        // Get user preferences
-        const preferences = getPreferences()
-        
-        // Use onboarding assets if preferences are empty
-        const assets = preferences.assets.length > 0 
-          ? preferences.assets 
-          : onboarding.data.selectedAssets.length > 0 
-            ? onboarding.data.selectedAssets 
-            : ['BTC', 'SOL', 'AVAX', 'MATIC'] // Fallback assets
+        // Get user preferences from auth context
+        const assets = user?.preferences?.selectedAssets?.length > 0 
+          ? user.preferences.selectedAssets 
+          : ['BTC', 'ETH', 'SOL'] // Default fallback assets
 
         // Get initial filter based on investor type
-        const filter = preferences.filter || 
-          (onboarding.data.investorType === 'day_trader' ? 'hot' : 'important')
+        const filter = user?.preferences?.investorType === 'Day Trader' ? 'hot' : 'important'
 
         // Fetch from CryptoPanic API
         console.log('📰 Fetching news with preferences:', { filter, assets })
@@ -49,18 +44,10 @@ export function useNews() {
         console.log('📰 Successfully transformed news data:', { count: transformedData.length })
         return transformedData
       } catch (error) {
-        console.error('❌ CryptoPanic API failed, falling back to mock data:', error)
+        console.error('❌ CryptoPanic API failed, trying backend API:', error)
         
-        try {
-          // Try the original API first
-          const response = await dashboardApi.getNews()
-          return response.data
-        } catch (apiError) {
-          // Fallback to mock data if both APIs fail
-          const mockResponse = await fetch('/mocks/news.json')
-          const mockData = await mockResponse.json()
-          return mockData.data
-        }
+        // Try the backend API as fallback
+        return await newDashboardApi.getNews()
       }
     },
     staleTime: 5 * 60 * 1000, // 5 minutes

@@ -1,10 +1,47 @@
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { AuthForm } from '../components/AuthForm'
-import { useLogin } from '../hooks/useLogin'
+import { useAuth } from '@/contexts/AuthContext'
+import { useToast } from '@/hooks/useToast'
+import { useState } from 'react'
 
 export function LoginPage() {
-  const { mutate: login, isPending } = useLogin()
+  const navigate = useNavigate()
+  const { doLogin } = useAuth()
+  const { toast } = useToast()
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleLogin = async (data: { email: string; password: string }) => {
+    setIsLoading(true)
+    try {
+      await doLogin(data.email, data.password)
+      
+      // Show success message
+      toast({
+        title: 'Welcome back!',
+        description: 'You have successfully logged in.',
+      })
+      
+      navigate('/dashboard')
+    } catch (error) {
+      console.error('Login failed:', error)
+      
+      // Show professional error alert
+      const errorMessage = error instanceof Error ? error.message : 'Login failed'
+      
+      toast({
+        variant: 'destructive',
+        title: 'Login Failed',
+        description: errorMessage.includes('401') || errorMessage.includes('unauthorized') 
+          ? 'Invalid email or password. Please check your credentials and try again.'
+          : errorMessage.includes('network') || errorMessage.includes('fetch')
+          ? 'Unable to connect to the server. Please check your internet connection.'
+          : 'An unexpected error occurred. Please try again.',
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -24,20 +61,12 @@ export function LoginPage() {
               <p className="apple-body mt-4 text-lg text-muted-foreground">
                 Sign in to your account to continue
               </p>
-              <div className="mt-4 p-3 bg-muted/50 rounded-lg border border-muted">
-                <p className="text-sm text-muted-foreground">
-                  <strong>Demo Mode:</strong> Use any email and password to login
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Example: demo@example.com / password123
-                </p>
-              </div>
             </div>
 
             <AuthForm
               type="login"
-              onSubmit={login}
-              isPending={isPending}
+              onSubmit={handleLogin}
+              isPending={isLoading}
             />
 
             <div className="text-center">

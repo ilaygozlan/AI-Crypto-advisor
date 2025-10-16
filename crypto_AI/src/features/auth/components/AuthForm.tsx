@@ -32,8 +32,8 @@ export function AuthForm({ type, onSubmit, isPending }: AuthFormProps) {
 
     if (!formData.password) {
       newErrors.password = 'Password is required'
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters'
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters'
     }
 
     if (type === 'signup' && !formData.name) {
@@ -64,8 +64,34 @@ export function AuthForm({ type, onSubmit, isPending }: AuthFormProps) {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
+    
+    // Clear existing error for this field
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }))
+    }
+    
+    // Real-time validation
+    if (field === 'email' && value) {
+      if (!/\S+@\S+\.\S+/.test(value)) {
+        setErrors(prev => ({ ...prev, email: 'Please enter a valid email address' }))
+      }
+    }
+    
+    if (field === 'password' && value) {
+      if (value.length < 8) {
+        setErrors(prev => ({ ...prev, password: 'Password must be at least 8 characters' }))
+      } else if (value.length >= 8) {
+        // Clear password error if it meets requirements
+        setErrors(prev => ({ ...prev, password: '' }))
+      }
+    }
+    
+    if (field === 'name' && value) {
+      if (value.length < 2) {
+        setErrors(prev => ({ ...prev, name: 'Name must be at least 2 characters' }))
+      } else {
+        setErrors(prev => ({ ...prev, name: '' }))
+      }
     }
   }
 

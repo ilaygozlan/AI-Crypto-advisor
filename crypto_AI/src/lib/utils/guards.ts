@@ -1,11 +1,13 @@
-import type { User } from '@/lib/state/auth.store'
+type User = { id: string; email: string; firstName?: string; lastName?: string }
 
 export function isAuthenticated(user: User | null): boolean {
   return user !== null
 }
 
 export function hasCompletedOnboarding(user: User | null): boolean {
-  return user?.hasCompletedOnboarding ?? false
+  // For now, assume onboarding is completed if user exists
+  // This can be enhanced when we add onboarding completion tracking
+  return user !== null
 }
 
 export function canAccessDashboard(user: User | null): boolean {

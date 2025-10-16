@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { SectionHeader } from '@/components/common/SectionHeader'
 import { StepAssets } from '../components/StepAssets'
 import { StepInvestorType } from '../components/StepInvestorType'
 import { StepContentTypes } from '../components/StepContentTypes'
-import { useSaveOnboarding } from '../hooks/useSaveOnboarding'
 import { usePrefsStore } from '@/lib/state/prefs.store'
 
 const steps = [
@@ -16,9 +16,10 @@ const steps = [
 ]
 
 export function OnboardingPage() {
+  const navigate = useNavigate()
   const [currentStep, setCurrentStep] = useState(0)
-  const { mutate: saveOnboarding, isPending } = useSaveOnboarding()
-  const { assets, investorType, contentTypes } = usePrefsStore()
+  const [isSaving, setIsSaving] = useState(false)
+  const { assets, investorType, contentTypes, setHasCompletedOnboarding } = usePrefsStore()
 
   const canProceed = () => {
     switch (currentStep) {
@@ -33,16 +34,20 @@ export function OnboardingPage() {
     }
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1)
     } else {
-      // Save onboarding data
-      saveOnboarding({
-        assets,
-        investorType: investorType!,
-        contentTypes,
-      })
+      // Mark onboarding as completed and redirect to dashboard
+      setIsSaving(true)
+      try {
+        setHasCompletedOnboarding(true)
+        navigate('/dashboard')
+      } catch (error) {
+        console.error('Error completing onboarding:', error)
+      } finally {
+        setIsSaving(false)
+      }
     }
   }
 
@@ -57,7 +62,7 @@ export function OnboardingPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <SectionHeader
-        title="Welcome to Moveo AI Crypto Advisor"
+        title="Welcome to AI Crypto Advisor"
         subtitle="Let's personalize your experience in just a few steps"
         className="text-center mb-12"
       />
@@ -128,11 +133,11 @@ export function OnboardingPage() {
 
         <Button
           onClick={handleNext}
-          disabled={!canProceed() || isPending}
+          disabled={!canProceed() || isSaving}
           className="flex items-center space-x-2"
         >
           <span>
-            {isPending
+            {isSaving
               ? 'Saving...'
               : currentStep === steps.length - 1
               ? 'Complete Setup'

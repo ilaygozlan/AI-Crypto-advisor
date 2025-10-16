@@ -3,12 +3,12 @@ import { Card } from '@/components/common/Card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useAuthStore } from '@/lib/state/auth.store'
+import { useAuth } from '@/contexts/AuthContext'
 
 export function ProfileForm() {
-  const { user, logout } = useAuthStore()
+  const { user, doLogout } = useAuth()
   const [formData, setFormData] = useState({
-    name: user?.name || '',
+    name: user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : '',
     email: user?.email || '',
   })
   const [isEditing, setIsEditing] = useState(false)
@@ -21,14 +21,14 @@ export function ProfileForm() {
 
   const handleCancel = () => {
     setFormData({
-      name: user?.name || '',
+      name: user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : '',
       email: user?.email || '',
     })
     setIsEditing(false)
   }
 
   const handleLogout = () => {
-    logout()
+    doLogout()
   }
 
   return (

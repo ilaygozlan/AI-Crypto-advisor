@@ -16,7 +16,7 @@ A production-grade React + TypeScript application for AI-powered cryptocurrency 
 - **Interactive Voting**: Like/dislike system for all content
 - **Settings**: Profile management and preferences
 - **Dark Mode**: System preference detection with manual toggle
-- **Mock Data**: Local development with realistic mock data
+- **Real-time Data**: Live cryptocurrency data and news feeds
 
 ## 🛠 Tech Stack
 
@@ -36,7 +36,7 @@ A production-grade React + TypeScript application for AI-powered cryptocurrency 
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd moveo-crypto-ai-advisor
+cd ai-crypto-advisor
 ```
 
 2. Install dependencies:
@@ -52,7 +52,7 @@ cp env.example .env
 4. Update `.env` with your configuration:
 ```env
 VITE_API_BASE_URL=https://api.example.com
-VITE_APP_NAME=Moveo AI Crypto Advisor
+VITE_APP_NAME=AI Crypto Advisor
 ```
 
 ## 🚀 Development
@@ -148,7 +148,7 @@ This app integrates with the [CryptoPanic API](https://cryptopanic.com/developer
 - **Personalized News**: Filters news based on user's selected cryptocurrencies and investment type
 - **Sentiment Analysis**: Uses CryptoPanic's built-in sentiment scoring
 - **Real-time Updates**: Fetches latest news every 10 minutes
-- **Fallback System**: Gracefully falls back to mock data if API is unavailable
+- **Robust Error Handling**: Graceful error handling with user feedback
 
 See [CRYPTOPANIC_SETUP.md](./CRYPTOPANIC_SETUP.md) for detailed setup instructions.
 
@@ -192,7 +192,7 @@ See [CRYPTOPANIC_SETUP.md](./CRYPTOPANIC_SETUP.md) for detailed setup instructio
 ### AI Insights
 - Daily AI-generated market analysis
 - Personalized recommendations
-- Regenerate functionality (disabled in demo)
+- Regenerate functionality
 
 ### Fun Memes
 - Daily crypto-related memes
@@ -259,7 +259,7 @@ See [CRYPTOPANIC_SETUP.md](./CRYPTOPANIC_SETUP.md) for detailed setup instructio
 
 ## 📄 License
 
-This project is created for the Moveo coding task demonstration.
+This project is a production-ready AI-powered cryptocurrency advisor application.
 
 ## 🎯 Future Enhancements
 
