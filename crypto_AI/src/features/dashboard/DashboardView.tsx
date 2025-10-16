@@ -2,12 +2,22 @@ import { useEffect, useMemo, useState } from 'react';
 import { IconTabs } from '@/components/ui/IconTabs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Newspaper, LineChart, Bot, PartyPopper } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import MarketNewsPanel from './panels/MarketNewsPanel';
 import CoinPricesPanel from './panels/CoinPricesPanel';
 import AiInsightPanel from './panels/AiInsightPanel';
 import MemePanel from './panels/MemePanel';
 
-const TABS = [
+// Content type mapping from database to tab IDs
+const CONTENT_TYPE_MAPPING = {
+  'Market News': 'news',
+  'articles': 'news',
+  'social': 'prices', 
+  'ai': 'ai',
+  'Fun': 'meme'
+} as const;
+
+const ALL_TABS = [
   { id: 'news',   label: 'Market News',     icon: <Newspaper className="h-4 w-4" /> },
   { id: 'prices', label: 'Coin Prices',     icon: <LineChart className="h-4 w-4" /> },
   { id: 'ai',     label: 'AI Insight',      icon: <Bot className="h-4 w-4" /> },
@@ -15,9 +25,32 @@ const TABS = [
 ] as const;
 
 export default function DashboardView() {
+  const { user } = useAuth();
   const url = new URL(window.location.href);
   const initial = (url.searchParams.get('tab') as string) || 'news';
   const [tab, setTab] = useState<string>(initial);
+
+  // Filter tabs based on user's selected content types
+  const availableTabs = useMemo(() => {
+    if (!user?.preferences?.selectedContentTypes) {
+      // If no preferences, show all tabs
+      return ALL_TABS;
+    }
+
+    const selectedTabIds = user.preferences.selectedContentTypes
+      .map(contentType => CONTENT_TYPE_MAPPING[contentType as keyof typeof CONTENT_TYPE_MAPPING])
+      .filter(Boolean);
+
+    return ALL_TABS.filter(tab => selectedTabIds.includes(tab.id));
+  }, [user?.preferences?.selectedContentTypes]);
+
+  // Ensure current tab is available in filtered tabs
+  useEffect(() => {
+    if (availableTabs.length > 0 && !availableTabs.some(t => t.id === tab)) {
+      // If current tab is not available, switch to the first available tab
+      setTab(availableTabs[0].id);
+    }
+  }, [availableTabs, tab]);
 
   useEffect(() => {
     const u = new URL(window.location.href);
@@ -38,7 +71,7 @@ export default function DashboardView() {
   return (
     <section className="mx-auto w-full max-w-6xl px-4">
       <div className="sticky top-16 z-10 mb-4 bg-transparent pt-2">
-        <IconTabs tabs={TABS as any} value={tab} onChange={setTab} />
+        <IconTabs tabs={availableTabs as any} value={tab} onChange={setTab} />
       </div>
 
       <div className="relative min-h-[420px]">
