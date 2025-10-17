@@ -21,13 +21,15 @@ A production-grade React + TypeScript application for AI-powered cryptocurrency 
 ## 🛠 Tech Stack
 
 - **Frontend**: React 18 + TypeScript + Vite
-- **Styling**: Tailwind CSS + shadcn/ui components
-- **State Management**: Zustand
+- **Backend**: Node.js + Express.js + PostgreSQL
+- **Styling**: Tailwind CSS + shadcn/ui components (Radix UI)
+- **State Management**: Zustand + React Context
 - **Data Fetching**: TanStack Query (React Query)
 - **HTTP Client**: Axios
 - **Routing**: React Router v6
 - **Animations**: Framer Motion
 - **Icons**: Lucide React
+- **Authentication**: JWT tokens with httpOnly cookies
 - **Testing**: Vitest + Testing Library
 - **Linting**: ESLint + Prettier
 
@@ -44,25 +46,52 @@ cd ai-crypto-advisor
 npm install
 ```
 
-3. Create environment file:
+3. Create environment files:
 ```bash
 cp env.example .env
+cp env.development .env.development
+cp env.production .env.production
 ```
 
-4. Update `.env` with your configuration:
+4. Update environment files with your configuration:
+
+**Frontend (.env.development / .env.production):**
 ```env
-VITE_API_BASE_URL=https://api.example.com
+VITE_SERVER_URL=http://localhost:3000
+VITE_CRYPTOPANIC_API_KEY=your_cryptopanic_api_key
 VITE_APP_NAME=AI Crypto Advisor
+```
+
+**Backend (.env):**
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/crypto_advisor
+JWT_ACCESS_SECRET=your-access-secret-key
+JWT_REFRESH_SECRET=your-refresh-secret-key
+CG_API_KEY=your-coingecko-api-key
+OPENROUTER_API_KEY=your-openrouter-api-key
+REDDIT_CLIENT_ID=your-reddit-client-id
+REDDIT_CLIENT_SECRET=your-reddit-client-secret
+PORT=3000
+NODE_ENV=development
 ```
 
 ## 🚀 Development
 
-Start the development server:
+### Frontend Development
+Start the frontend development server:
 ```bash
 npm run dev
 ```
 
-The app will be available at `http://crypto-ai-advisore.s3-website-us-east-1.amazonaws.com`
+### Backend Development
+Start the backend server:
+```bash
+cd server
+npm install
+npm start
+```
+
+The frontend will be available at `http://localhost:5173` and the backend at `http://localhost:3000`
 
 ## 🏗 Build
 
@@ -113,24 +142,35 @@ npm run format:check
 ## 📁 Project Structure
 
 ```
-src/
-├── app/                    # App configuration and routing
-├── components/
-│   ├── ui/                 # shadcn/ui components
-│   ├── layout/             # Layout components
-│   └── common/             # Reusable components
-├── features/               # Feature-based modules
-│   ├── auth/               # Authentication
-│   ├── onboarding/         # User onboarding
-│   ├── dashboard/          # Main dashboard
-│   └── settings/           # User settings
-├── lib/
-│   ├── api/                # API client and endpoints
-│   ├── state/              # Zustand stores
-│   └── utils/              # Utility functions
-├── types/                  # TypeScript type definitions
-├── styles/                 # Global styles
-└── test/                   # Test setup
+crypto_AI/
+├── server/                 # Backend Node.js/Express application
+│   ├── routes/             # API route definitions
+│   ├── services/           # Business logic layer
+│   ├── middlewares/        # Express middleware
+│   ├── repos/              # Data access layer
+│   ├── utils/              # Backend utilities
+│   └── package.json        # Backend dependencies
+├── src/                    # Frontend React application
+│   ├── app/                # App configuration and routing
+│   ├── components/
+│   │   ├── ui/             # shadcn/ui components (Radix UI)
+│   │   ├── layout/         # Layout components
+│   │   └── common/         # Reusable components
+│   ├── features/           # Feature-based modules
+│   │   ├── auth/           # Authentication
+│   │   ├── dashboard/      # Main dashboard
+│   │   ├── news/           # News features
+│   │   └── settings/       # User settings
+│   ├── lib/
+│   │   ├── api/            # API client and endpoints
+│   │   ├── state/          # Zustand stores
+│   │   └── utils/          # Utility functions
+│   ├── types/              # TypeScript type definitions
+│   ├── styles/             # Global styles
+│   └── contexts/           # React contexts
+├── public/                 # Static assets
+├── dist/                   # Build output
+└── package.json            # Frontend dependencies
 ```
 
 ## 🔗 CryptoPanic API Integration
@@ -151,6 +191,33 @@ This app integrates with the [CryptoPanic API](https://cryptopanic.com/developer
 - **Robust Error Handling**: Graceful error handling with user feedback
 
 See [CRYPTOPANIC_SETUP.md](./CRYPTOPANIC_SETUP.md) for detailed setup instructions.
+
+## 🔌 Backend API Endpoints
+
+### Authentication
+- `POST /auth/login` - User login
+- `POST /auth/signup` - User registration with onboarding
+- `POST /auth/refresh` - Refresh JWT token
+- `POST /auth/logout` - User logout
+
+### User Data
+- `GET /me` - Get user information
+- `GET /me/data` - Get user preferences and onboarding data
+
+### External APIs (Proxied)
+- `GET /api/coinGecko/prices` - Crypto prices
+- `GET /api/coinGecko/markets` - Market data
+- `GET /api/coinGecko/chart/:coinId` - Chart data
+
+### Content & Features
+- `GET /api/insights/today` - Today's AI insight
+- `GET /api/memes` - Fetch memes with pagination
+- `POST /api/memes/refresh` - Manually refresh memes
+- `POST /api/reactions` - Save user reactions
+- `POST /dashboard/vote` - Submit content votes
+
+### System
+- `GET /health` - Server health check
 
 ## 🎨 Design System
 
@@ -237,8 +304,22 @@ See [CRYPTOPANIC_SETUP.md](./CRYPTOPANIC_SETUP.md) for detailed setup instructio
 ## 🔧 Configuration
 
 ### Environment Variables
-- `VITE_API_BASE_URL`: Backend API endpoint
+
+**Frontend:**
+- `VITE_SERVER_URL`: Backend API endpoint
+- `VITE_CRYPTOPANIC_API_KEY`: CryptoPanic API key for news
 - `VITE_APP_NAME`: Application display name
+
+**Backend:**
+- `DATABASE_URL`: PostgreSQL connection string
+- `JWT_ACCESS_SECRET`: JWT access token secret
+- `JWT_REFRESH_SECRET`: JWT refresh token secret
+- `CG_API_KEY`: CoinGecko API key
+- `OPENROUTER_API_KEY`: OpenRouter AI API key
+- `REDDIT_CLIENT_ID`: Reddit API client ID
+- `REDDIT_CLIENT_SECRET`: Reddit API client secret
+- `PORT`: Server port (default: 3000)
+- `NODE_ENV`: Environment (development/production)
 
 ### TypeScript
 - Strict mode enabled
@@ -261,7 +342,18 @@ See [CRYPTOPANIC_SETUP.md](./CRYPTOPANIC_SETUP.md) for detailed setup instructio
 
 This project is a production-ready AI-powered cryptocurrency advisor application.
 
-## 🎯 Future Enhancements
+## 🎯 Current Features
+
+- **Full-Stack Application**: Complete React frontend with Node.js backend
+- **AI-Powered Insights**: Daily market analysis using OpenRouter API
+- **Real-time Data**: Live crypto prices, news, and market data
+- **Reddit Integration**: Automated meme fetching from crypto subreddits
+- **Interactive Voting**: Like/dislike system for all content types
+- **Personalized Content**: ML-based scoring and user preference filtering
+- **Secure Authentication**: JWT-based auth with rate limiting and lockout protection
+- **Responsive Design**: Mobile-first design with dark mode support
+
+## 🚀 Future Enhancements
 
 - Real-time WebSocket connections
 - Advanced charting with TradingView
@@ -269,6 +361,8 @@ This project is a production-ready AI-powered cryptocurrency advisor application
 - Social features and community
 - Mobile app with React Native
 - Advanced AI insights and predictions
+- Push notifications for price alerts
+- Advanced technical analysis tools
 
 ---
 

@@ -23,15 +23,15 @@ The **AI Crypto Advisor** is a full-stack web application that provides personal
 ### Technology Stack
 - **Backend**: Node.js, Express.js, PostgreSQL
 - **Frontend**: React 18, TypeScript, Vite
-- **Authentication**: JWT tokens with httpOnly cookies, bcrypt password hashing
+- **Authentication**: JWT tokens with httpOnly cookies, bcryptjs password hashing
 - **Database**: PostgreSQL with connection pooling and automatic migrations
 - **External APIs**: CoinGecko API (Free & Pro), CryptoPanic API, OpenRouter AI, Reddit API
-- **UI Framework**: Tailwind CSS, Shadcn/ui components, Framer Motion animations
+- **UI Framework**: Tailwind CSS, Shadcn/ui components (Radix UI), Framer Motion animations
 - **State Management**: React Context, TanStack Query (React Query), Zustand for preferences
-- **Security**: Helmet, CORS, Rate limiting, Input validation with Joi
+- **Security**: Helmet, CORS, Rate limiting, Input validation
 - **Development Tools**: ESLint, Prettier, Vitest for testing
 - **Icons**: Lucide React icon library
-- **HTTP Client**: Custom fetch-based API client with retry logic
+- **HTTP Client**: Axios for API calls with retry logic
 - **AI Integration**: OpenRouter API for LLM-powered insights with structured prompts
 - **Content Automation**: Node-cron for scheduled tasks, Reddit API for meme fetching
 - **Data Processing**: Advanced JSON handling and content normalization
@@ -540,12 +540,12 @@ cd crypto_AI
 mkdir server
 cd server
 npm init -y
-npm install express cors helmet cookie-parser dotenv bcrypt jsonwebtoken pg morgan
+npm install express cors helmet cookie-parser dotenv bcryptjs jsonwebtoken pg morgan
 
 # Initialize frontend
 cd ..
 npm create vite@latest . -- --template react-ts
-npm install @tanstack/react-query react-router-dom framer-motion
+npm install @tanstack/react-query react-router-dom framer-motion axios zustand
 npm install -D tailwindcss postcss autoprefixer
 ```
 
@@ -560,12 +560,11 @@ npm install -D tailwindcss postcss autoprefixer
     "helmet": "^8.1.0",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.16.3",
     "morgan": "^1.10.1",
     "express-rate-limit": "^8.1.0",
-    "joi": "^17.11.0",
     "node-cron": "^4.2.1",
     "node-fetch": "^3.3.2",
     "snoowrap": "^1.23.0"
@@ -582,10 +581,13 @@ npm install -D tailwindcss postcss autoprefixer
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.8.0",
-    "@tanstack/react-query": "^5.0.0",
-    "framer-motion": "^10.0.0",
-    "lucide-react": "^0.263.0"
+    "react-router-dom": "^6.20.1",
+    "@tanstack/react-query": "^5.17.0",
+    "framer-motion": "^10.18.0",
+    "lucide-react": "^0.303.0",
+    "axios": "^1.6.5",
+    "zustand": "^4.4.7",
+    "@radix-ui/react-*": "Latest versions for UI components"
   }
 }
 ```
