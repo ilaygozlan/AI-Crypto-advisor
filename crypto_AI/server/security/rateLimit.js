@@ -6,6 +6,12 @@ export const loginLimiter = rateLimit({
   max: 3,                   // max 3 login attempts
   standardHeaders: true,
   legacyHeaders: false,
+  // Trust proxy headers for proper IP detection
+  trustProxy: true,
+  // Use X-Forwarded-For header when available
+  keyGenerator: (req) => {
+    return req.ip || req.connection.remoteAddress || 'unknown';
+  },
   message: {
     error: 'Too many login attempts, please try again later.',
     retryAfter: '15 minutes'
@@ -18,6 +24,12 @@ export const signupLimiter = rateLimit({
   max: 10,                  // max 10 signup attempts
   standardHeaders: true,
   legacyHeaders: false,
+  // Trust proxy headers for proper IP detection
+  trustProxy: true,
+  // Use X-Forwarded-For header when available
+  keyGenerator: (req) => {
+    return req.ip || req.connection.remoteAddress || 'unknown';
+  },
   message: {
     error: 'Too many signup attempts, please try again later.',
     retryAfter: '5 minutes'

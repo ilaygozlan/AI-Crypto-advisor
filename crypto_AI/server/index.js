@@ -29,6 +29,9 @@ import dashboardRouter from './routes/dashboard.js';
 
 const app = express();
 
+// Trust proxy for proper rate limiting behind load balancers (Render, etc.)
+app.set('trust proxy', 1);
+
 // middlewares
 app.use(helmet());
 
