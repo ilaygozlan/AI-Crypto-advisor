@@ -1,100 +1,125 @@
-import { Card } from "@/components/common/Card";
-import { Skeleton } from "@/components/common/Skeleton";
-import { VoteButtons } from "@/components/common/VoteButtons";
-import { useMeme } from "../hooks/useMeme";
-import { useVote } from "../hooks/useVote";
-import { ExternalLink } from "lucide-react";
+import { useEffect, useRef } from 'react'
+import { Skeleton } from '@/components/common/Skeleton'
+import { MemeCard } from './MemeCard'
+import type { MemeItem } from '@/types/dashboard'
 
-export function MemeSection() {
-  const { data: meme, isLoading, error } = useMeme();
-  const { mutate: vote } = useVote();
+interface MemeSectionProps {
+  memes: MemeItem[]
+  isLoading?: boolean
+  isLoadingMore?: boolean
+  hasMore?: boolean
+  onLoadMore?: () => void
+}
+
+export function MemeSection({ 
+  memes, 
+  isLoading = false, 
+  isLoadingMore = false, 
+  hasMore = false, 
+  onLoadMore 
+}: MemeSectionProps) {
+  const sentinelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!onLoadMore || !hasMore) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoadingMore) {
+          onLoadMore()
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (sentinelRef.current) {
+      observer.observe(sentinelRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [onLoadMore, hasMore, isLoadingMore])
 
   if (isLoading) {
     return (
-      <Card title="🎉 Fun Crypto Meme">
-        <div className="space-y-4">
-          <Skeleton className="h-48 w-full rounded-lg" />
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-3 w-1/2" />
-          </div>
-          <div className="flex justify-between items-center">
-            <Skeleton className="h-3 w-1/3" />
-            <div className="flex space-x-2">
-              <Skeleton className="h-8 w-8 rounded" />
-              <Skeleton className="h-8 w-8 rounded" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <Skeleton className="h-64 w-full" />
+            <div className="p-4 space-y-3">
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-1/2" />
+              <div className="flex justify-between items-center">
+                <Skeleton className="h-3 w-1/3" />
+                <div className="flex space-x-2">
+                  <Skeleton className="h-6 w-12 rounded-full" />
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </Card>
-    );
+        ))}
+      </div>
+    )
   }
 
-  if (error) {
+  if (memes.length === 0) {
     return (
-      <Card title="🎉 Fun Crypto Meme">
-        <div className="text-center py-8">
-          <p className="text-muted-foreground">Failed to load meme</p>
-        </div>
-      </Card>
-    );
-  }
-
-  if (!meme) {
-    return (
-      <Card title="🎉 Fun Crypto Meme">
-        <div className="text-center py-8">
-          <p className="text-muted-foreground">No meme available</p>
-        </div>
-      </Card>
-    );
+      <div className="text-center py-12">
+        <div className="text-6xl mb-4">😔</div>
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+          No memes found
+        </h3>
+        <p className="text-slate-600 dark:text-slate-400">
+          Try adjusting your filter or check back later for new content.
+        </p>
+      </div>
+    )
   }
 
   return (
-    <Card title="🎉 Fun Crypto Meme">
-      <div className="space-y-4">
-        <div className="relative">
-          <img
-            src={meme.imageUrl}
-            alt={meme.title}
-            className="w-full h-48 object-cover rounded-lg"
-            loading="lazy"
-          />
-        </div>
-
-        <div>
-          <h3 className="font-semibold text-sm mb-1">{meme.title}</h3>
-          <p className="text-sm text-muted-foreground">{meme.caption}</p>
-        </div>
-
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>Source: {meme.source}</span>
-          <a
-            href={meme.imageUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
-          >
-            View full size
-            <ExternalLink className="ml-1 h-3 w-3" />
-          </a>
-        </div>
-
-        <div className="flex items-center justify-between pt-2">
-          <span className="text-xs text-muted-foreground">
-            Daily crypto humor
-          </span>
-
-          <VoteButtons
-            upVotes={meme?.votes?.up ?? 0}
-            downVotes={meme?.votes?.down ?? 0}
-            userVote={meme.userVote}
-            onVote={(voteType) =>
-              vote({ section: "meme", itemId: meme.id, vote: voteType })
-            }
-          />
-        </div>
+    <div className="space-y-6">
+      {/* Meme Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {memes.map((meme) => (
+          <MemeCard key={meme.id} meme={meme} />
+        ))}
       </div>
-    </Card>
-  );
+
+      {/* Loading More Skeleton */}
+      {isLoadingMore && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={`loading-${i}`} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+              <Skeleton className="h-64 w-full" />
+              <div className="p-4 space-y-3">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+                <div className="flex justify-between items-center">
+                  <Skeleton className="h-3 w-1/3" />
+                  <div className="flex space-x-2">
+                    <Skeleton className="h-6 w-12 rounded-full" />
+                    <Skeleton className="h-6 w-16 rounded-full" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Infinite Scroll Sentinel */}
+      {hasMore && (
+        <div ref={sentinelRef} className="h-4" />
+      )}
+
+      {/* End of content */}
+      {!hasMore && memes.length > 0 && (
+        <div className="text-center py-8">
+          <p className="text-slate-500 dark:text-slate-400 text-sm">
+            You've reached the end! 🎉
+          </p>
+        </div>
+      )}
+    </div>
+  )
 }

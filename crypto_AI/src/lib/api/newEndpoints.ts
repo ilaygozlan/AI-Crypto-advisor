@@ -15,8 +15,6 @@ export const newDashboardApi = {
   getAIInsight: () =>
     request<AIInsight>('/dashboard/ai-insight'),
   
-  getMeme: () =>
-    request<MemeItem>('/dashboard/meme'),
   
   vote: (data: VoteRequest) =>
     request<VoteResponse>('/dashboard/vote', {

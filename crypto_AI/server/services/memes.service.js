@@ -110,7 +110,8 @@ export async function fetchMemes({ limitPerSub = LIMIT_PER_SUB } = {}) {
 }
 
 export function startMemesCron() {
-  cron.schedule('12 * * * *', async () => {
+    //run this func once a day at 00:00 to import new memes :)
+  cron.schedule('0 0 * * *', async () => {
     try {
       console.log('[cron] fetching memes…');
       const { added } = await fetchMemes();

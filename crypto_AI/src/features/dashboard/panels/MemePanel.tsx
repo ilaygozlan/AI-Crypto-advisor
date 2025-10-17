@@ -1,118 +1,107 @@
-import { Skeleton } from '@/components/common/Skeleton'
-import { VoteButtons } from '@/components/common/VoteButtons'
+import { useState } from 'react'
+import { PartyPopper, RefreshCw } from 'lucide-react'
 import { useMeme } from '../hooks/useMeme'
-import { useVote } from '../hooks/useVote'
-import { PartyPopper, ExternalLink } from 'lucide-react'
+import { MemeSection } from '../components/MemeSection'
+
+const SUBREDDIT_OPTIONS = [
+  { value: 'all', label: 'All Subreddits' },
+  { value: 'CryptoMemes', label: 'CryptoMemes' },
+  { value: 'cryptomemes', label: 'cryptomemes' },
+  { value: 'BitcoinMemes', label: 'BitcoinMemes' },
+  { value: 'CryptoCurrency', label: 'CryptoCurrency' },
+  { value: 'Bitcoin', label: 'Bitcoin' },
+]
 
 export default function MemePanel() {
-  const { data: meme, isLoading, error } = useMeme()
-  const { mutate: vote } = useVote()
+  const [selectedSub, setSelectedSub] = useState('all')
+  const { data: memes, isLoading, isLoadingMore, isError, error, hasMore, refetch, loadMore } = useMeme({ 
+    limit: 24, 
+    sub: selectedSub === 'all' ? undefined : selectedSub 
+  })
 
-  if (isLoading) {
+  const handleSubredditChange = (sub: string) => {
+    setSelectedSub(sub)
+  }
+
+  if (isError) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-800" />
-          <div>
-            <Skeleton className="h-6 w-48 mb-2" />
-            <Skeleton className="h-4 w-32" />
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+              <PartyPopper className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Crypto Memes</h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Community's favorite crypto humor</p>
+            </div>
           </div>
         </div>
-        <div className="space-y-4">
-          <Skeleton className="h-64 w-full rounded-xl" />
-          <Skeleton className="h-6 w-3/4" />
-          <Skeleton className="h-4 w-1/2" />
-        </div>
-        <div className="flex justify-between items-center">
-          <Skeleton className="h-3 w-1/3" />
-          <div className="flex space-x-2">
-            <Skeleton className="h-8 w-8 rounded" />
-            <Skeleton className="h-8 w-8 rounded" />
-          </div>
-        </div>
-      </div>
-    )
-  }
 
-  if (error) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">Failed to load meme</p>
-      </div>
-    )
-  }
-
-  if (!meme) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">No meme available</p>
+        {/* Error State */}
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6 text-center">
+          <div className="text-red-600 dark:text-red-400 text-4xl mb-4">😞</div>
+          <h3 className="text-lg font-semibold text-red-900 dark:text-red-100 mb-2">
+            Couldn't load memes
+          </h3>
+          <p className="text-red-700 dark:text-red-300 mb-4">
+            {error?.message || 'Something went wrong while fetching memes. Please try again.'}
+          </p>
+          <button
+            onClick={refetch}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Retry
+          </button>
+        </div>
       </div>
     )
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="h-8 w-8 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
-          <PartyPopper className="h-5 w-5 text-orange-600 dark:text-orange-400" />
-        </div>
-        <div>
-          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Fun Crypto Meme</h2>
-          <p className="text-sm text-slate-600 dark:text-slate-400">Community's favorite crypto humor</p>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <div className="relative">
-          <img
-            src={meme.imageUrl}
-            alt={meme.title}
-            className="w-full h-64 object-cover rounded-xl shadow-sm"
-          />
-          <div className="absolute top-3 right-3 bg-black/50 text-white px-2 py-1 rounded-full text-xs font-medium">
-            {meme.source}
+      {/* Header with Filter */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-8 w-8 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+            <PartyPopper className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Crypto Memes</h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400">Community's favorite crypto humor</p>
           </div>
         </div>
 
-        <div>
-          <h3 className="font-semibold text-lg mb-2 text-slate-900 dark:text-slate-100">
-            {meme.title}
-          </h3>
-          <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-            {meme.caption}
-          </p>
-        </div>
-
-        <div className="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">
-          <div className="flex items-center gap-2">
-            <span>From {meme.source}</span>
-            <span>•</span>
-            <span>{new Date(meme.createdAt).toLocaleDateString()}</span>
-          </div>
-          <a
-            href={meme.imageUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+        {/* Subreddit Filter */}
+        <div className="flex items-center gap-2">
+          <label htmlFor="subreddit-filter" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            Filter:
+          </label>
+          <select
+            id="subreddit-filter"
+            value={selectedSub}
+            onChange={(e) => handleSubredditChange(e.target.value)}
+            className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
           >
-            View full size
-            <ExternalLink className="ml-1 h-3 w-3" />
-          </a>
-        </div>
-
-        <div className="flex items-center justify-between pt-4">
-          <div className="text-sm text-slate-600 dark:text-slate-400">
-            How funny is this meme?
-          </div>
-
-          <VoteButtons
-            upVotes={meme.votes.up}
-            downVotes={meme.votes.down}
-            userVote={meme.userVote}
-            onVote={(voteType) => vote({ section: 'meme', itemId: meme.id, vote: voteType })}
-          />
+            {SUBREDDIT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
+
+      {/* Meme Grid */}
+      <MemeSection
+        memes={memes}
+        isLoading={isLoading}
+        isLoadingMore={isLoadingMore}
+        hasMore={hasMore}
+        onLoadMore={loadMore}
+      />
     </div>
   )
 }

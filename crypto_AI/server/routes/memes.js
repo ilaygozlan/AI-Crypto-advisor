@@ -14,6 +14,64 @@ router.post('/refresh', async (_req, res) => {
   }
 });
 
+// Main API endpoint for fetching memes with pagination and filtering
+router.get('/', async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit) || 24, 100); // Max 100 items
+    const sub = req.query.sub;
+    const cursor = req.query.cursor ? new Date(String(req.query.cursor)) : null;
+
+    let whereConditions = ['source_url IS NOT NULL', 'is_nsfw = false'];
+    let params = [];
+    let paramCount = 0;
+
+    // Add subreddit filter
+    if (sub && sub !== 'all') {
+      paramCount++;
+      whereConditions.push(`subreddit = $${paramCount}`);
+      params.push(sub);
+    }
+
+    // Add cursor pagination
+    if (cursor && !isNaN(cursor.getTime())) {
+      paramCount++;
+      whereConditions.push(`created_utc < $${paramCount}`);
+      params.push(cursor.toISOString());
+    }
+
+    // Add limit
+    paramCount++;
+    params.push(limit);
+
+    const query = `
+      SELECT id, subreddit, title, score, num_comments, permalink, source_url, created_utc
+      FROM memes
+      WHERE ${whereConditions.join(' AND ')}
+      ORDER BY created_utc DESC
+      LIMIT $${paramCount}
+    `;
+
+    const { rows } = await pgPool.query(query, params);
+
+    // Transform to match expected API contract
+    const memes = rows.map(row => ({
+      id: row.id,
+      subreddit: row.subreddit,
+      title: row.title,
+      score: row.score,
+      num_comments: row.num_comments,
+      permalink: row.permalink,
+      source_url: row.source_url,
+      created_utc: row.created_utc.toISOString()
+    }));
+
+    res.json(memes);
+  } catch (error) {
+    console.error('[GET /api/memes]', error);
+    res.status(500).json({ error: 'Failed to fetch memes' });
+  }
+});
+
 router.get('/preview', async (_req, res) => {
   const { rows } = await pgPool.query(`
     SELECT title, source_url, subreddit, permalink

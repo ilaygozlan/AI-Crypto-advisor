@@ -14,11 +14,11 @@ export function SectionHeader({ title, subtitle, className }: SectionHeaderProps
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <h2 className="apple-heading text-3xl font-semibold tracking-tight text-foreground">
+      <h2 className="apple-heading text-3xl font-semibold tracking-tight text-foreground text-center">
         {title}
       </h2>
       {subtitle && (
-        <p className="apple-body mt-2 text-lg text-muted-foreground">
+        <p className="apple-body mt-2 text-lg text-muted-foreground text-center">
           {subtitle}
         </p>
       )}

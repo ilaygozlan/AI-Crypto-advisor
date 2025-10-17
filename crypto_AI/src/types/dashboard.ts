@@ -41,15 +41,13 @@ export interface AIInsight {
 
 export interface MemeItem {
   id: string
+  subreddit: string
   title: string
-  imageUrl: string
-  caption: string
-  source: string
-  votes: {
-    up: number
-    down: number
-  }
-  userVote?: 'up' | 'down'
+  score: number
+  num_comments: number
+  permalink: string
+  source_url: string
+  created_utc: string
 }
 
 export interface VoteRequest {

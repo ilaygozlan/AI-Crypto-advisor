@@ -39,6 +39,10 @@ const PORT = process.env.PORT || 3000;
 
 (async () => {
   await initDb(); // ensure tables exist
+
+  // start the hourly fetcher
+  startMemesCron();
+  
   app.listen(PORT, () => {
     console.log(`✅ Server running on http://localhost:${PORT}`);
   });
