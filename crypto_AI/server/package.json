@@ -19,6 +19,13 @@
     "express-rate-limit": "^8.1.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "node-cron": "^4.2.1",
+    "node-fetch": "^3.3.2",
+    "pg": "^8.16.3",
+    "snoowrap": "^1.23.0"
+  },
+  "devDependencies": {
+    "reddit-oauth-helper": "^0.3.2"
   }
 }

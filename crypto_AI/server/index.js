@@ -7,7 +7,8 @@ import { initDb } from './DB.js';
 import authRoutes from './routes/auth.js';
 import meRoutes from './routes/me.js';
 import insightsRouter from './routes/insights.js';
-
+import memesRouter from './routes/memes.js';
+import { startMemesCron } from './services/memes.service.js';
 
 const app = express();
 
@@ -30,6 +31,8 @@ app.use('/', meRoutes);
 // AI
 app.use('/api/insights', insightsRouter);
 
+// Memes API
+app.use('/api/memes', memesRouter);
 
 // start
 const PORT = process.env.PORT || 3000;
@@ -40,3 +43,6 @@ const PORT = process.env.PORT || 3000;
     console.log(`✅ Server running on http://localhost:${PORT}`);
   });
 })();
+
+
+

@@ -105,10 +105,26 @@ await pool.query(`CREATE EXTENSION IF NOT EXISTS pgcrypto;`);
     ON public.insights(generated_at DESC);
   `);
 
-  await pool.query(`
-    DELETE FROM insights
-    WHERE user_id = 'ed583ad1-0e0d-4a9b-9a6e-6557abbefbec'
-      AND date_key = CURRENT_DATE;
-  `);
+
+  await pool.query(`CREATE TABLE IF NOT EXISTS memes (
+  id           TEXT PRIMARY KEY,         -- redditId
+  subreddit    TEXT NOT NULL,
+  title        TEXT NOT NULL,
+  score        INTEGER NOT NULL DEFAULT 0,
+  num_comments INTEGER NOT NULL DEFAULT 0,
+  permalink    TEXT NOT NULL,
+  source_url   TEXT NOT NULL,            -- direct image if available
+  cdn_url      TEXT,                     -- optional if you later mirror to S3
+  is_nsfw      BOOLEAN NOT NULL DEFAULT FALSE,
+  flair        TEXT,
+  author_name  TEXT,
+  created_utc  TIMESTAMPTZ NOT NULL,
+  fetched_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);`);
+
+  await pool.query(`CREATE INDEX IF NOT EXISTS idx_memes_created   ON memes (created_utc DESC);`);
+  await pool.query(`CREATE INDEX IF NOT EXISTS idx_memes_subreddit ON memes (subreddit, created_utc DESC);`);
+
+
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_refresh_user ON refresh_tokens(user_id);`);
 }
