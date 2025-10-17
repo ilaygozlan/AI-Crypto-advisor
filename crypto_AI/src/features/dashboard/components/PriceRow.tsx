@@ -9,12 +9,12 @@ export interface PriceData {
   symbol: string;
   name: string;
   image: string;
-  current_price: number;
-  market_cap: number;
-  market_cap_rank: number;
-  price_change_percentage_1h: number;
-  price_change_percentage_24h: number;
-  price_change_percentage_7d: number;
+  current_price: number | null;
+  market_cap: number | null;
+  market_cap_rank: number | null;
+  price_change_percentage_1h: number | null;
+  price_change_percentage_24h: number | null;
+  price_change_percentage_7d: number | null;
 }
 
 interface PriceRowProps {
@@ -48,21 +48,24 @@ export function PriceRow({
     onVote?.(coin.id, reaction)
   }
 
-  const formatPrice = (price: number) => {
+  const formatPrice = (price: number | null | undefined) => {
+    if (price == null) return '$0.00'
     if (price < 0.01) return `$${price.toFixed(6)}`
     if (price < 1) return `$${price.toFixed(4)}`
     if (price < 100) return `$${price.toFixed(2)}`
     return `$${price.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
   }
 
-  const formatMarketCap = (marketCap: number) => {
+  const formatMarketCap = (marketCap: number | null | undefined) => {
+    if (marketCap == null) return '$0'
     if (marketCap >= 1e12) return `$${(marketCap / 1e12).toFixed(2)}T`
     if (marketCap >= 1e9) return `$${(marketCap / 1e9).toFixed(2)}B`
     if (marketCap >= 1e6) return `$${(marketCap / 1e6).toFixed(2)}M`
     return `$${marketCap.toLocaleString()}`
   }
 
-  const formatPercentage = (percentage: number) => {
+  const formatPercentage = (percentage: number | null | undefined) => {
+    if (percentage == null) return '+0.00%'
     const sign = percentage >= 0 ? '+' : ''
     return `${sign}${percentage.toFixed(2)}%`
   }
@@ -118,10 +121,10 @@ export function PriceRow({
 
         {/* Right: Changes */}
         <div className="text-right">
-          <div className={`flex items-center justify-end space-x-1 ${getChangeColor(coin.price_change_percentage_24h)}`}>
-            {getChangeIcon(coin.price_change_percentage_24h)}
+          <div className={`flex items-center justify-end space-x-1 ${getChangeColor(coin.price_change_percentage_24h || 0)}`}>
+            {getChangeIcon(coin.price_change_percentage_24h || 0)}
             <span className="font-medium">
-              {formatPercentage(coin.price_change_percentage_24h)}
+              {formatPercentage(coin.price_change_percentage_24h || 0)}
             </span>
           </div>
           <div className="text-sm text-slate-600 dark:text-slate-400">
@@ -191,20 +194,20 @@ export function PriceRow({
           <div className="border-t border-slate-200 dark:border-slate-700 pt-4">
             <div className="grid grid-cols-3 gap-4 mb-4">
               <div className="text-center">
-                <div className={`text-sm font-medium ${getChangeColor(coin.price_change_percentage_1h)}`}>
-                  {formatPercentage(coin.price_change_percentage_1h)}
+                <div className={`text-sm font-medium ${getChangeColor(coin.price_change_percentage_1h || 0)}`}>
+                  {formatPercentage(coin.price_change_percentage_1h || 0)}
                 </div>
                 <div className="text-xs text-slate-600 dark:text-slate-400">1h</div>
               </div>
               <div className="text-center">
-                <div className={`text-sm font-medium ${getChangeColor(coin.price_change_percentage_24h)}`}>
-                  {formatPercentage(coin.price_change_percentage_24h)}
+                <div className={`text-sm font-medium ${getChangeColor(coin.price_change_percentage_24h || 0)}`}>
+                  {formatPercentage(coin.price_change_percentage_24h || 0)}
                 </div>
                 <div className="text-xs text-slate-600 dark:text-slate-400">24h</div>
               </div>
               <div className="text-center">
-                <div className={`text-sm font-medium ${getChangeColor(coin.price_change_percentage_7d)}`}>
-                  {formatPercentage(coin.price_change_percentage_7d)}
+                <div className={`text-sm font-medium ${getChangeColor(coin.price_change_percentage_7d || 0)}`}>
+                  {formatPercentage(coin.price_change_percentage_7d || 0)}
                 </div>
                 <div className="text-xs text-slate-600 dark:text-slate-400">7d</div>
               </div>

@@ -81,7 +81,7 @@ export function PricesSection() {
                   isPositive ? 'text-green-600' : 'text-red-600'
                 }`}>
                   <TrendIcon className="h-3 w-3 mr-1" />
-                  {Math.abs(price.priceChangePercentage24h).toFixed(2)}%
+                  {Math.abs(price.priceChangePercentage24h || 0).toFixed(2)}%
                 </div>
               </div>
             </div>

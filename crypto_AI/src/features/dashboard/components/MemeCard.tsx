@@ -86,14 +86,16 @@ export function MemeCard({ meme, onVote }: MemeCardProps) {
     handleVote(newReaction)
   }
 
-  const formatScore = (score: number) => {
+  const formatScore = (score: number | null | undefined) => {
+    if (score == null) return '0'
     if (score >= 1000) {
       return `${(score / 1000).toFixed(1)}k`
     }
     return score.toString()
   }
 
-  const formatComments = (comments: number) => {
+  const formatComments = (comments: number | null | undefined) => {
+    if (comments == null) return '0'
     if (comments >= 1000) {
       return `${(comments / 1000).toFixed(1)}k`
     }

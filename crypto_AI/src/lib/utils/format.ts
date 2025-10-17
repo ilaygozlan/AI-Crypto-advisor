@@ -7,7 +7,8 @@ export function formatCurrency(amount: number, currency = 'USD'): string {
   }).format(amount)
 }
 
-export function formatPercentage(value: number, decimals = 2): string {
+export function formatPercentage(value: number | null | undefined, decimals = 2): string {
+  if (value == null) return '+0.00%'
   return `${value >= 0 ? '+' : ''}${value.toFixed(decimals)}%`
 }
 

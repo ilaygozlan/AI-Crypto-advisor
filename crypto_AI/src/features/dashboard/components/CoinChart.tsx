@@ -124,10 +124,10 @@ export function CoinChart({ coinId, days = 7, height = 120 }: CoinChartProps) {
         
         {/* Price labels */}
         <div className="absolute top-0 left-0 text-xs text-slate-600 dark:text-slate-400">
-          ${maxPrice.toFixed(2)}
+          ${(maxPrice || 0).toFixed(2)}
         </div>
         <div className="absolute bottom-0 left-0 text-xs text-slate-600 dark:text-slate-400">
-          ${minPrice.toFixed(2)}
+          ${(minPrice || 0).toFixed(2)}
         </div>
       </div>
     </div>

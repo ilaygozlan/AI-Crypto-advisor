@@ -39,11 +39,7 @@ export async function insertInsight(n) {
   const content_json = safeJson(n.content_json);
   const sources = safeJsonArray(n.sources);
 
-  // (Optional) Quick sanity log during debugging:
-  // console.log('DEBUG types:', {
-  //   cjType: typeof content_json, cjIsArray: Array.isArray(content_json),
-  //   srcIsArray: Array.isArray(sources), firstSrcType: sources[0] && typeof sources[0]
-  // });
+
 
   const q = `
     INSERT INTO insights
