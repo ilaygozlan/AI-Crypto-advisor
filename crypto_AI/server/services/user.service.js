@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { pool } from '../DB.js';
 import { newId } from '../utils/crypto.js';
 

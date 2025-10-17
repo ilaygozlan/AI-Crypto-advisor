@@ -1,4 +1,15 @@
 import 'dotenv/config';
+import { config } from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables from parent directory
+config({ path: path.join(__dirname, '..', '.env') });
+config({ path: path.join(__dirname, '..', 'env.production') });
+config({ path: path.join(__dirname, '..', 'env.development') });
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -17,11 +28,17 @@ const app = express();
 // middlewares
 app.use(helmet());
 
+const allowedOrigins = [
+  'http://localhost:5173', // Local development
+  'https://crypto-ai-advisore.s3.us-east-1.amazonaws.com', // Production S3
+  process.env.FRONTEND_URL // Additional custom frontend URL if set
+].filter(Boolean); // Remove any undefined values
+
+console.log('🌐 CORS allowed origins:', allowedOrigins);
+console.log('🔧 FRONTEND_URL env var:', process.env.FRONTEND_URL);
+
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL ||
-    'https://crypto-ai-advisore.s3.us-east-1.amazonaws.com'
-  ],
+  origin: allowedOrigins,
   credentials: true
 }));
 
@@ -30,6 +47,16 @@ app.use(express.json());
 
 // basic health
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+
+// CORS test endpoint
+app.get('/cors-test', (_req, res) => {
+  res.json({ 
+    message: 'CORS is working!',
+    allowedOrigins: allowedOrigins,
+    frontendUrl: process.env.FRONTEND_URL,
+    timestamp: new Date().toISOString()
+  });
+});
 
 // routes
 app.use('/auth', authRoutes);
