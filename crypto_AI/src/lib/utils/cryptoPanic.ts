@@ -78,18 +78,14 @@ export function buildCryptoPanicUrl(
 
 // Get API token from environment
 function getApiToken(): string {
-  console.log('🔍 Environment variables check:', {
-    env: (import.meta as any).env,
-    token: (import.meta as any).env?.VITE_CRYPTOPANIC_TOKEN,
-    allEnvKeys: Object.keys((import.meta as any).env || {})
-  })
+  // Environment variables check
   
   const token = (import.meta as any).env?.VITE_CRYPTOPANIC_TOKEN || '3723635d4a6332021e486543490a5dfc19b5167a'
   if (!token) {
     console.error('❌ VITE_CRYPTOPANIC_TOKEN not found in environment variables')
     throw new Error('VITE_CRYPTOPANIC_TOKEN environment variable is required')
   }
-  console.log('✅ Using CryptoPanic token:', token.substring(0, 8) + '...')
+  console.log('✅ Using CryptoPanic token')
   return token
 }
 
@@ -110,7 +106,7 @@ export async function fetchCryptoPanicPosts(
     url: url.split('?')[0] // Log base URL without sensitive token
   })
   
-  console.log('🌐 Full URL (with token):', url)
+  console.log('🌐 Making API request to CryptoPanic')
   
   let response = await fetch(url, {
     signal,
@@ -123,7 +119,7 @@ export async function fetchCryptoPanicPosts(
     throw new Error(`CryptoPanic API error: ${response.status} ${response.statusText}`)
   }
   let data = await response.json()
-  console.log('🔍 CryptoPanic API Response:', data)
+  console.log('🔍 CryptoPanic API Response received')
 
   // If no results with specific assets, try without asset filter
   if (data.results.length === 0 && assets.length > 0) {

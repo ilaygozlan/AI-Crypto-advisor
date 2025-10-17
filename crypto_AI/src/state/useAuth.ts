@@ -37,7 +37,7 @@ export function useAuthController() {
           };
         }
       } catch (prefError) {
-        console.log('No preferences found for user');
+        // No preferences found for user
       }
       
       setUser(userData);
@@ -60,7 +60,7 @@ export function useAuthController() {
             };
           }
         } catch (prefError) {
-          console.log('No preferences found for user');
+          // No preferences found for user
         }
         
         setUser(userData);
@@ -78,16 +78,16 @@ export function useAuthController() {
     const { user } = await apiLogin({ email, password });
     const userData = user as User;
     
-    console.log('Login successful, user data:', userData);
+    console.log('Login successful');
     
     // Fetch user preferences
     try {
       const userDataResponse = await getMyData();
-      console.log('User preferences response:', userDataResponse);
+      console.log('User preferences loaded');
       
       if (userDataResponse.data && userDataResponse.data.length > 0) {
         const latestData = userDataResponse.data[0];
-        console.log('Latest user data:', latestData);
+        console.log('User preferences updated');
         
         userData.preferences = {
           investorType: latestData.investorType,
@@ -96,12 +96,12 @@ export function useAuthController() {
           completedAt: latestData.completedAt
         };
         
-        console.log('User data with preferences:', userData);
+        console.log('User data with preferences loaded');
       } else {
-        console.log('No user data found in response');
+        console.log('No user preferences found');
       }
     } catch (prefError) {
-      console.log('Error fetching user preferences:', prefError);
+      console.log('Error fetching user preferences');
       // If it's a 404, the user might not have preferences saved yet
       if (prefError instanceof Error && prefError.message.includes('404')) {
         console.log('User has no saved preferences yet');

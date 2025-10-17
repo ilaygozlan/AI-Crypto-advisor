@@ -28,7 +28,7 @@ function buildCryptoPanicUrl(params = {}) {
   urlParams.append('kind', kind);
   urlParams.append('public', isPublic);
   urlParams.append('regions', regions);
-  
+  console.log("url :" ,urlParams );
   if (currencies && currencies.length > 0) {
     urlParams.append('currencies', currencies.join(','));
   }
