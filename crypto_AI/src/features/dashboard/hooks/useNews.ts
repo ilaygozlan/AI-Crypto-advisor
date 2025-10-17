@@ -18,7 +18,7 @@ export function useNews() {
       const filter = user?.preferences?.investorType === 'Day Trader' ? 'hot' : 'important'
 
       // Fetch from our server API
-      console.log('📰 Fetching news with preferences:', { filter, assets })
+      console.log('📰 Fetching news with user preferences')
       const newsItems = await fetchNews({
         filter,
         currencies: assets.join(','),
@@ -44,7 +44,7 @@ export function useNews() {
       if (user?.id && transformedData.length > 0) {
         try {
           const newsIds = transformedData.map(item => item.id)
-          console.log('📰 Fetching user reactions for news items:', newsIds)
+          console.log('📰 Fetching user reactions for news items')
           const reactionsData = await newDashboardApi.getNewsReactions(newsIds.map(String))
           
           // Enrich news items with user reactions and vote counts
