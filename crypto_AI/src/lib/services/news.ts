@@ -38,56 +38,26 @@ export async function fetchNews(params: NewsParams = {}): Promise<NewsItem[]> {
     ...(params.important !== undefined ? { important: params.important } : {}),
   }).toString();
 
-  const BASE = import.meta.env.VITE_SERVER_URL ?? 'http://localhost:3000';
-  const res = await fetch(`${BASE}/api/news?${qs}`, {
-    credentials: 'include', // Include cookies for authentication
-    headers: {
-      'Accept': 'application/json',
-    }
-  });
+  // Import the authenticated request function
+  const { request } = await import('@/lib/api');
   
-  if (!res.ok) {
-    throw new Error(`News fetch failed: ${res.status} ${res.statusText}`);
-  }
-  
-  return res.json();
+  return request<NewsItem[]>(`/api/news?${qs}`);
 }
 
 /**
  * Refresh news manually (admin/debug endpoint)
  */
 export async function refreshNews(): Promise<{ ok: boolean; saved: number; errors: number }> {
-  const BASE = import.meta.env.VITE_SERVER_URL ?? 'http://localhost:3000';
-  const res = await fetch(`${BASE}/api/news/refresh`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Accept': 'application/json',
-    }
+  const { request } = await import('@/lib/api');
+  return request<{ ok: boolean; saved: number; errors: number }>('/api/news/refresh', {
+    method: 'POST'
   });
-  
-  if (!res.ok) {
-    throw new Error(`News refresh failed: ${res.status} ${res.statusText}`);
-  }
-  
-  return res.json();
 }
 
 /**
  * Check news service health
  */
 export async function checkNewsHealth(): Promise<{ status: string; timestamp: string; service: string }> {
-  const BASE = import.meta.env.VITE_SERVER_URL ?? 'http://localhost:3000';
-  const res = await fetch(`${BASE}/api/news/health`, {
-    credentials: 'include',
-    headers: {
-      'Accept': 'application/json',
-    }
-  });
-  
-  if (!res.ok) {
-    throw new Error(`News health check failed: ${res.status} ${res.statusText}`);
-  }
-  
-  return res.json();
+  const { request } = await import('@/lib/api');
+  return request<{ status: string; timestamp: string; service: string }>('/api/news/health');
 }
