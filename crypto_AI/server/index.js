@@ -30,7 +30,7 @@ app.use(helmet());
 
 const allowedOrigins = [
   'http://localhost:5173', // Local development
-  'https://crypto-ai-advisore.s3.us-east-1.amazonaws.com', // Production S3
+  'http://crypto-ai-advisore.s3-website-us-east-1.amazonaws.com', // Production S3
   process.env.FRONTEND_URL // Additional custom frontend URL if set
 ].filter(Boolean); // Remove any undefined values
 
