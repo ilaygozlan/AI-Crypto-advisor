@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { newDashboardApi } from '@/lib/api/newEndpoints'
-import { fetchNews } from '@/lib/services/news'
 import { useAuth } from '@/contexts/AuthContext'
+import { transformStaticNewsData } from '@/data/staticNews'
 import type { NewsItem } from '@/types/dashboard'
 
 export function useNews() {
@@ -10,26 +10,15 @@ export function useNews() {
   return useQuery({
     queryKey: ['news', user?.id],
     queryFn: async () => {
-      // Get user preferences from auth context
-      const assets = user?.preferences?.selectedAssets?.length && user.preferences.selectedAssets.length > 0 
-        ? user.preferences.selectedAssets 
-        : ['BTC', 'ETH', 'SOL'] // Default fallback assets
-
-      const filter = user?.preferences?.investorType === 'Day Trader' ? 'hot' : 'important'
-
-      // Fetch from our server API
-      console.log('📰 Fetching news with user preferences')
-      const newsItems = await fetchNews({
-        filter,
-        currencies: assets.join(','),
-        limit: '24'
-      })
+      // Use static news data instead of fetching from server
+      console.log('📰 Using static news data')
+      const newsItems = transformStaticNewsData()
       
       // Transform to app format - show all results
       const transformedData: NewsItem[] = newsItems.map(item => ({
         id: String(item.id),
         title: item.title,
-        summary: item.title, // Use title as summary since we don't have description
+        summary: item.description || item.title, // Use description as summary
         source: item.source || 'cryptopanic',
         url: item.url || '#',
         publishedAt: item.published_at,

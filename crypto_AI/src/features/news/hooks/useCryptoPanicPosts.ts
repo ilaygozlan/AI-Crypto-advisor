@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useRef } from 'react'
-import { fetchNews } from '@/lib/services/news'
+import { transformStaticNewsData } from '@/data/staticNews'
 import { 
   getPreferences, 
   setPreferences, 
@@ -68,30 +68,26 @@ export function useCryptoPanicPosts() {
       // Note: signal is available from the query function parameter
 
       try {
-        // Use our new server-side API
-        const newsItems = await fetchNews({
-          filter: preferences.filter,
-          currencies: preferences.assets.join(','),
-          limit: '24'
-        })
+        // Use static news data instead of server API
+        const newsItems = transformStaticNewsData()
 
-        // Transform server response to match expected format
+        // Transform static data to match expected format
         const transformedPosts = newsItems.map(item => ({
           id: item.id,
           title: item.title,
           url: item.url,
           published_at: item.published_at,
-          created_at: item.published_at, // Use published_at as fallback
+          created_at: item.created_at,
           domain: new URL(item.url).hostname,
           slug: item.id,
           kind: 'news',
-          description: item.title,
+          description: item.description || item.title,
           source: {
             title: item.source || 'cryptopanic',
             region: 'en',
             domain: new URL(item.url).hostname
           },
-          currencies: item.currencies?.map(code => ({
+          currencies: (item.currencies as string[])?.map(code => ({
             code,
             title: code,
             slug: code.toLowerCase(),
@@ -109,7 +105,7 @@ export function useCryptoPanicPosts() {
             comments: 0
           },
           metadata: {
-            description: item.title
+            description: item.description || item.title
           }
         }))
 

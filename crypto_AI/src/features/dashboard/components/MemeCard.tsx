@@ -56,7 +56,7 @@ export function MemeCard({ meme, onVote }: MemeCardProps) {
       onVote?.(meme.id, reaction)
 
       // Send reaction to server
-      const responseData = await setReaction(meme, reaction)
+      await setReaction(meme, reaction)
       
       console.log(`✅ Successfully ${action} meme - Reaction saved to database`)
       console.log(`📊 Reaction change: ${previousReaction || 'none'} → ${reaction || 'none'}`)

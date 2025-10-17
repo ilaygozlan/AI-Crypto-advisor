@@ -71,7 +71,7 @@ export default function AiInsightPanel({ autoFetch = false }: AiInsightPanelProp
     
     try {
       // Send reaction to server
-      const responseData = await setInsightReaction(insight, reaction)
+      await setInsightReaction(insight, reaction)
       
       console.log(`✅ Successfully ${action} AI insight - Reaction saved to database`)
       console.log(`📊 Reaction change: ${previousReaction || 'none'} → ${reaction || 'none'}`)
