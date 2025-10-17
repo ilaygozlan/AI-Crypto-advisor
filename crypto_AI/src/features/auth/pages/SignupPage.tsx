@@ -1,10 +1,8 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { EnhancedSignupForm } from '../components/EnhancedSignupForm'
-import { useAuthLockout } from '@/hooks/useAuthLockout'
 
 export function SignupPage() {
-  const { lockout, isDisabled, formattedTime } = useAuthLockout()
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -27,25 +25,6 @@ export function SignupPage() {
             </div>
 
             <EnhancedSignupForm />
-
-            {/* Signup attempts counter */}
-            {lockout.count > 0 && (
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground">
-                  {lockout.count} / 3 signup attempts used
-                </p>
-                {isDisabled && (
-                  <p className="text-xs text-destructive mt-1">
-                    Locked for: {formattedTime}
-                  </p>
-                )}
-                {!isDisabled && lockout.count >= 3 && (
-                  <p className="text-xs text-green-600 mt-1">
-                    You can now try signing up again
-                  </p>
-                )}
-              </div>
-            )}
 
             <div className="text-center">
               <p className="text-sm text-muted-foreground">

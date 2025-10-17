@@ -5,7 +5,7 @@ import { createUser, findUserByEmail, verifyPassword } from '../services/user.se
 import { signAccessToken, generateRefreshToken } from '../services/token.service.js';
 import { sha256Base64 } from '../utils/crypto.js';
 import { saveUserData } from '../services/userData.service.js';
-import { authLimiter } from '../security/rateLimit.js';
+import { loginLimiter, signupLimiter } from '../security/rateLimit.js';
 
 const router = express.Router();
 
@@ -24,7 +24,7 @@ function setRefreshCookie(res, token, maxAgeMs) {
 }
 
 // POST /auth/signup
-router.post('/signup', authLimiter, async (req, res) => {
+router.post('/signup', signupLimiter, async (req, res) => {
   try {
     const { email, password, firstName, lastName } = req.body || {};
     if (!email || !password) return res.status(400).json({ error: 'email and password are required' });
@@ -75,7 +75,7 @@ if (req.body.data) {
 });
 
 // POST /auth/login
-router.post('/login', authLimiter, async (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
   try {
     const { email, password } = req.body || {};
     if (!email || !password) return res.status(400).json({ error: 'email and password are required' });
