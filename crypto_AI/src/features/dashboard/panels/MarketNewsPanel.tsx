@@ -70,7 +70,7 @@ export default function MarketNewsPanel() {
   }
   const sortedNews = sortNewsByDate(news)
 
-console.log(news)
+
 return (
   <div className="space-y-6">
     <div className="flex items-center gap-3">

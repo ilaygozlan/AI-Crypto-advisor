@@ -15,6 +15,11 @@ export const newDashboardApi = {
   getAIInsight: () =>
     request<AIInsight>('/dashboard/ai-insight'),
   
+  getNewsReactions: (newsIds: string[]) =>
+    request<{ userReactions: Record<string, 'up' | 'down' | null>, voteCounts: Record<string, { up: number, down: number }> }>('/dashboard/news/reactions', {
+      method: 'POST',
+      body: JSON.stringify({ newsIds })
+    }),
   
   vote: (data: VoteRequest) =>
     request<VoteResponse>('/dashboard/vote', {

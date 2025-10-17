@@ -10,6 +10,7 @@ import insightsRouter from './routes/insights.js';
 import memesRouter from './routes/memes.js';
 import { startMemesCron } from './services/memes.service.js';
 import reactionsRouter from './routes/reactions.js';
+import dashboardRouter from './routes/dashboard.js';
 
 const app = express();
 
@@ -37,6 +38,9 @@ app.use('/api/memes', memesRouter);
 
 // Reactions API
 app.use('/api/reactions', reactionsRouter);
+
+// Dashboard API
+app.use('/dashboard', dashboardRouter);
 
 // start
 const PORT = process.env.PORT || 3000;

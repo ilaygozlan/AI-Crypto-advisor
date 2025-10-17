@@ -54,7 +54,7 @@ export interface MemeItem {
 export interface VoteRequest {
   section: 'news' | 'prices' | 'ai' | 'meme'
   itemId: string
-  vote: 'up' | 'down'
+  vote: 'up' | 'down' | null
 }
 
 export interface VoteResponse {

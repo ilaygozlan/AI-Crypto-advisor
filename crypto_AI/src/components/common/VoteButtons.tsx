@@ -7,7 +7,7 @@ interface VoteButtonsProps {
   upVotes: number
   downVotes: number
   userVote?: 'up' | 'down'
-  onVote: (vote: 'up' | 'down') => void
+  onVote: (vote: 'up' | 'down' | null) => void
   disabled?: boolean
   className?: string
 }
@@ -32,7 +32,7 @@ export function VoteButtons({
                 'h-8 w-8 focus-ring',
                 userVote === 'up' && 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'
               )}
-              onClick={() => onVote('up')}
+              onClick={() => onVote(userVote === 'up' ? null : 'up')}
               disabled={disabled}
               aria-label={`Vote up (${upVotes} votes)`}
             >
@@ -53,7 +53,7 @@ export function VoteButtons({
                 'h-8 w-8 focus-ring',
                 userVote === 'down' && 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400'
               )}
-              onClick={() => onVote('down')}
+              onClick={() => onVote(userVote === 'down' ? null : 'down')}
               disabled={disabled}
               aria-label={`Vote down (${downVotes} votes)`}
             >
