@@ -70,8 +70,7 @@ export async function signup(data: {
     completedAt: string; // ISO string
   };
 }) {
-  console.log('Signup data:', data)
-  console.log('Signup data type:', typeof data)
+  console.log('Signup data being processed')
   const res = await request<{ accessToken: string; user: any }>(
     '/auth/signup',
     { method: 'POST', body: JSON.stringify(data) }

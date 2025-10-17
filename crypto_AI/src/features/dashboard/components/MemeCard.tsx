@@ -18,12 +18,7 @@ async function setReaction(meme: MemeItem, next: 'like' | 'dislike' | null) {
     } : undefined
   };
   
-  console.log(`📤 Sending reaction to server:`, {
-    memeId: meme.id,
-    memeTitle: meme.title,
-    reaction: next ?? 'none',
-    hasContent: !!body.content
-  });
+  console.log(`📤 Sending reaction to server`);
   
   const response = await request('/api/reactions', {
     method: 'POST',
@@ -54,7 +49,7 @@ export function MemeCard({ meme, onVote }: MemeCardProps) {
     const previousReaction = userReaction
     const action = reaction === 'like' ? 'liked' : reaction === 'dislike' ? 'disliked' : 'removed reaction from'
     
-    console.log(`🔄 Attempting to ${action} meme: "${meme.title}" (ID: ${meme.id})`)
+    console.log(`🔄 Attempting to ${action} meme`)
     
     try {
       // Optimistic update
@@ -63,11 +58,11 @@ export function MemeCard({ meme, onVote }: MemeCardProps) {
       // Send reaction to server
       const responseData = await setReaction(meme, reaction)
       
-      console.log(`✅ Successfully ${action} meme: "${meme.title}" - Reaction saved to database`)
+      console.log(`✅ Successfully ${action} meme - Reaction saved to database`)
       console.log(`📊 Reaction change: ${previousReaction || 'none'} → ${reaction || 'none'}`)
-      console.log(`📋 Server response:`, responseData)
+      console.log(`📋 Server response received`)
     } catch (error) {
-      console.error(`❌ Failed to ${action} meme: "${meme.title}"`, error)
+      console.error(`❌ Failed to ${action} meme`, error)
       console.log(`🔄 Reverting reaction back to: ${previousReaction || 'none'}`)
       // Revert optimistic update on error
       onVote?.(meme.id, userReaction ?? null)

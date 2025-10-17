@@ -153,7 +153,7 @@ export function EnhancedSignupForm() {
         }
       }
       
-      console.log('Signup data being sent:', signupData)
+      console.log('Signup data being sent')
       await doSignup(signupData)
       
       // Clear form data after successful signup

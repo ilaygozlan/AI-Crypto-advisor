@@ -21,12 +21,7 @@ async function setInsightReaction(insight: TodayInsight, next: 'like' | 'dislike
     } : undefined
   };
   
-  console.log(`📤 Sending AI insight reaction to server:`, {
-    insightId: insight.id,
-    insightTitle: insight.title,
-    reaction: next ?? 'none',
-    hasContent: !!body.content
-  });
+  console.log(`📤 Sending AI insight reaction to server`);
   
   const response = await request('/api/reactions', {
     method: 'POST',
@@ -72,20 +67,20 @@ export default function AiInsightPanel({ autoFetch = false }: AiInsightPanelProp
     const previousReaction = userReaction
     const action = reaction === 'like' ? 'liked' : reaction === 'dislike' ? 'disliked' : 'removed reaction from'
     
-    console.log(`🔄 Attempting to ${action} AI insight: "${insight.title}" (ID: ${insight.id})`)
+    console.log(`🔄 Attempting to ${action} AI insight`)
     
     try {
       // Send reaction to server
       const responseData = await setInsightReaction(insight, reaction)
       
-      console.log(`✅ Successfully ${action} AI insight: "${insight.title}" - Reaction saved to database`)
+      console.log(`✅ Successfully ${action} AI insight - Reaction saved to database`)
       console.log(`📊 Reaction change: ${previousReaction || 'none'} → ${reaction || 'none'}`)
-      console.log(`📋 Server response:`, responseData)
+      console.log(`📋 Server response received`)
       
       // Refetch the insight to get updated voting data
       refetch()
     } catch (error) {
-      console.error(`❌ Failed to ${action} AI insight: "${insight.title}"`, error)
+      console.error(`❌ Failed to ${action} AI insight`, error)
     } finally {
       setIsVoting(false)
     }

@@ -25,7 +25,7 @@ export function useChart({
     queryKey: ['chart', coinId, vsCurrency, days],
     queryFn: async (): Promise<ChartData[]> => {
       try {
-        console.log('📈 Fetching chart data for:', { coinId, vsCurrency, days })
+        console.log('📈 Fetching chart data')
         
         const chartData = await getChart(coinId, vsCurrency, days)
         
@@ -37,10 +37,7 @@ export function useChart({
           volume: chartData.total_volumes[index]?.[1] || 0,
         }))
         
-        console.log('📈 Successfully fetched chart data:', { 
-          coinId, 
-          dataPoints: transformedData.length 
-        })
+        console.log('📈 Successfully fetched chart data')
         
         return transformedData
       } catch (error) {

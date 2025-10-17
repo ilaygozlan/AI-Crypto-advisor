@@ -82,7 +82,7 @@ export default function CoinPricesPanel() {
             coin={price} 
             showChart={true}
             onVote={(coinId, voteType) => {
-              console.log(`Vote ${voteType} for coin ${coinId}`)
+              console.log(`Vote ${voteType} for coin`)
               // The PriceRow component now handles localStorage interaction
             }}
           />
