@@ -2,7 +2,7 @@ import 'dotenv/config';
 import cron from 'node-cron';
 import { pgPool } from '../memeDB/memeDB.js';
 
-const CRYPTOPANIC_BASE_URL = 'https://cryptopanic.com/api/v1';
+const CRYPTOPANIC_BASE_URL = 'https://cryptopanic.com/api/developer/v2';
 const CACHE_TTL_MS = 60 * 1000; // 60 seconds
 const DEFAULT_CURRENCIES = ['BTC', 'ETH', 'SOL']; // More reliable default
 
