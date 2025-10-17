@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { newDashboardApi } from '@/lib/api/newEndpoints'
 import { fetchCryptoPanicPosts } from '@/lib/utils/cryptoPanic'
 import { useAuth } from '@/contexts/AuthContext'
+import type { NewsItem } from '@/types/dashboard'
 
 export function useNews() {
   const { user } = useAuth()
@@ -10,7 +11,7 @@ export function useNews() {
     queryKey: ['news', user?.id],
     queryFn: async () => {
       // Get user preferences from auth context
-      const assets = user?.preferences?.selectedAssets?.length > 0 
+      const assets = user?.preferences?.selectedAssets?.length && user.preferences.selectedAssets.length > 0 
         ? user.preferences.selectedAssets 
         : ['BTC', 'ETH', 'SOL'] // Default fallback assets
 
@@ -21,22 +22,18 @@ export function useNews() {
       const response = await fetchCryptoPanicPosts(filter, assets, 1)
       
       // Transform to app format - show all results
-      const transformedData = response.results.map(item => ({
-        id: item.id,
+      const transformedData: NewsItem[] = response.results.map(item => ({
+        id: String(item.id),
         title: item.title,
         summary: item.description || item.title,
-        content: item.description || item.title,
         source: item.source?.title || 'Unknown',
         url: item.url || '#',
         publishedAt: item.published_at,
-        sentiment: (item.votes?.positive || 0) > (item.votes?.negative || 0) ? 'positive' : 
-                  (item.votes?.negative || 0) > (item.votes?.positive || 0) ? 'negative' : 'neutral',
         votes: {
           up: (item.votes?.positive || 0) + (item.votes?.liked || 0),
           down: (item.votes?.negative || 0) + (item.votes?.disliked || 0)
         },
         userVote: null, // Will be populated below
-        currencies: item.currencies?.map(c => c.code) || []
       }))
       
       // If user is logged in, fetch their reactions for these news items
@@ -44,7 +41,7 @@ export function useNews() {
         try {
           const newsIds = transformedData.map(item => item.id)
           console.log('📰 Fetching user reactions for news items:', newsIds)
-          const reactionsData = await newDashboardApi.getNewsReactions(newsIds)
+          const reactionsData = await newDashboardApi.getNewsReactions(newsIds.map(String))
           
           // Enrich news items with user reactions and vote counts
           transformedData.forEach(item => {

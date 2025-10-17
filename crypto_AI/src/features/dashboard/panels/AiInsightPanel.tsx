@@ -1,7 +1,7 @@
 import { Skeleton } from '@/components/common/Skeleton'
 import { BrainLoader } from '@/components/common/BrainLoader'
 import { useTodayInsight } from '../hooks/useTodayInsight'
-import { Brain, Clock, RefreshCw, TrendingUp, Compass, ExternalLink, ThumbsUp, ThumbsDown } from 'lucide-react'
+import { Brain, RefreshCw, TrendingUp, Compass, ExternalLink, ThumbsUp, ThumbsDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
 import { request } from '@/lib/api'
@@ -180,7 +180,7 @@ export default function AiInsightPanel({ autoFetch = false }: AiInsightPanelProp
     )
   }
 
-  const { content_json } = insight
+  const { content_json } = insight!
 
   return (
     <div className="space-y-6">
@@ -226,7 +226,7 @@ export default function AiInsightPanel({ autoFetch = false }: AiInsightPanelProp
               Key Points
             </h4>
             <ul className="space-y-2">
-              {content_json.detail_bullets.map((bullet, index) => (
+              {content_json.detail_bullets.map((bullet: string, index: number) => (
                 <li key={index} className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
                   <span className="text-slate-700 dark:text-slate-300 leading-relaxed">{bullet}</span>
@@ -244,7 +244,7 @@ export default function AiInsightPanel({ autoFetch = false }: AiInsightPanelProp
               Actionable Steps
             </h4>
             <div className="grid gap-4 md:grid-cols-2">
-              {content_json.actionable.map((action, index) => (
+              {content_json.actionable.map((action: any, index: number) => (
                 <a
                   key={index}
                   href={action.url}
@@ -277,7 +277,7 @@ export default function AiInsightPanel({ autoFetch = false }: AiInsightPanelProp
               Sources
             </h4>
             <div className="flex flex-wrap gap-2">
-              {content_json.sources.map((source, index) => (
+              {content_json.sources.map((source: any, index: number) => (
                 <a
                   key={index}
                   href={source.url}
@@ -297,7 +297,7 @@ export default function AiInsightPanel({ autoFetch = false }: AiInsightPanelProp
         <div className="border-t border-slate-200 dark:border-slate-700 pt-4">
           <div className="flex items-center justify-between">
             <div className="text-xs text-slate-500 dark:text-slate-400">
-              Generated on {new Date(insight.generated_at).toLocaleDateString()} at {new Date(insight.generated_at).toLocaleTimeString()}
+              Generated on {new Date(insight!.generated_at).toLocaleDateString()} at {new Date(insight!.generated_at).toLocaleTimeString()}
             </div>
             
             {/* Voting buttons */}

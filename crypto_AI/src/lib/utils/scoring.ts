@@ -21,10 +21,10 @@ function calculateTimeDecay(publishedAt: string): number {
 
 // Calculate popularity boost from votes
 function calculatePopularityBoost(votes: CryptoPanicPost['votes']): number {
-  const total = votes.positive + votes.negative
+  const total = (votes?.positive ?? 0) + (votes?.negative ?? 0)
   if (total === 0) return 0
   
-  const ratio = votes.positive / total
+  const ratio = (votes?.positive ?? 0) / total
   // Small boost for positive sentiment
   return (ratio - 0.5) * 2
 }
@@ -61,7 +61,7 @@ export function calculatePersonalizationScore(
   }
 
   // Source preference bonus
-  const sourceKey = post.source.title.toLowerCase().replace(/\s+/g, '_')
+  const sourceKey = post.source?.title?.toLowerCase().replace(/\s+/g, '_') ?? 'unknown'
   const sourceWeight = weights.sources[sourceKey] || 0
   score += sourceWeight * 3
 
@@ -87,7 +87,7 @@ export function calculatePersonalizationScore(
   }
 
   // Important news bonus for conservative investors
-  if (investorType === 'conservative' && post.votes.important > 0) {
+  if (investorType === 'conservative' && (post.votes?.important ?? 0) > 0) {
     score += 5
   }
 
@@ -125,7 +125,7 @@ export function updateWeights(
   }
 
   // Update source weight
-  const sourceKey = post.source.title.toLowerCase().replace(/\s+/g, '_')
+  const sourceKey = post.source?.title?.toLowerCase().replace(/\s+/g, '_') ?? 'unknown'
   newWeights.sources[sourceKey] = (newWeights.sources[sourceKey] || 0) + weightChange
 
   // Update tag weights

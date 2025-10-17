@@ -114,7 +114,7 @@ export function useCryptoPanicPosts() {
       postId: string
       reaction: ReactionType | null 
     }) => {
-      const post = postsQuery.data?.find(p => p.id === postId)
+      const post = postsQuery.data?.find(p => String(p.id) === postId)
       if (!post) throw new Error('Post not found')
 
       const previousReaction = reactions[postId] || null

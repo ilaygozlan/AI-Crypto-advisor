@@ -154,7 +154,7 @@ export function EnhancedSignupForm() {
       }
       
       console.log('Signup data being sent:', signupData)
-      const user = await doSignup(signupData)
+      await doSignup(signupData)
       
       // Clear form data after successful signup
       setFormData({

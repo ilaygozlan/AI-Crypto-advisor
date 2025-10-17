@@ -1,5 +1,4 @@
 import { Skeleton } from '@/components/common/Skeleton'
-import { VoteButtons } from '@/components/common/VoteButtons'
 import { usePrices } from '../hooks/usePrices'
 import { useVote } from '../hooks/useVote'
 import { PriceRow } from '../components/PriceRow'
@@ -7,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext'
 
 export default function CoinPricesPanel() {
   const { data: prices, isLoading, error } = usePrices()
-  const { mutate: vote } = useVote()
+  const { mutate: _vote } = useVote()
   const { user } = useAuth()
 
   if (isLoading) {

@@ -1,5 +1,5 @@
 import { request } from '../api'
-import type { NewsItem, PriceData, AIInsight, MemeItem, VoteRequest, VoteResponse, TodayInsight } from '@/types/dashboard'
+import type { NewsItem, PriceData, AIInsight, VoteRequest, VoteResponse, TodayInsight } from '@/types/dashboard'
 
 /**
  * Dashboard API endpoints using the new fetch-based API client

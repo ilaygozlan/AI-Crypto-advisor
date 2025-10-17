@@ -9,7 +9,7 @@ export interface NewsItem {
     up: number
     down: number
   }
-  userVote?: 'up' | 'down'
+  userVote?: 'up' | 'down' | null
 }
 
 export interface PriceData {

@@ -9,7 +9,7 @@ export function PreferencesForm() {
   const assets = user?.preferences?.selectedAssets || []
   const investorType = user?.preferences?.investorType
   const contentTypes = user?.preferences?.selectedContentTypes || []
-  const completedAt = user?.preferences?.completedAt
+  // const _completedAt = user?.preferences?.completedAt
 
   // Helper function to format investor type display
   const formatInvestorType = (type: string | undefined) => {

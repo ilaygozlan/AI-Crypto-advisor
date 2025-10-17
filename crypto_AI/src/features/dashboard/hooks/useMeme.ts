@@ -47,7 +47,7 @@ export function useMeme({ limit = 24, sub }: UseMemeOptions = {}): UseMemeReturn
       const memes = await request<MemeItem[]>(`/api/memes?${params}`)
       
       // Debug: Log reactions received from server
-      const memesWithReactions = memes.filter(m => m.user_reaction).slice(0, 3)
+      // const _memesWithReactions = memes.filter(m => m.user_reaction).slice(0, 3)
       
       if (append) {
         setData(prev => [...prev, ...memes])

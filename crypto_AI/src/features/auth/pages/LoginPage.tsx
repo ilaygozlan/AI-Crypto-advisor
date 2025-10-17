@@ -130,10 +130,12 @@ export function LoginPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <div className="h-64 w-64 mx-auto rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-8">
-              <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-4xl">🚀</span>
-              </div>
+            <div className="mb-8">
+              <img 
+                src="https://crypto-ai-photos.s3.us-east-1.amazonaws.com/ChatGPT+Image+Oct+17%2C+2025%2C+04_16_17+PM.png"
+                alt="AI-Powered Crypto Insights"
+                className="h-80 w-80 mx-auto object-contain rounded-full border-4 border-primary/20 shadow-lg"
+              />
             </div>
             <h2 className="apple-heading text-2xl font-semibold text-foreground mb-4">
               AI-Powered Crypto Insights

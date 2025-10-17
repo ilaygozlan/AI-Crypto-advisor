@@ -195,10 +195,10 @@ export function extractTags(post: CryptoPanicPost): string[] {
   }
   
   // Add source tag
-  tags.push(post.source.title.toLowerCase().replace(/\s+/g, '_'))
+  tags.push(post.source?.title?.toLowerCase().replace(/\s+/g, '_') ?? 'unknown')
   
   // Add region tag
-  if (post.source.region) {
+  if (post.source?.region) {
     tags.push(post.source.region.toLowerCase())
   }
   

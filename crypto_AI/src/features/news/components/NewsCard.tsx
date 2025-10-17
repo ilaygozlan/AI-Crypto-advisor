@@ -24,22 +24,22 @@ export function NewsCard({ post, onReaction, isReacting = false }: NewsCardProps
     try {
       // Toggle reaction if same, otherwise set new reaction
       const newReaction = post.userReaction === reaction ? null : reaction
-      await onReaction(post.id, newReaction)
+      await onReaction(String(post.id), newReaction)
     } finally {
       setIsOptimisticReacting(false)
     }
   }
 
-  const hostname = extractHostname(post.url)
+  const hostname = extractHostname(post.url ?? '')
   const publishedDate = formatPublishedDate(post.published_at)
   const tags = extractTags(post)
   const assets = post.currencies?.map(c => c.code) || []
 
   const getSentimentColor = () => {
-    const total = post.votes.positive + post.votes.negative
+    const total = (post.votes?.positive ?? 0) + (post.votes?.negative ?? 0)
     if (total === 0) return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
     
-    const positiveRatio = post.votes.positive / total
+    const positiveRatio = (post.votes?.positive ?? 0) / total
     if (positiveRatio > 0.6) return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
     if (positiveRatio < 0.4) return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
     return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
@@ -76,7 +76,7 @@ export function NewsCard({ post, onReaction, isReacting = false }: NewsCardProps
               aria-label={`Like ${post.title}`}
             >
               <ThumbsUp className="h-3 w-3" />
-              {post.votes.positive + post.votes.liked}
+              {(post.votes?.positive ?? 0) + (post.votes?.liked ?? 0)}
             </Button>
             
             <Button
@@ -88,7 +88,7 @@ export function NewsCard({ post, onReaction, isReacting = false }: NewsCardProps
               aria-label={`Dislike ${post.title}`}
             >
               <ThumbsDown className="h-3 w-3" />
-              {post.votes.negative + post.votes.disliked}
+              {(post.votes?.negative ?? 0) + (post.votes?.disliked ?? 0)}
             </Button>
           </div>
         </div>
@@ -134,13 +134,13 @@ export function NewsCard({ post, onReaction, isReacting = false }: NewsCardProps
             variant="secondary" 
             className={`${getSentimentColor()} text-xs`}
           >
-            {post.votes.positive + post.votes.negative > 0 
-              ? `${Math.round((post.votes.positive / (post.votes.positive + post.votes.negative)) * 100)}% positive`
+            {(post.votes?.positive ?? 0) + (post.votes?.negative ?? 0) > 0 
+              ? `${Math.round(((post.votes?.positive ?? 0) / ((post.votes?.positive ?? 0) + (post.votes?.negative ?? 0))) * 100)}% positive`
               : 'No votes'
             }
           </Badge>
           
-          {post.votes.important > 0 && (
+          {(post.votes?.important ?? 0) > 0 && (
             <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400 text-xs">
               Important
             </Badge>

@@ -70,7 +70,7 @@ export function MemeCard({ meme, onVote }: MemeCardProps) {
       console.error(`❌ Failed to ${action} meme: "${meme.title}"`, error)
       console.log(`🔄 Reverting reaction back to: ${previousReaction || 'none'}`)
       // Revert optimistic update on error
-      onVote?.(meme.id, userReaction)
+      onVote?.(meme.id, userReaction ?? null)
     } finally {
       setIsVoting(false)
     }

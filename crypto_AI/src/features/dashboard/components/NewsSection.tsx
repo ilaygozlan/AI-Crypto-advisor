@@ -70,10 +70,10 @@ export function NewsSection() {
               <VoteButtons
                 upVotes={newsItem.votes.up}
                 downVotes={newsItem.votes.down}
-                userVote={newsItem.userVote}
+                userVote={newsItem.userVote ?? undefined}
                 onVote={(voteType) => vote({ 
                   section: 'news', 
-                  itemId: newsItem.id, 
+                  itemId: String(newsItem.id), 
                   vote: voteType,
                   content: {
                     title: newsItem.title,
