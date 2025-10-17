@@ -57,7 +57,9 @@ crypto_AI/
 │   │   ├── auth.js                  # Authentication endpoints (login, signup, refresh, logout)
 │   │   ├── me.js                    # User data endpoints (/me, /me/data)
 │   │   ├── insights.js              # AI insights endpoints (/api/insights)
-│   │   └── memes.js                 # Memes API endpoints (/api/memes)
+│   │   ├── memes.js                 # Memes API endpoints (/api/memes)
+│   │   ├── dashboard.js             # Dashboard API endpoints (/dashboard/*)
+│   │   └── reactions.js             # User reactions API endpoints (/api/reactions)
 │   ├── services/                    # Business logic layer
 │   │   ├── user.service.js          # User CRUD operations
 │   │   ├── userData.service.js      # User preferences management
@@ -263,11 +265,14 @@ crypto_AI/
 
 | Endpoint | Method | Auth | Description |
 |----------|--------|------|-------------|
-| `/dashboard/news` | GET | Yes | Fetches personalized news feed |
-| `/dashboard/prices` | GET | Yes | Fetches user's selected crypto prices |
-| `/dashboard/ai-insight` | GET | Yes | Fetches AI-generated market insights |
-| `/dashboard/meme` | GET | Yes | Fetches daily crypto meme |
-| `/dashboard/vote` | POST | Yes | Submit vote for content (like/dislike) |
+| `/dashboard/news/reactions` | POST | Yes | Fetches user reactions for news items |
+| `/dashboard/vote` | POST | Yes | Submit vote for content (like/dislike) with rich metadata |
+
+### User Reactions API Endpoints
+
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/reactions` | POST | Yes | Save/update user reaction for any content type |
 
 ### AI Insights API Endpoints
 
@@ -312,7 +317,7 @@ Client Request → Express Middleware → Route Handler → Service Layer → Da
 
 #### 2. Database Integration
 - **PostgreSQL**: Primary database with connection pooling
-- **Tables**: `users`, `user_data`, `refresh_tokens`, `insights`, `memes`
+- **Tables**: `users`, `user_data`, `refresh_tokens`, `insights`, `memes`, `user_reactions`
 - **Connection Management**: Automatic connection pooling and error handling
 - **Migrations**: Database schema initialization on startup
 - **Dual Database Setup**: Separate connections for main app and memes data
@@ -428,10 +433,12 @@ Client Request → Express Middleware → Route Handler → Service Layer → Da
 ### Interactive Voting System
 - **Universal Voting**: Like/dislike functionality for all content types (news, prices, insights, memes)
 - **Optimistic Updates**: Immediate UI feedback with server synchronization
-- **Vote Persistence**: Votes saved to backend with user association
+- **Vote Persistence**: Votes saved to backend with user association and rich metadata
+- **Toggle Functionality**: Clicking the same vote removes it (like/dislike toggle)
 - **Visual Feedback**: Active states, vote counts, and hover effects
 - **Accessibility**: Keyboard navigation and screen reader support
 - **Real-time Sync**: Vote counts updated across all users in real-time
+- **Content Metadata**: Rich content information stored with each reaction for analytics
 
 ### Enhanced Authentication & Security
 - **Rate Limiting**: Login attempt limiting with progressive lockout (3 attempts/15min)
@@ -733,3 +740,104 @@ CREATE TABLE memes (
 - **Real-time Updates**: WebSocket integration for live data updates
 
 This architecture provides a solid foundation for a production-ready crypto advisor application with proper security, scalability, and maintainability. The current implementation includes all core features with room for future enhancements and scaling.
+
+## User Reactions Data Structure
+
+The application stores user reactions in the `user_reactions` table with rich metadata for each content type. Here are JSON examples of the data saved for each reaction type:
+
+### News Reactions
+```json
+{
+  "user_id": "631aaa82-1bdb-495a-b834-0cbf0340fed7",
+  "content_type": "news",
+  "external_id": "26168734",
+  "reaction": "like",
+  "content": {
+    "title": "Bitcoin Reaches New All-Time High",
+    "source": "CryptoNews",
+    "publishedAt": "2024-01-15T10:30:00Z",
+    "summary": "Bitcoin has reached a new all-time high of $100,000, driven by institutional adoption."
+  },
+  "created_at": "2024-01-15T10:35:00Z",
+  "updated_at": "2024-01-15T10:35:00Z"
+}
+```
+
+### Coin/Price Reactions
+```json
+{
+  "user_id": "631aaa82-1bdb-495a-b834-0cbf0340fed7",
+  "content_type": "coin",
+  "external_id": "bitcoin",
+  "reaction": "dislike",
+  "content": {
+    "symbol": "BTC",
+    "name": "Bitcoin",
+    "current_price": 45000.00,
+    "price_change_percentage_24h": -2.5
+  },
+  "created_at": "2024-01-15T10:35:00Z",
+  "updated_at": "2024-01-15T10:35:00Z"
+}
+```
+
+### AI Insights Reactions
+```json
+{
+  "user_id": "631aaa82-1bdb-495a-b834-0cbf0340fed7",
+  "content_type": "ai_insight",
+  "external_id": "insight-2024-01-15-abc123",
+  "reaction": "like",
+  "content": {
+    "title": "Market Analysis: Bitcoin Consolidation Expected",
+    "provider": "openrouter",
+    "model": "openrouter/auto",
+    "generated_at": "2024-01-15T09:00:00Z"
+  },
+  "created_at": "2024-01-15T10:35:00Z",
+  "updated_at": "2024-01-15T10:35:00Z"
+}
+```
+
+### Meme Reactions
+```json
+{
+  "user_id": "631aaa82-1bdb-495a-b834-0cbf0340fed7",
+  "content_type": "meme",
+  "external_id": "reddit-meme-xyz789",
+  "reaction": "like",
+  "content": {
+    "title": "When Bitcoin hits $100k",
+    "subreddit": "cryptocurrency",
+    "author": "crypto_meme_lord",
+    "score": 1250,
+    "num_comments": 45,
+    "source_url": "https://reddit.com/r/cryptocurrency/comments/xyz789"
+  },
+  "created_at": "2024-01-15T10:35:00Z",
+  "updated_at": "2024-01-15T10:35:00Z"
+}
+```
+
+### Database Schema for user_reactions Table
+```sql
+CREATE TABLE user_reactions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  content_type VARCHAR(50) NOT NULL, -- 'news', 'coin', 'ai_insight', 'meme'
+  external_id VARCHAR(255) NOT NULL, -- External content ID (CryptoPanic ID, coin symbol, etc.)
+  reaction VARCHAR(20) NOT NULL,     -- 'like' or 'dislike'
+  content JSONB DEFAULT '{}',        -- Rich metadata about the content
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(user_id, content_type, external_id)
+);
+```
+
+### Key Benefits of This Data Structure
+- **Analytics**: Track user preferences and content performance
+- **Personalization**: Improve content recommendations based on voting patterns
+- **Audit Trail**: Complete history of user interactions with content
+- **Rich Metadata**: Detailed content information for better insights
+- **Flexible Schema**: JSONB content field allows for different metadata per content type
+- **Performance**: Indexed on user_id, content_type, and external_id for fast queries
