@@ -6,7 +6,12 @@ export function requireAuth(req, res, next) {
     const [, token] = hdr.split(' ');
     if (!token) return res.status(401).json({ error: 'Missing bearer token' });
     const payload = verifyAccessToken(token);
-    req.user = { id: payload.sub, email: payload.email };
+    req.user = { 
+      id: payload.sub, 
+      email: payload.email, 
+      firstName: payload.firstName, 
+      lastName: payload.lastName 
+    };
     return next();
   } catch (err) {
     return res.status(401).json({ error: 'Invalid/expired token' });

@@ -46,7 +46,7 @@ if (req.body.data) {
 }
 
     // tokens
-    const accessToken = signAccessToken({ sub: user.id, email: user.email });
+    const accessToken = signAccessToken({ sub: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName });
     const { token: refreshToken, hash: refreshHash, expiresAt } = generateRefreshToken();
 
     // persist refresh (rotation-ready)
@@ -86,7 +86,7 @@ router.post('/login', loginLimiter, async (req, res) => {
     const ok = await verifyPassword(password, user.password_hash);
     if (!ok) return res.status(401).json({ error: 'invalid_credentials' });
 
-    const accessToken = signAccessToken({ sub: user.id, email: user.email });
+    const accessToken = signAccessToken({ sub: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName });
     const { token: refreshToken, hash: refreshHash, expiresAt } = generateRefreshToken();
 
     await pool.query(
@@ -127,13 +127,13 @@ router.post('/refresh', async (req, res) => {
 
     // fetch user for new access token
     const { rows: userRows } = await pool.query(
-      `SELECT id, email FROM users WHERE id = $1`,
+      `SELECT id, email, first_name AS "firstName", last_name AS "lastName" FROM users WHERE id = $1`,
       [rt.userId]
     );
     const user = userRows[0];
     if (!user) return res.status(401).json({ error: 'user_not_found' });
 
-    const accessToken = signAccessToken({ sub: user.id, email: user.email });
+    const accessToken = signAccessToken({ sub: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName });
     const { token: newRefresh, hash: newHash, expiresAt } = generateRefreshToken();
 
     await pool.query(

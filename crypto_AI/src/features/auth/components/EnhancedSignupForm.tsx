@@ -28,9 +28,9 @@ const availableAssets = [
 
 const contentTypes = [
   { value: 'Market News', title: 'Market News', description: 'Latest crypto news', icon: '📰' },
-  { value: 'Charts', title: 'Charts', description: 'Technical analysis', icon: '📊' },
-  { value: 'Social', title: 'Social', description: 'Social sentiment', icon: '💬' },
-  { value: 'Fun', title: 'Fun', description: 'Memes and entertainment', icon: '🎉' },
+  { value: 'Charts', title: 'Coin Prices', description: 'Technical analysis', icon: '📊' },
+  { value: 'Social', title: 'AI Insight', description: 'Social sentiment', icon: '🧠' },
+  { value: 'Fun', title: 'Fun Crypto Meme', description: 'Memes and entertainment', icon: '🎉' },
 ]
 
 export function EnhancedSignupForm() {
