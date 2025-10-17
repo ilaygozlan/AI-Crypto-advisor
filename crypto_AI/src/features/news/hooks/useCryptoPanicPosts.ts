@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useRef } from 'react'
-import { fetchNews, type NewsItem } from '@/lib/services/news'
+import { fetchNews } from '@/lib/services/news'
 import { 
   getPreferences, 
   setPreferences, 
@@ -57,7 +57,7 @@ export function useCryptoPanicPosts() {
   // Main query for posts
   const postsQuery = useQuery({
     queryKey: ['crypto-panic-posts', preferences.filter, preferences.assets.sort().join(',')],
-    queryFn: async ({ signal }) => {
+    queryFn: async () => {
       // Abort previous request
       if (abortControllerRef.current) {
         abortControllerRef.current.abort()
@@ -65,7 +65,7 @@ export function useCryptoPanicPosts() {
       
       // Create new abort controller
       abortControllerRef.current = new AbortController()
-      const combinedSignal = signal || abortControllerRef.current.signal
+      // Note: signal is available from the query function parameter
 
       try {
         // Use our new server-side API
@@ -116,8 +116,15 @@ export function useCryptoPanicPosts() {
         // Transform to scored posts
         const scoredPosts: ScoredPost[] = transformedPosts.map(post => {
           const userReaction = reactions[post.id] || null
+          
+          // Convert string id to number for compatibility with CryptoPanicPost type
+          const cryptoPanicPost = {
+            ...post,
+            id: parseInt(post.id, 10) || 0
+          }
+          
           const score = calculatePersonalizationScore(
-            post,
+            cryptoPanicPost,
             preferences.weights,
             userReaction,
             user?.preferences?.selectedAssets || ['BTC', 'ETH', 'SOL'],
@@ -126,7 +133,7 @@ export function useCryptoPanicPosts() {
           )
 
           return {
-            ...post,
+            ...cryptoPanicPost,
             personalizationScore: score,
             userReaction
           }
