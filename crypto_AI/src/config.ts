@@ -1,6 +1,6 @@
 export const SERVER_URL =
   (import.meta as any).env?.VITE_SERVER_URL ??
-  'http://localhost:3000';
+  'https://ai-crypto-advisor-2oxd.onrender.com';
 
 // CoinGecko API Configuration
 export const COINGECKO_API_KEY = (import.meta as any).env?.VITE_CG_API_KEY;
