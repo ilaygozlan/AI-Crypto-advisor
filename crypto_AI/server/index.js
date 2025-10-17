@@ -6,7 +6,9 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables from parent directory
+// Load environment variables from parent directory and server directory
+// Load server's own .env file first (highest priority)
+config({ path: path.join(__dirname, '.env') });
 config({ path: path.join(__dirname, '..', '.env') });
 config({ path: path.join(__dirname, '..', 'env.production') });
 config({ path: path.join(__dirname, '..', 'env.development') });
