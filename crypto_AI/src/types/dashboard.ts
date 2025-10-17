@@ -55,6 +55,7 @@ export interface VoteRequest {
   section: 'news' | 'prices' | 'ai' | 'meme'
   itemId: string
   vote: 'up' | 'down' | null
+  content?: any
 }
 
 export interface VoteResponse {

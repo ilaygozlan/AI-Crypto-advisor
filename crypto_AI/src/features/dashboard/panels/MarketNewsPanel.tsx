@@ -103,7 +103,17 @@ return (
               downVotes={item.votes?.down || 0}
               userVote={item.userVote}
               onVote={(voteType) =>
-                vote({ section: 'news', itemId: item.id, vote: voteType })
+                vote({ 
+                  section: 'news', 
+                  itemId: item.id, 
+                  vote: voteType,
+                  content: {
+                    title: item.title,
+                    source: item.source,
+                    publishedAt: item.publishedAt,
+                    summary: item.summary || item.description
+                  }
+                })
               }
             />
           </div>

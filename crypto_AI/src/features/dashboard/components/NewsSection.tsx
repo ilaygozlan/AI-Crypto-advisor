@@ -71,7 +71,17 @@ export function NewsSection() {
                 upVotes={newsItem.votes.up}
                 downVotes={newsItem.votes.down}
                 userVote={newsItem.userVote}
-                onVote={(voteType) => vote({ section: 'news', itemId: newsItem.id, vote: voteType })}
+                onVote={(voteType) => vote({ 
+                  section: 'news', 
+                  itemId: newsItem.id, 
+                  vote: voteType,
+                  content: {
+                    title: newsItem.title,
+                    source: newsItem.source,
+                    publishedAt: newsItem.publishedAt,
+                    summary: newsItem.summary
+                  }
+                })}
               />
             </div>
           </div>

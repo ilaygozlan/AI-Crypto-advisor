@@ -11,7 +11,7 @@ The **AI Crypto Advisor** is a full-stack web application that provides personal
 - **CryptoPanic News Integration**: Real-time cryptocurrency news with personalized filtering and sentiment analysis
 - **AI Insights Service**: Daily AI-generated market analysis using OpenRouter API with structured prompts and user-specific recommendations
 - **Reddit Memes Integration**: Automated meme fetching from crypto subreddits with content filtering and NSFW protection
-- **Interactive Voting System**: Like/dislike functionality for all content with optimistic updates
+- **Interactive Voting System**: Like/dislike functionality for all content (news, prices, AI insights, memes) with optimistic updates and persistent storage
 - **Personalized Dashboard**: Customizable crypto portfolio tracking with user preference-based content filtering
 - **Settings Management**: Profile editing and preference viewing with secure logout
 - **Dark Mode Support**: System preference detection with manual toggle

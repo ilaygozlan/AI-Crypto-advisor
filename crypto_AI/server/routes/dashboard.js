@@ -61,7 +61,7 @@ router.post('/news/reactions', requireAuth, async (req, res) => {
 // Dashboard vote endpoint for news, prices, AI insights, and memes
 router.post('/vote', requireAuth, async (req, res) => {
   try {
-    const { section, itemId, vote } = req.body || {};
+    const { section, itemId, vote, content } = req.body || {};
     const userId = req.user.id;
 
     console.log(`[POST /dashboard/vote] Received request:`, {
@@ -121,7 +121,7 @@ router.post('/vote', requireAuth, async (req, res) => {
         ON CONFLICT (user_id, content_type, external_id) DO UPDATE
           SET reaction = EXCLUDED.reaction,
               updated_at = NOW()
-      `, [userId, contentType, itemId, newReaction, {}]);
+      `, [userId, contentType, itemId, newReaction, content || {}]);
     }
 
     // Get updated vote counts for this item
