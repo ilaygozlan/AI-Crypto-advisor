@@ -22,7 +22,7 @@ export async function initDb() {
     );
   `);
 
-await pool.query(`
+  await pool.query(`
   CREATE TABLE IF NOT EXISTS user_data (
     id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -46,7 +46,7 @@ await pool.query(`
       revoked_at  TIMESTAMPTZ
     );
   `);
-await pool.query(`CREATE EXTENSION IF NOT EXISTS pgcrypto;`);
+  await pool.query(`CREATE EXTENSION IF NOT EXISTS pgcrypto;`);
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS public.insights (
@@ -125,6 +125,37 @@ await pool.query(`CREATE EXTENSION IF NOT EXISTS pgcrypto;`);
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_memes_created   ON memes (created_utc DESC);`);
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_memes_subreddit ON memes (subreddit, created_utc DESC);`);
 
+  await pool.query(`DO $$ BEGIN
+  CREATE TYPE reaction_value AS ENUM ('like', 'dislike');
+  EXCEPTION WHEN duplicate_object THEN NULL;
+  END $$;`);
+
+await pool.query(`CREATE TABLE IF NOT EXISTS user_reactions (
+  user_id       UUID         NOT NULL,                -- מזהה המשתמש שלך
+  content_type  TEXT         NOT NULL,                -- 'meme' | 'news' | 'coin' | 'ai_daily_news' | ...
+  external_id   TEXT         NOT NULL,                -- מזהה הפריט במקור (מם=redditId, חדשות=url-hash וכו')
+  reaction      reaction_value NOT NULL,              -- like | dislike
+  content       JSONB        NOT NULL,                -- Snapshot מינימלי של התוכן בזמן הפעולה
+  created_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+  updated_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (user_id, content_type, external_id)    -- ← מונע כפילויות לאותו פריט אצל אותו משתמש
+);`);
+
+await pool.query(`CREATE OR REPLACE FUNCTION touch_user_reactions_updated_at()
+RETURNS TRIGGER LANGUAGE plpgsql AS $$
+BEGIN
+  NEW.updated_at := NOW();
+  RETURN NEW;
+END $$;`);
+
+await pool.query(`DROP TRIGGER IF EXISTS trg_touch_user_reactions ON user_reactions;
+CREATE TRIGGER trg_touch_user_reactions
+BEFORE UPDATE ON user_reactions
+FOR EACH ROW EXECUTE FUNCTION touch_user_reactions_updated_at();`);
+
+  await pool.query(`CREATE INDEX IF NOT EXISTS idx_user_reactions_user ON user_reactions (user_id, content_type);`);
+  await pool.query(`CREATE INDEX IF NOT EXISTS idx_user_reactions_type ON user_reactions (content_type);`);
+  await pool.query(`CREATE INDEX IF NOT EXISTS idx_user_reactions_like ON user_reactions (user_id) WHERE reaction = 'like';`);
 
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_refresh_user ON refresh_tokens(user_id);`);
 }
