@@ -101,9 +101,5 @@ export interface TodayInsight {
   created_at: string
   updated_at: string
   generated_at: string
-  votes?: {
-    up: number
-    down: number
-  }
-  userVote?: 'up' | 'down'
+  user_reaction?: 'like' | 'dislike' | null
 }

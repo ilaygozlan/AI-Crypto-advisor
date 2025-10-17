@@ -1,11 +1,40 @@
 import { Skeleton } from '@/components/common/Skeleton'
 import { BrainLoader } from '@/components/common/BrainLoader'
-import { VoteButtons } from '@/components/common/VoteButtons'
 import { useTodayInsight } from '../hooks/useTodayInsight'
-import { useVote } from '../hooks/useVote'
-import { Brain, Clock, RefreshCw, TrendingUp, Compass, ExternalLink } from 'lucide-react'
+import { Brain, Clock, RefreshCw, TrendingUp, Compass, ExternalLink, ThumbsUp, ThumbsDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
+import { request } from '@/lib/api'
+import type { TodayInsight } from '@/types/dashboard'
+
+// API function for setting AI insight reactions
+async function setInsightReaction(insight: TodayInsight, next: 'like' | 'dislike' | null) {
+  const body = {
+    contentType: 'ai_insight',
+    externalId: insight.id,
+    reaction: next ?? 'none',
+    content: next ? {
+      title: insight.title,
+      generated_at: insight.generated_at,
+      user_id: insight.user_id,
+      date_key: insight.date_key,
+    } : undefined
+  };
+  
+  console.log(`📤 Sending AI insight reaction to server:`, {
+    insightId: insight.id,
+    insightTitle: insight.title,
+    reaction: next ?? 'none',
+    hasContent: !!body.content
+  });
+  
+  const response = await request('/api/reactions', {
+    method: 'POST',
+    body: JSON.stringify(body)
+  });
+  
+  return response;
+}
 
 interface AiInsightPanelProps {
   autoFetch?: boolean
@@ -14,7 +43,7 @@ interface AiInsightPanelProps {
 export default function AiInsightPanel({ autoFetch = false }: AiInsightPanelProps) {
   const [shouldFetch, setShouldFetch] = useState(false)
   const { data: insight, isLoading, error, refetch, isRefetching } = useTodayInsight(shouldFetch)
-  const { mutate: vote } = useVote()
+  const [isVoting, setIsVoting] = useState(false)
 
   // Auto-fetch when the panel is mounted with autoFetch prop
   useEffect(() => {
@@ -29,6 +58,47 @@ export default function AiInsightPanel({ autoFetch = false }: AiInsightPanelProp
 
   const handleInitialFetch = () => {
     setShouldFetch(true)
+  }
+
+  // Use server-side user reaction state
+  const userReaction = insight?.user_reaction
+  const isLiked = userReaction === 'like'
+  const isDisliked = userReaction === 'dislike'
+
+  const handleVote = async (reaction: 'like' | 'dislike' | null) => {
+    if (isVoting || !insight) return
+
+    setIsVoting(true)
+    const previousReaction = userReaction
+    const action = reaction === 'like' ? 'liked' : reaction === 'dislike' ? 'disliked' : 'removed reaction from'
+    
+    console.log(`🔄 Attempting to ${action} AI insight: "${insight.title}" (ID: ${insight.id})`)
+    
+    try {
+      // Send reaction to server
+      const responseData = await setInsightReaction(insight, reaction)
+      
+      console.log(`✅ Successfully ${action} AI insight: "${insight.title}" - Reaction saved to database`)
+      console.log(`📊 Reaction change: ${previousReaction || 'none'} → ${reaction || 'none'}`)
+      console.log(`📋 Server response:`, responseData)
+      
+      // Refetch the insight to get updated voting data
+      refetch()
+    } catch (error) {
+      console.error(`❌ Failed to ${action} AI insight: "${insight.title}"`, error)
+    } finally {
+      setIsVoting(false)
+    }
+  }
+
+  const handleLike = () => {
+    const newReaction = isLiked ? null : 'like'
+    handleVote(newReaction)
+  }
+
+  const handleDislike = () => {
+    const newReaction = isDisliked ? null : 'dislike'
+    handleVote(newReaction)
   }
 
   // Show initial state when no fetch has been initiated
@@ -231,12 +301,35 @@ export default function AiInsightPanel({ autoFetch = false }: AiInsightPanelProp
             </div>
             
             {/* Voting buttons */}
-            <VoteButtons
-              upVotes={insight.votes?.up || 0}
-              downVotes={insight.votes?.down || 0}
-              userVote={insight.userVote}
-              onVote={(voteType) => vote({ section: 'ai', itemId: insight.id, vote: voteType })}
-            />
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={handleLike}
+                disabled={isVoting}
+                className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                  isLiked
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-400 dark:hover:bg-slate-600'
+                } ${isVoting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                aria-pressed={isLiked}
+              >
+                <ThumbsUp className="h-3 w-3" />
+                <span>Like</span>
+              </button>
+              
+              <button
+                onClick={handleDislike}
+                disabled={isVoting}
+                className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                  isDisliked
+                    ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-400 dark:hover:bg-slate-600'
+                } ${isVoting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                aria-pressed={isDisliked}
+              >
+                <ThumbsDown className="h-3 w-3" />
+                <span>Dislike</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
