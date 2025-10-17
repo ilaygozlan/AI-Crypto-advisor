@@ -20,6 +20,7 @@ const KEYS = {
   FILTER: 'crypto:filter',
   ASSETS: 'crypto:assets', 
   REACTIONS: 'crypto:reactions',
+  COIN_REACTIONS: 'crypto:coin_reactions',
   WEIGHTS: 'crypto:weights'
 } as const
 
@@ -78,6 +79,25 @@ export function setReaction(postId: string, reaction: ReactionType | null): void
   setReactions(reactions)
 }
 
+// Coin reactions
+export function getCoinReactions(): Record<string, ReactionType> {
+  return safeGet(KEYS.COIN_REACTIONS, {})
+}
+
+export function setCoinReactions(reactions: Record<string, ReactionType>): void {
+  safeSet(KEYS.COIN_REACTIONS, reactions)
+}
+
+export function setCoinReaction(coinId: string, reaction: ReactionType | null): void {
+  const reactions = getCoinReactions()
+  if (reaction === null) {
+    delete reactions[coinId]
+  } else {
+    reactions[coinId] = reaction
+  }
+  setCoinReactions(reactions)
+}
+
 // Personalization weights
 export function getWeights(): PersonalizationWeights {
   return safeGet(KEYS.WEIGHTS, {
@@ -111,5 +131,6 @@ export function resetPreferences(): void {
   localStorage.removeItem(KEYS.FILTER)
   localStorage.removeItem(KEYS.ASSETS)
   localStorage.removeItem(KEYS.REACTIONS)
+  localStorage.removeItem(KEYS.COIN_REACTIONS)
   localStorage.removeItem(KEYS.WEIGHTS)
 }

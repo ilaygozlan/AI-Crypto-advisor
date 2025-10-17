@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ChevronDown, ChevronUp, TrendingUp, TrendingDown, ThumbsUp, ThumbsDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { CoinChart } from './CoinChart'
+import { getCoinReactions, setCoinReaction, type ReactionType } from '@/lib/utils/cryptoPrefs'
 
 export interface PriceData {
   id: string;
@@ -20,7 +21,6 @@ interface PriceRowProps {
   coin: PriceData;
   showChart?: boolean;
   onVote?: (coinId: string, voteType: 'like' | 'dislike') => void;
-  userVote?: 'like' | 'dislike' | null;
   likes?: number;
   dislikes?: number;
 }
@@ -29,11 +29,24 @@ export function PriceRow({
   coin, 
   showChart = true, 
   onVote, 
-  userVote = null, 
 }: PriceRowProps) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const[isLike,SetIsLike]=useState(false);
-  const[isUnLike,SetIsUnLike]=useState(false);
+  const [userReaction, setUserReaction] = useState<ReactionType | null>(null)
+
+  // Initialize reaction state from localStorage
+  useEffect(() => {
+    const coinReactions = getCoinReactions()
+    setUserReaction(coinReactions[coin.id] || null)
+  }, [coin.id])
+
+  const handleVote = (reaction: ReactionType) => {
+    // If clicking the same reaction, remove it (toggle off)
+    const newReaction = userReaction === reaction ? null : reaction
+    
+    setUserReaction(newReaction)
+    setCoinReaction(coin.id, newReaction)
+    onVote?.(coin.id, reaction)
+  }
 
   const formatPrice = (price: number) => {
     if (price < 0.01) return `$${price.toFixed(6)}`
@@ -122,15 +135,13 @@ export function PriceRow({
             variant="ghost"
             size="sm"
             className={`h-8 w-8 p-0 ${
-              isLike
+              userReaction === 'like'
                 ? 'text-green-600 bg-green-50 hover:bg-green-100 dark:text-green-400 dark:bg-green-900/20' 
                 : 'text-slate-500 hover:text-green-600 hover:bg-green-50 dark:text-slate-400 dark:hover:text-green-400'
             }`}
             onClick={(e) => {
               e.stopPropagation()
-              onVote?.(coin.id, 'like')
-              SetIsLike(true);
-              SetIsUnLike(false);
+              handleVote('like')
             }}
           >
             <ThumbsUp className="h-4 w-4" />
@@ -141,15 +152,13 @@ export function PriceRow({
             variant="ghost"
             size="sm"
             className={`h-8 w-8 p-0 ${
-              isUnLike 
+              userReaction === 'dislike' 
                 ? 'text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-900/20' 
                 : 'text-slate-500 hover:text-red-600 hover:bg-red-50 dark:text-slate-400 dark:hover:text-red-400'
             }`}
             onClick={(e) => {
               e.stopPropagation()
-              onVote?.(coin.id, 'dislike')
-               SetIsLike(false);
-              SetIsUnLike(true);
+              handleVote('dislike')
             }}
           >
             <ThumbsDown className="h-4 w-4" />
