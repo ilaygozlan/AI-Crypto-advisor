@@ -100,4 +100,10 @@ export interface TodayInsight {
   sources: InsightSource[]
   created_at: string
   updated_at: string
+  generated_at: string
+  votes?: {
+    up: number
+    down: number
+  }
+  userVote?: 'up' | 'down'
 }

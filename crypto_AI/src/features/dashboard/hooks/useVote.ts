@@ -79,7 +79,7 @@ function getQueryKeyForSection(section: string) {
     case 'prices':
       return ['prices']
     case 'ai':
-      return ['ai-insight']
+      return ['today-insight'] // Updated to match the useTodayInsight hook
     case 'meme':
       return ['meme-data'] // Updated to match the custom hook
     default:

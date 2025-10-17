@@ -1,6 +1,8 @@
 import { Skeleton } from '@/components/common/Skeleton'
 import { BrainLoader } from '@/components/common/BrainLoader'
+import { VoteButtons } from '@/components/common/VoteButtons'
 import { useTodayInsight } from '../hooks/useTodayInsight'
+import { useVote } from '../hooks/useVote'
 import { Brain, Clock, RefreshCw, TrendingUp, Compass, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
@@ -12,6 +14,7 @@ interface AiInsightPanelProps {
 export default function AiInsightPanel({ autoFetch = false }: AiInsightPanelProps) {
   const [shouldFetch, setShouldFetch] = useState(false)
   const { data: insight, isLoading, error, refetch, isRefetching } = useTodayInsight(shouldFetch)
+  const { mutate: vote } = useVote()
 
   // Auto-fetch when the panel is mounted with autoFetch prop
   useEffect(() => {
@@ -221,8 +224,20 @@ export default function AiInsightPanel({ autoFetch = false }: AiInsightPanelProp
         )}
 
         {/* Footer */}
-        <div className="border-t border-slate-200 dark:border-slate-700 pt-4 text-xs text-slate-500 dark:text-slate-400 text-center">
-          Generated on {new Date(insight.generated_at).toLocaleDateString()} at {new Date(insight.generated_at).toLocaleTimeString()}
+        <div className="border-t border-slate-200 dark:border-slate-700 pt-4">
+          <div className="flex items-center justify-between">
+            <div className="text-xs text-slate-500 dark:text-slate-400">
+              Generated on {new Date(insight.generated_at).toLocaleDateString()} at {new Date(insight.generated_at).toLocaleTimeString()}
+            </div>
+            
+            {/* Voting buttons */}
+            <VoteButtons
+              upVotes={insight.votes?.up || 0}
+              downVotes={insight.votes?.down || 0}
+              userVote={insight.userVote}
+              onVote={(voteType) => vote({ section: 'ai', itemId: insight.id, vote: voteType })}
+            />
+          </div>
         </div>
       </div>
     </div>
