@@ -131,7 +131,7 @@ export async function initDb() {
   END $$;`);
 
 await pool.query(`CREATE TABLE IF NOT EXISTS user_reactions (
-  user_id       UUID         NOT NULL,                -- מזהה המשתמש שלך
+  user_id       TEXT         NOT NULL REFERENCES users(id) ON DELETE CASCADE,  -- מזהה המשתמש שלך
   content_type  TEXT         NOT NULL,                -- 'meme' | 'news' | 'coin' | 'ai_daily_news' | ...
   external_id   TEXT         NOT NULL,                -- מזהה הפריט במקור (מם=redditId, חדשות=url-hash וכו')
   reaction      reaction_value NOT NULL,              -- like | dislike

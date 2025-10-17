@@ -16,6 +16,7 @@ interface UseMemeReturn {
   hasMore: boolean
   refetch: () => void
   loadMore: () => void
+  updateMemeReaction: (memeId: string, reaction: 'like' | 'dislike' | null) => void
 }
 
 export function useMeme({ limit = 24, sub }: UseMemeOptions = {}): UseMemeReturn {
@@ -44,6 +45,9 @@ export function useMeme({ limit = 24, sub }: UseMemeOptions = {}): UseMemeReturn
       })
 
       const memes = await request<MemeItem[]>(`/api/memes?${params}`)
+      
+      // Debug: Log reactions received from server
+      const memesWithReactions = memes.filter(m => m.user_reaction).slice(0, 3)
       
       if (append) {
         setData(prev => [...prev, ...memes])
@@ -81,6 +85,16 @@ export function useMeme({ limit = 24, sub }: UseMemeOptions = {}): UseMemeReturn
     }
   }, [fetchMemes, isLoadingMore, hasMore, cursor])
 
+  const updateMemeReaction = useCallback((memeId: string, reaction: 'like' | 'dislike' | null) => {
+    setData(prevData => 
+      prevData.map(meme => 
+        meme.id === memeId 
+          ? { ...meme, user_reaction: reaction }
+          : meme
+      )
+    )
+  }, [])
+
   // Initial load
   useEffect(() => {
     fetchMemes(null, false)
@@ -94,6 +108,7 @@ export function useMeme({ limit = 24, sub }: UseMemeOptions = {}): UseMemeReturn
     error,
     hasMore,
     refetch,
-    loadMore
+    loadMore,
+    updateMemeReaction
   }
 }

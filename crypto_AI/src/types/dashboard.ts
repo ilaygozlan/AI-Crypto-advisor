@@ -48,6 +48,7 @@ export interface MemeItem {
   permalink: string
   source_url: string
   created_utc: string
+  user_reaction?: 'like' | 'dislike' | null
 }
 
 export interface VoteRequest {

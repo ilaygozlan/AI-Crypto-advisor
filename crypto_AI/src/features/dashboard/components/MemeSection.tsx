@@ -9,6 +9,7 @@ interface MemeSectionProps {
   isLoadingMore?: boolean
   hasMore?: boolean
   onLoadMore?: () => void
+  onVote?: (memeId: string, reaction: 'like' | 'dislike' | null) => void
 }
 
 export function MemeSection({ 
@@ -16,7 +17,8 @@ export function MemeSection({
   isLoading = false, 
   isLoadingMore = false, 
   hasMore = false, 
-  onLoadMore 
+  onLoadMore,
+  onVote
 }: MemeSectionProps) {
   const sentinelRef = useRef<HTMLDivElement>(null)
 
@@ -81,7 +83,7 @@ export function MemeSection({
       {/* Meme Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {memes.map((meme) => (
-          <MemeCard key={meme.id} meme={meme} />
+          <MemeCard key={meme.id} meme={meme} onVote={onVote} />
         ))}
       </div>
 

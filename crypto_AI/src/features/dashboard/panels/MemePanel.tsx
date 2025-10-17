@@ -14,13 +14,19 @@ const SUBREDDIT_OPTIONS = [
 
 export default function MemePanel() {
   const [selectedSub, setSelectedSub] = useState('all')
-  const { data: memes, isLoading, isLoadingMore, isError, error, hasMore, refetch, loadMore } = useMeme({ 
+  const memeHook = useMeme({ 
     limit: 24, 
     sub: selectedSub === 'all' ? undefined : selectedSub 
   })
+  
+  const { data: memes, isLoading, isLoadingMore, isError, error, hasMore, refetch, loadMore, updateMemeReaction } = memeHook
 
   const handleSubredditChange = (sub: string) => {
     setSelectedSub(sub)
+  }
+
+  const handleVote = (memeId: string, reaction: 'like' | 'dislike' | null) => {
+    updateMemeReaction?.(memeId, reaction)
   }
 
   if (isError) {
@@ -101,6 +107,7 @@ export default function MemePanel() {
         isLoadingMore={isLoadingMore}
         hasMore={hasMore}
         onLoadMore={loadMore}
+        onVote={handleVote}
       />
     </div>
   )

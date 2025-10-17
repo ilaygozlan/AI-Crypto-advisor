@@ -1,32 +1,89 @@
 import { useState } from 'react'
 import { ExternalLink, ThumbsUp, ThumbsDown, MessageCircle } from 'lucide-react'
+import { request } from '@/lib/api'
 import type { MemeItem } from '@/types/dashboard'
+
+// API function for setting meme reactions
+async function setReaction(meme: MemeItem, next: 'like' | 'dislike' | null) {
+  const body = {
+    contentType: 'meme',
+    externalId: meme.id,
+    reaction: next ?? 'none',
+    content: next ? {
+      title: meme.title,
+      permalink: meme.permalink,
+      source_url: meme.source_url,
+      subreddit: meme.subreddit,
+      created_utc: meme.created_utc,
+    } : undefined
+  };
+  
+  console.log(`📤 Sending reaction to server:`, {
+    memeId: meme.id,
+    memeTitle: meme.title,
+    reaction: next ?? 'none',
+    hasContent: !!body.content
+  });
+  
+  const response = await request('/api/reactions', {
+    method: 'POST',
+    body: JSON.stringify(body)
+  });
+  
+  return response;
+}
 
 interface MemeCardProps {
   meme: MemeItem
+  onVote?: (memeId: string, reaction: 'like' | 'dislike' | null) => void
 }
 
-export function MemeCard({ meme }: MemeCardProps) {
-  const [liked, setLiked] = useState(false)
-  const [disliked, setDisliked] = useState(false)
+export function MemeCard({ meme, onVote }: MemeCardProps) {
   const [imageError, setImageError] = useState(false)
+  const [isVoting, setIsVoting] = useState(false)
 
-  const handleLike = () => {
-    if (liked) {
-      setLiked(false)
-    } else {
-      setLiked(true)
-      setDisliked(false)
+  // Use server-side user reaction state
+  const userReaction = meme.user_reaction
+  const isLiked = userReaction === 'like'
+  const isDisliked = userReaction === 'dislike'
+
+  const handleVote = async (reaction: 'like' | 'dislike' | null) => {
+    if (isVoting) return
+
+    setIsVoting(true)
+    const previousReaction = userReaction
+    const action = reaction === 'like' ? 'liked' : reaction === 'dislike' ? 'disliked' : 'removed reaction from'
+    
+    console.log(`🔄 Attempting to ${action} meme: "${meme.title}" (ID: ${meme.id})`)
+    
+    try {
+      // Optimistic update
+      onVote?.(meme.id, reaction)
+
+      // Send reaction to server
+      const responseData = await setReaction(meme, reaction)
+      
+      console.log(`✅ Successfully ${action} meme: "${meme.title}" - Reaction saved to database`)
+      console.log(`📊 Reaction change: ${previousReaction || 'none'} → ${reaction || 'none'}`)
+      console.log(`📋 Server response:`, responseData)
+    } catch (error) {
+      console.error(`❌ Failed to ${action} meme: "${meme.title}"`, error)
+      console.log(`🔄 Reverting reaction back to: ${previousReaction || 'none'}`)
+      // Revert optimistic update on error
+      onVote?.(meme.id, userReaction)
+    } finally {
+      setIsVoting(false)
     }
   }
 
+  const handleLike = () => {
+    const newReaction = isLiked ? null : 'like'
+    handleVote(newReaction)
+  }
+
   const handleDislike = () => {
-    if (disliked) {
-      setDisliked(false)
-    } else {
-      setDisliked(true)
-      setLiked(false)
-    }
+    const newReaction = isDisliked ? null : 'dislike'
+    handleVote(newReaction)
   }
 
   const formatScore = (score: number) => {
@@ -110,12 +167,13 @@ export function MemeCard({ meme }: MemeCardProps) {
           <div className="flex items-center space-x-2">
             <button
               onClick={handleLike}
+              disabled={isVoting}
               className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                liked
+                isLiked
                   ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-400 dark:hover:bg-slate-600'
-              }`}
-              aria-pressed={liked}
+              } ${isVoting ? 'opacity-50 cursor-not-allowed' : ''}`}
+              aria-pressed={isLiked}
             >
               <ThumbsUp className="h-3 w-3" />
               <span>Like</span>
@@ -123,12 +181,13 @@ export function MemeCard({ meme }: MemeCardProps) {
             
             <button
               onClick={handleDislike}
+              disabled={isVoting}
               className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                disliked
+                isDisliked
                   ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-400 dark:hover:bg-slate-600'
-              }`}
-              aria-pressed={disliked}
+              } ${isVoting ? 'opacity-50 cursor-not-allowed' : ''}`}
+              aria-pressed={isDisliked}
             >
               <ThumbsDown className="h-3 w-3" />
               <span>Dislike</span>

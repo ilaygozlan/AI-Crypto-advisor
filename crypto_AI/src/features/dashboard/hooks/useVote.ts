@@ -51,12 +51,16 @@ export function useVote() {
           }
         }
 
-        if (variables.section === 'meme' && oldData.id === variables.itemId) {
-          return {
-            ...oldData,
-            votes: (data as any).newVoteCount || oldData.votes,
-            userVote: variables.vote,
-          }
+        if (variables.section === 'meme' && Array.isArray(oldData)) {
+          return oldData.map((item: any) =>
+            item.id === variables.itemId
+              ? {
+                  ...item,
+                  votes: (data as any).newVoteCount || item.votes,
+                  user_reaction: variables.vote === 'up' ? 'like' : variables.vote === 'down' ? 'dislike' : null,
+                }
+              : item
+          )
         }
 
         return oldData
@@ -77,7 +81,7 @@ function getQueryKeyForSection(section: string) {
     case 'ai':
       return ['ai-insight']
     case 'meme':
-      return ['meme']
+      return ['meme-data'] // Updated to match the custom hook
     default:
       return []
   }
