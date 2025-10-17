@@ -84,11 +84,9 @@ export default function CoinPricesPanel() {
             showChart={true}
             onVote={(coinId, voteType) => {
               console.log(`Vote ${voteType} for coin ${coinId}`)
-              // TODO: Implement vote functionality
+              // The PriceRow component now handles the database interaction
             }}
-            userVote={null} // TODO: Get from user's vote data
-            likes={Math.floor(Math.random() * 100)} // TODO: Get from API
-            dislikes={Math.floor(Math.random() * 20)} // TODO: Get from API
+            userVote={null} // TODO: Get from user's vote data when prices are fetched
           />
         ))}
       </div>

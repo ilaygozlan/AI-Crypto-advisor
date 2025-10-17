@@ -30,8 +30,6 @@ export function PriceRow({
   showChart = true, 
   onVote, 
   userVote = null, 
-  likes = 0, 
-  dislikes = 0 
 }: PriceRowProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -133,28 +131,25 @@ export function PriceRow({
           >
             <ThumbsUp className="h-4 w-4" />
           </Button>
-          <span className="text-xs text-slate-500 dark:text-slate-400 min-w-[20px] text-center">
-            {likes}
-          </span>
+        
           
           <Button
             variant="ghost"
             size="sm"
             className={`h-8 w-8 p-0 ${
-              userVote === 'dislike' 
+              userVote === 'like' 
                 ? 'text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-900/20' 
                 : 'text-slate-500 hover:text-red-600 hover:bg-red-50 dark:text-slate-400 dark:hover:text-red-400'
             }`}
             onClick={(e) => {
               e.stopPropagation()
               onVote?.(coin.id, 'dislike')
+              
             }}
           >
             <ThumbsDown className="h-4 w-4" />
           </Button>
-          <span className="text-xs text-slate-500 dark:text-slate-400 min-w-[20px] text-center">
-            {dislikes}
-          </span>
+      
           
           {showChart && (
             <Button

@@ -31,12 +31,9 @@ export interface CoinGeckoChartData {
  * Makes a request to CoinGecko API with proper headers
  */
 async function coinGeckoRequest<T>(endpoint: string): Promise<T> {
-  console.log('🔑 CoinGecko API Key:', COINGECKO_API_KEY ? `Present (${COINGECKO_API_KEY.substring(0, 8)}...)` : 'Using Free API');
-  console.log('🌐 CoinGecko API URL:', COINGECKO_API_URL);
-  console.log('📍 Endpoint:', endpoint);
   
   const url = `${COINGECKO_API_URL}${endpoint}`;
-  console.log('🔗 Full API URL:', url);
+
   
   // Conditionally include Pro API header
   const headers: Record<string, string> = {
@@ -49,7 +46,7 @@ async function coinGeckoRequest<T>(endpoint: string): Promise<T> {
     headers['x-cg-pro-api-key'] = COINGECKO_API_KEY;
   }
   
-  console.log('📋 Request headers:', headers);
+
   
   const response = await fetch(url, {
     headers,

@@ -26,7 +26,7 @@ export function usePrices() {
           throw new Error('No valid assets to fetch prices for')
         }
         
-        console.log('📊 Fetching prices for:', coinGeckoIds)
+      
         
         // Fetch market data from CoinGecko
         const marketData = await getMarkets(coinGeckoIds, 'usd')
@@ -45,7 +45,6 @@ export function usePrices() {
           price_change_percentage_7d: coin.price_change_percentage_7d_in_currency,
         }))
         
-        console.log('📊 Successfully fetched prices:', { count: transformedData.length })
         return transformedData
       } catch (error) {
         console.error('❌ Failed to fetch prices:', error)
