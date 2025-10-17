@@ -22,6 +22,8 @@ import meRoutes from './routes/me.js';
 import insightsRouter from './routes/insights.js';
 import memesRouter from './routes/memes.js';
 import { startMemesCron } from './services/memes.service.js';
+import newsRouter from './routes/news.js';
+import { startNewsCron, initialSeedIfEmpty } from './services/news.service.js';
 import reactionsRouter from './routes/reactions.js';
 import dashboardRouter from './routes/dashboard.js';
 
@@ -70,6 +72,9 @@ app.use('/api/insights', insightsRouter);
 // Memes API
 app.use('/api/memes', memesRouter);
 
+// News API
+app.use('/api/news', newsRouter);
+
 // Reactions API
 app.use('/api/reactions', reactionsRouter);
 
@@ -82,8 +87,12 @@ const PORT = process.env.PORT || 3000;
 (async () => {
   await initDb(); // ensure tables exist
 
-  // start the hourly fetcher
+  // start the cron jobs
   startMemesCron();
+  startNewsCron();
+
+  // initial seed for news if empty
+  await initialSeedIfEmpty();
 
   app.listen(PORT, () => {
     console.log(`✅ Server running on http://localhost:${PORT}`);

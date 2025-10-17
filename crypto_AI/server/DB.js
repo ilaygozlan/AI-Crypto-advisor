@@ -158,4 +158,36 @@ FOR EACH ROW EXECUTE FUNCTION touch_user_reactions_updated_at();`);
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_user_reactions_like ON user_reactions (user_id) WHERE reaction = 'like';`);
 
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_refresh_user ON refresh_tokens(user_id);`);
+
+  // News items table
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS news_items (
+      id              BIGSERIAL PRIMARY KEY,
+      source_id       TEXT,               -- upstream unique id if exists
+      title           TEXT NOT NULL,
+      url             TEXT NOT NULL,
+      published_at    TIMESTAMPTZ NOT NULL,
+      currencies      TEXT[] DEFAULT '{}',
+      is_important    BOOLEAN DEFAULT FALSE,
+      source          TEXT,               -- e.g., "cryptopanic"
+      raw             JSONB,              -- full upstream payload (for debugging / future use)
+      created_at      TIMESTAMPTZ DEFAULT NOW()
+    );
+  `);
+
+  await pool.query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS ux_news_source_url ON news_items(source, url);
+  `);
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_news_published_at ON news_items(published_at DESC);
+  `);
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_news_currencies ON news_items USING GIN(currencies);
+  `);
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_news_important ON news_items(is_important) WHERE is_important = true;
+  `);
 }

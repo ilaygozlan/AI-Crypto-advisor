@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useRef } from 'react'
-import { fetchCryptoPanicPosts, type FilterType } from '@/lib/utils/cryptoPanic'
+import { fetchNews, type NewsItem } from '@/lib/services/news'
 import { 
   getPreferences, 
   setPreferences, 
@@ -8,6 +8,8 @@ import {
   setReaction,
   type ReactionType 
 } from '@/lib/utils/cryptoPrefs'
+
+export type FilterType = 'hot' | 'rising' | 'important' | 'bullish' | 'bearish'
 import { 
   calculatePersonalizationScore, 
   updateWeights, 
@@ -66,15 +68,53 @@ export function useCryptoPanicPosts() {
       const combinedSignal = signal || abortControllerRef.current.signal
 
       try {
-        const response = await fetchCryptoPanicPosts(
-          preferences.filter,
-          preferences.assets,
-          1,
-          combinedSignal
-        )
+        // Use our new server-side API
+        const newsItems = await fetchNews({
+          filter: preferences.filter,
+          currencies: preferences.assets.join(','),
+          limit: '24'
+        })
+
+        // Transform server response to match expected format
+        const transformedPosts = newsItems.map(item => ({
+          id: item.id,
+          title: item.title,
+          url: item.url,
+          published_at: item.published_at,
+          created_at: item.published_at, // Use published_at as fallback
+          domain: new URL(item.url).hostname,
+          slug: item.id,
+          kind: 'news',
+          description: item.title,
+          source: {
+            title: item.source || 'cryptopanic',
+            region: 'en',
+            domain: new URL(item.url).hostname
+          },
+          currencies: item.currencies?.map(code => ({
+            code,
+            title: code,
+            slug: code.toLowerCase(),
+            url: `https://cryptopanic.com/currencies/${code.toLowerCase()}/`
+          })) || [],
+          votes: {
+            negative: 0,
+            positive: 0,
+            important: item.is_important ? 1 : 0,
+            liked: 0,
+            disliked: 0,
+            lol: 0,
+            toxic: 0,
+            saved: 0,
+            comments: 0
+          },
+          metadata: {
+            description: item.title
+          }
+        }))
 
         // Transform to scored posts
-        const scoredPosts: ScoredPost[] = response.results.map(post => {
+        const scoredPosts: ScoredPost[] = transformedPosts.map(post => {
           const userReaction = reactions[post.id] || null
           const score = calculatePersonalizationScore(
             post,

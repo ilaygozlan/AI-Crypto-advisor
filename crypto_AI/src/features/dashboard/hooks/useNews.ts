@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { newDashboardApi } from '@/lib/api/newEndpoints'
-import { fetchCryptoPanicPosts } from '@/lib/utils/cryptoPanic'
+import { fetchNews } from '@/lib/services/news'
 import { useAuth } from '@/contexts/AuthContext'
 import type { NewsItem } from '@/types/dashboard'
 
@@ -17,21 +17,25 @@ export function useNews() {
 
       const filter = user?.preferences?.investorType === 'Day Trader' ? 'hot' : 'important'
 
-      // Fetch from CryptoPanic API
+      // Fetch from our server API
       console.log('📰 Fetching news with preferences:', { filter, assets })
-      const response = await fetchCryptoPanicPosts(filter, assets, 1)
+      const newsItems = await fetchNews({
+        filter,
+        currencies: assets.join(','),
+        limit: '24'
+      })
       
       // Transform to app format - show all results
-      const transformedData: NewsItem[] = response.results.map(item => ({
+      const transformedData: NewsItem[] = newsItems.map(item => ({
         id: String(item.id),
         title: item.title,
-        summary: item.description || item.title,
-        source: item.source?.title || 'Unknown',
+        summary: item.title, // Use title as summary since we don't have description
+        source: item.source || 'cryptopanic',
         url: item.url || '#',
         publishedAt: item.published_at,
         votes: {
-          up: (item.votes?.positive || 0) + (item.votes?.liked || 0),
-          down: (item.votes?.negative || 0) + (item.votes?.disliked || 0)
+          up: item.is_important ? 1 : 0, // Use importance as upvotes
+          down: 0
         },
         userVote: null, // Will be populated below
       }))
