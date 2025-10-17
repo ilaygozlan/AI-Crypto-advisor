@@ -12,9 +12,11 @@ import MemePanel from './panels/MemePanel';
 const CONTENT_TYPE_MAPPING = {
   'Market News': 'news',
   'articles': 'news',
-  'charts': 'prices', 
+  'charts': 'prices',
+  'Charts': 'prices', 
   'social': 'ai',
-  'Fun': 'meme'
+  'Fun': 'meme',
+  'memes' : 'meme',
 } as const;
 
 const ALL_TABS = [
