@@ -28,7 +28,7 @@ function buildCryptoPanicUrl(params = {}) {
   urlParams.append('kind', kind);
   urlParams.append('public', isPublic);
   urlParams.append('regions', regions);
-  console.log("url :" ,urlParams );
+  console.log("url :" ,urlParams )
   if (currencies && currencies.length > 0) {
     urlParams.append('currencies', currencies.join(','));
   }
@@ -150,10 +150,10 @@ export async function getNewsFromDb({
   const whereConditions = [];
 
   // Add currency filter
-  if (currencies && currencies.length > 0) {
-    params.push(currencies);
-    whereConditions.push(`currencies && $${params.length}`);
-  }
+ if (currencies && currencies.length > 0) {
+  params.push(currencies);
+  whereConditions.push(`currencies && $${params.length}::text[]`);
+}
 
   // Add importance filter
   if (important !== null) {
@@ -271,76 +271,30 @@ async function getCachedOrFresh(cacheKey, fetchFn) {
  */
 export async function getNews(params = {}) {
   const {
-    filter = 'important',
-    currencies = DEFAULT_CURRENCIES,
     limit = 24,
     cursor = null,
-    important = null
+    currencies = null,
+    // important = null,
   } = params;
 
-  const cacheKey = `news_${filter}_${currencies.sort().join(',')}_${limit}_${cursor || 'null'}_${important || 'null'}`;
+  const dbResults = await getNewsFromDb({
+    limit,
+    cursor,
+    currencies,
+    important: null, 
+  });
 
-  try {
-    // Try to get fresh data from upstream
-    const result = await getCachedOrFresh(cacheKey, async () => {
-      const upstreamData = await fetchNewsFromUpstream({
-        filter,
-        currencies,
-        page: 1
-      });
-
-      const normalizedItems = normalizeNews(upstreamData);
-      
-      // Save to database in background (don't wait)
-      saveNewsBatch(normalizedItems).catch(err => 
-        console.warn('[news] Background save failed:', err.message)
-      );
-
-      return normalizedItems;
-    });
-
-    // Apply additional filtering and pagination
-    let filteredResults = result;
-
-    if (important !== null) {
-      filteredResults = filteredResults.filter(item => item.is_important === important);
-    }
-
-    if (cursor) {
-      const cursorDate = new Date(cursor);
-      filteredResults = filteredResults.filter(item => 
-        new Date(item.published_at) < cursorDate
-      );
-    }
-
-    return filteredResults.slice(0, limit);
-  } catch (error) {
-    console.warn('[news] Upstream fetch failed, falling back to database:', error.message);
-    
-    // Fallback to database
-    try {
-      const dbResults = await getNewsFromDb({
-        limit,
-        cursor,
-        currencies,
-        important
-      });
-
-      return dbResults.map(row => ({
-        source_id: row.source_id,
-        title: row.title,
-        url: row.url,
-        published_at: row.published_at,
-        currencies: row.currencies,
-        is_important: row.is_important,
-        source: row.source,
-        raw: row.raw
-      }));
-    } catch (dbError) {
-      console.error('[news] Database fallback also failed:', dbError.message);
-      throw new Error('Failed to fetch news from both upstream and database');
-    }
-  }
+ 
+  return dbResults.map(row => ({
+    source_id: row.source_id,
+    title: row.title,
+    url: row.url,
+    published_at: row.published_at,
+    currencies: row.currencies,
+    is_important: row.is_important,
+    source: row.source,
+    raw: row.raw
+  }));
 }
 
 /**

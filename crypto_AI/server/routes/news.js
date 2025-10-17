@@ -17,44 +17,31 @@ router.post('/refresh', async (_req, res) => {
 });
 
 // Main API endpoint for fetching news with filtering and pagination
+// server/routes/news.js
 router.get('/', requireAuth, async (req, res) => {
   try {
-    // Parse and validate query parameters
-    const limit = Math.min(parseInt(req.query.limit) || 24, 100); // Max 100 items
+    const limit = Math.min(parseInt(req.query.limit) || 24, 100);
     const cursor = req.query.cursor ? new Date(String(req.query.cursor)) : null;
-    const filter = req.query.filter || 'important';
-    const currencies = req.query.currencies ? 
-      String(req.query.currencies).split(',').map(c => c.trim().toUpperCase()) : 
-      ['BTC', 'MATIC', 'SOL', 'LINK', 'AVAX'];
-    const important = req.query.important !== undefined ? 
-      req.query.important === 'true' : null;
+    const currencies = req.query.currencies
+      ? String(req.query.currencies).split(',').map(c => c.trim().toUpperCase())
+      : null; 
 
-    console.log(`[GET /api/news] Request params:`, {
+    console.log(`[GET /api/news] params:`, {
       limit,
       cursor: cursor?.toISOString(),
-      filter,
-      currencies,
-      important
+      currencies
     });
 
-    console.log(`[GET /api/news] About to fetch news from service...`);
-    
-    // Get news from service
+   
     const newsItems = await getNews({
-      filter,
-      currencies,
       limit,
       cursor,
-      important
+      currencies
     });
 
-    console.log(`[GET /api/news] Returning ${newsItems.length} news items`);
-
-    // Set cache headers
     res.set('Cache-Control', 'public, max-age=30');
 
-    // Transform to match expected API contract
-    const transformedNews = newsItems.map(item => ({
+    const transformed = newsItems.map(item => ({
       id: item.source_id,
       title: item.title,
       url: item.url,
@@ -64,11 +51,10 @@ router.get('/', requireAuth, async (req, res) => {
       currencies: item.currencies || [],
       is_important: item.is_important || false,
       source: item.source || 'cryptopanic',
-      // Include raw data for debugging/future use
       raw: item.raw || null
     }));
 
-    res.json(transformedNews);
+    res.json(transformed);
   } catch (error) {
     console.error('[GET /api/news]', error);
     res.status(500).json({ error: 'Failed to fetch news' });
