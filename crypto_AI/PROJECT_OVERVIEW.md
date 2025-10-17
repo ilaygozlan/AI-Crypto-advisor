@@ -9,26 +9,32 @@ The **AI Crypto Advisor** is a full-stack web application that provides personal
 - **Enhanced Onboarding**: 3-step wizard for user preferences (investor type, assets, content types)
 - **Real-time Crypto Data**: Live prices, charts, and market data via CoinGecko API with Pro API support
 - **CryptoPanic News Integration**: Real-time cryptocurrency news with personalized filtering and sentiment analysis
-- **AI Insights**: Daily AI-generated market analysis and recommendations with regeneration capability
+- **AI Insights Service**: Daily AI-generated market analysis using OpenRouter API with structured prompts and user-specific recommendations
+- **Reddit Memes Integration**: Automated meme fetching from crypto subreddits with content filtering and NSFW protection
 - **Interactive Voting System**: Like/dislike functionality for all content with optimistic updates
 - **Personalized Dashboard**: Customizable crypto portfolio tracking with user preference-based content filtering
 - **Settings Management**: Profile editing and preference viewing with secure logout
 - **Dark Mode Support**: System preference detection with manual toggle
 - **Responsive Design**: Mobile-first design with smooth animations and transitions
 - **Content Personalization**: ML-based scoring system for news relevance based on user behavior
+- **Automated Content Pipeline**: Scheduled tasks for meme fetching and AI insight generation
+- **Advanced Data Processing**: Sophisticated JSON handling and content normalization for external APIs
 
 ### Technology Stack
 - **Backend**: Node.js, Express.js, PostgreSQL
 - **Frontend**: React 18, TypeScript, Vite
 - **Authentication**: JWT tokens with httpOnly cookies, bcrypt password hashing
 - **Database**: PostgreSQL with connection pooling and automatic migrations
-- **External APIs**: CoinGecko API (Free & Pro), CryptoPanic API, OpenRouter AI
+- **External APIs**: CoinGecko API (Free & Pro), CryptoPanic API, OpenRouter AI, Reddit API
 - **UI Framework**: Tailwind CSS, Shadcn/ui components, Framer Motion animations
 - **State Management**: React Context, TanStack Query (React Query), Zustand for preferences
 - **Security**: Helmet, CORS, Rate limiting, Input validation with Joi
 - **Development Tools**: ESLint, Prettier, Vitest for testing
 - **Icons**: Lucide React icon library
 - **HTTP Client**: Custom fetch-based API client with retry logic
+- **AI Integration**: OpenRouter API for LLM-powered insights with structured prompts
+- **Content Automation**: Node-cron for scheduled tasks, Reddit API for meme fetching
+- **Data Processing**: Advanced JSON handling and content normalization
 
 ### Workflow
 1. User registers/logs in with email and password (with rate limiting protection)
@@ -49,17 +55,31 @@ crypto_AI/
 │   ├── package.json                 # Backend dependencies
 │   ├── routes/                      # API route definitions
 │   │   ├── auth.js                  # Authentication endpoints (login, signup, refresh, logout)
-│   │   └── me.js                    # User data endpoints (/me, /me/data)
+│   │   ├── me.js                    # User data endpoints (/me, /me/data)
+│   │   ├── insights.js              # AI insights endpoints (/api/insights)
+│   │   └── memes.js                 # Memes API endpoints (/api/memes)
 │   ├── services/                    # Business logic layer
 │   │   ├── user.service.js          # User CRUD operations
 │   │   ├── userData.service.js      # User preferences management
-│   │   └── token.service.js         # JWT token handling
+│   │   ├── token.service.js         # JWT token handling
+│   │   ├── insightService.js        # AI insights generation and management
+│   │   ├── insightPrompt.js         # AI prompt engineering and message building
+│   │   ├── llmOpenRouter.js         # OpenRouter API integration for LLM calls
+│   │   ├── memes.service.js         # Reddit memes fetching and processing
+│   │   └── redditClient.js          # Reddit API client and authentication
 │   ├── middlewares/                 # Express middleware
 │   │   └── auth.js                  # JWT authentication middleware
 │   ├── security/                    # Security utilities
 │   │   └── rateLimit.js             # Rate limiting configuration
 │   ├── repos/                       # Data access layer
-│   │   └── refresh-token.repo.js    # Refresh token repository
+│   │   ├── refresh-token.repo.js    # Refresh token repository
+│   │   ├── userDataRepo.js          # User data repository
+│   │   └── insightsRepo.js          # AI insights repository
+│   ├── memeDB/                      # Memes database management
+│   │   └── memeDB.js                # Memes database connection and initialization
+│   ├── scripts/                     # Utility scripts
+│   │   ├── get-reddit-refresh-token.js # Reddit OAuth token generation
+│   │   └── testReddit.js            # Reddit API testing script
 │   └── utils/                       # Backend utilities
 │       └── crypto.js                # Cryptographic helpers
 ├── src/                             # Frontend React application
@@ -115,6 +135,7 @@ crypto_AI/
 │   │   │   │   ├── useMeme.ts       # Meme data hook
 │   │   │   │   ├── useNews.ts       # News data hook
 │   │   │   │   ├── usePrices.ts     # Prices data hook
+│   │   │   │   ├── useTodayInsight.ts # Today's AI insight hook
 │   │   │   │   └── useVote.ts       # Voting hook
 │   │   │   ├── panels/              # Dashboard panels
 │   │   │   │   ├── AiInsightPanel.tsx # AI insights panel
@@ -248,6 +269,19 @@ crypto_AI/
 | `/dashboard/meme` | GET | Yes | Fetches daily crypto meme |
 | `/dashboard/vote` | POST | Yes | Submit vote for content (like/dislike) |
 
+### AI Insights API Endpoints
+
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/insights/today` | GET | Yes | Fetches today's AI insight for user (with user_id query param) |
+
+### Memes API Endpoints
+
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/memes` | GET | Yes | Fetches memes with pagination and filtering (limit, sub, cursor params) |
+| `/api/memes/refresh` | POST | Yes | Manually triggers meme fetching from Reddit |
+
 ### System Endpoints
 
 | Endpoint | Method | Auth | Description |
@@ -278,17 +312,32 @@ Client Request → Express Middleware → Route Handler → Service Layer → Da
 
 #### 2. Database Integration
 - **PostgreSQL**: Primary database with connection pooling
-- **Tables**: `users`, `user_data`, `refresh_tokens`
+- **Tables**: `users`, `user_data`, `refresh_tokens`, `insights`, `memes`
 - **Connection Management**: Automatic connection pooling and error handling
 - **Migrations**: Database schema initialization on startup
+- **Dual Database Setup**: Separate connections for main app and memes data
+- **JSONB Support**: Advanced JSON storage for AI insights and content metadata
 
 #### 3. External API Integration
 - **CoinGecko API**: Real-time crypto market data
+- **OpenRouter API**: AI-powered insights generation with structured prompts
+- **Reddit API**: Automated meme fetching from crypto subreddits
 - **Backend Proxy**: All external API calls go through backend for security
 - **Caching**: In-memory caching for API responses (30s-2min TTL)
 - **Rate Limiting**: Protection against API abuse
+- **OAuth Integration**: Reddit OAuth for secure API access
+- **Content Filtering**: NSFW detection and content moderation
 
-#### 4. Security Features
+#### 4. AI and Automation Services
+- **AI Insights Generation**: Daily personalized market analysis using OpenRouter API
+- **Structured Prompts**: Advanced prompt engineering for consistent AI responses
+- **Content Processing**: JSON parsing and normalization for AI-generated content
+- **Scheduled Tasks**: Node-cron for automated meme fetching and content updates
+- **Reddit Integration**: Automated content curation from crypto subreddits
+- **Content Moderation**: NSFW filtering and quality control for user-generated content
+- **Data Persistence**: AI insights stored with metadata for analytics and improvement
+
+#### 5. Security Features
 - **Helmet**: Security headers (CSP, HSTS, X-Frame-Options)
 - **CORS**: Restrictive cross-origin resource sharing with environment-based origins
 - **Rate Limiting**: Authentication endpoint protection (3 attempts/15min) with lockout system
@@ -358,6 +407,24 @@ Client Request → Express Middleware → Route Handler → Service Layer → Da
 - **Investor Type Matching**: Content filtered and scored based on user's investment style
 - **Persistent Learning**: User preferences and voting history stored for continuous improvement
 
+### AI Insights Generation System
+- **OpenRouter Integration**: Advanced LLM API integration for market analysis
+- **Structured Prompts**: Sophisticated prompt engineering for consistent AI responses
+- **User-Specific Analysis**: Personalized insights based on user's investment type and asset preferences
+- **Daily Generation**: Automated daily insight creation with caching and regeneration
+- **Content Parsing**: Advanced JSON parsing and normalization for AI-generated content
+- **Source Attribution**: AI insights include source references and metadata
+- **Token Management**: Efficient token usage tracking and cost optimization
+
+### Reddit Memes Automation
+- **Multi-Subreddit Fetching**: Automated content curation from multiple crypto subreddits
+- **Content Filtering**: NSFW detection and quality control for user-generated content
+- **Image Processing**: Advanced image URL extraction and validation
+- **Scheduled Updates**: Hourly cron jobs for fresh content delivery
+- **Pagination Support**: Efficient content loading with cursor-based pagination
+- **OAuth Integration**: Secure Reddit API access with token refresh
+- **Content Moderation**: Automated filtering of inappropriate or low-quality content
+
 ### Interactive Voting System
 - **Universal Voting**: Like/dislike functionality for all content types (news, prices, insights, memes)
 - **Optimistic Updates**: Immediate UI feedback with server synchronization
@@ -398,6 +465,13 @@ JWT_REFRESH_SECRET=your-refresh-secret-key
 # External APIs
 CG_API_KEY=your-coingecko-api-key
 OPENROUTER_API_KEY=your-openrouter-api-key
+OPENROUTER_MODEL=openrouter/auto
+
+# Reddit API Configuration
+REDDIT_CLIENT_ID=your-reddit-client-id
+REDDIT_CLIENT_SECRET=your-reddit-client-secret
+REDDIT_USER_AGENT=your-app-name/1.0.0
+REDDIT_REFRESH_TOKEN=your-reddit-refresh-token
 
 # Server Configuration
 PORT=3000
@@ -438,11 +512,14 @@ npm start
 - **Backend**: Deploy to Render, Railway, or AWS with automatic database migrations
 - **Frontend**: Deploy to Vercel, Netlify, or static hosting with environment variables
 - **Database**: Use managed PostgreSQL (Render, Railway, AWS RDS) with connection pooling
-- **Environment**: Set production environment variables for all services
+- **Environment**: Set production environment variables for all services (including Reddit and OpenRouter APIs)
 - **Domain**: Configure CORS for production domains and SSL certificates
 - **Docker**: Docker Compose setup available for containerized deployment
 - **Railway**: Pre-configured with railway.json and nixpacks.toml for easy deployment
 - **Monitoring**: Health check endpoints and error logging for production monitoring
+- **Scheduled Tasks**: Ensure cron jobs for meme fetching and AI insights run in production
+- **API Rate Limits**: Configure rate limiting for external API calls (Reddit, OpenRouter)
+- **Content Moderation**: Implement production-ready content filtering and NSFW detection
 
 ## How to Rebuild This Project from Scratch
 
@@ -478,10 +555,16 @@ npm install -D tailwindcss postcss autoprefixer
     "dotenv": "^17.2.3",
     "bcrypt": "^5.1.1",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.11.3",
+    "pg": "^8.16.3",
     "morgan": "^1.10.1",
-    "express-rate-limit": "^7.1.5",
-    "joi": "^17.11.0"
+    "express-rate-limit": "^8.1.0",
+    "joi": "^17.11.0",
+    "node-cron": "^4.2.1",
+    "node-fetch": "^3.3.2",
+    "snoowrap": "^1.23.0"
+  },
+  "devDependencies": {
+    "reddit-oauth-helper": "^0.3.2"
   }
 }
 ```
@@ -503,13 +586,21 @@ npm install -D tailwindcss postcss autoprefixer
 ### 3. Core Files to Create
 
 #### Backend Structure
-- `server/index.js` - Main server file
-- `server/DB.js` - Database connection
+- `server/index.js` - Main server file with scheduled tasks
+- `server/DB.js` - Database connection and schema initialization
 - `server/routes/auth.js` - Authentication routes
 - `server/routes/me.js` - User data routes
+- `server/routes/insights.js` - AI insights API routes
+- `server/routes/memes.js` - Memes API routes
 - `server/services/user.service.js` - User business logic
 - `server/services/token.service.js` - JWT handling
+- `server/services/insightService.js` - AI insights generation
+- `server/services/llmOpenRouter.js` - OpenRouter API integration
+- `server/services/memes.service.js` - Reddit memes fetching
+- `server/services/redditClient.js` - Reddit API client
 - `server/middlewares/auth.js` - Authentication middleware
+- `server/repos/insightsRepo.js` - AI insights data access
+- `server/memeDB/memeDB.js` - Memes database management
 
 #### Frontend Structure
 - `src/app/App.tsx` - Main app component
@@ -553,14 +644,48 @@ CREATE TABLE refresh_tokens (
   revoked_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT NOW()
 );
+
+-- AI insights table
+CREATE TABLE insights (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  date_key TEXT NOT NULL,
+  provider TEXT DEFAULT 'openrouter',
+  model TEXT DEFAULT 'openrouter/auto',
+  prompt_tokens INTEGER,
+  completion_tokens INTEGER,
+  title TEXT,
+  tl_dr TEXT,
+  content_md TEXT,
+  content_json JSONB,
+  sources JSONB DEFAULT '[]',
+  generated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Memes table
+CREATE TABLE memes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  reddit_id TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL,
+  subreddit TEXT NOT NULL,
+  author TEXT,
+  score INTEGER DEFAULT 0,
+  num_comments INTEGER DEFAULT 0,
+  source_url TEXT,
+  is_nsfw BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT NOW(),
+  reddit_created_at TIMESTAMP
+);
 ```
 
 ### 5. Startup Sequence
-1. **Database Setup**: Initialize PostgreSQL and run schema
-2. **Backend Start**: Start Express server with middleware
-3. **Frontend Start**: Start Vite development server
-4. **Environment**: Configure environment variables
-5. **Testing**: Verify authentication and API endpoints
+1. **Database Setup**: Initialize PostgreSQL and run schema (including insights and memes tables)
+2. **Backend Start**: Start Express server with middleware and scheduled tasks
+3. **AI Services**: Initialize OpenRouter API client and insight generation
+4. **Reddit Integration**: Setup Reddit OAuth and start meme fetching cron job
+5. **Frontend Start**: Start Vite development server
+6. **Environment**: Configure environment variables for all external APIs
+7. **Testing**: Verify authentication, API endpoints, and automated services
 
 ### 6. Key Implementation Notes
 - **Security First**: Implement rate limiting, input validation, and secure token storage
@@ -578,13 +703,16 @@ CREATE TABLE refresh_tokens (
 - **Dashboard Interface**: Tabbed interface with personalized content filtering
 - **CryptoPanic Integration**: Real-time news with personalized filtering and sentiment analysis
 - **CoinGecko Integration**: Real-time crypto prices with Pro API support
-- **AI Insights**: Daily AI-generated market analysis with regeneration capability
+- **AI Insights Service**: Daily AI-generated market analysis using OpenRouter API with structured prompts
+- **Reddit Memes Integration**: Automated meme fetching from crypto subreddits with content filtering
 - **Voting System**: Universal like/dislike functionality for all content types
 - **Content Personalization**: ML-based scoring system for news relevance
 - **Settings Management**: Profile editing and preference viewing
 - **Dark Mode**: System detection with manual toggle and smooth transitions
 - **Responsive Design**: Mobile-first design with comprehensive loading states
 - **Security**: Rate limiting, input validation, secure token storage, and error handling
+- **Automated Content Pipeline**: Scheduled tasks for meme fetching and AI insight generation
+- **Advanced Data Processing**: Sophisticated JSON handling and content normalization
 
 ### 🔄 In Progress / Future Enhancements
 - **Onboarding Flow**: Dedicated onboarding pages (currently integrated in signup)
