@@ -4,7 +4,7 @@ import { requireAuth } from '../middlewares/auth.js';
 
 const router = Router();
 
-// שמירת לייק/דיסלייק או ביטול
+// Save like/dislike or cancel
 router.post('/', requireAuth, async (req, res) => {
   try {
     const { contentType, externalId, reaction, content } = req.body || {};
@@ -51,7 +51,7 @@ router.post('/', requireAuth, async (req, res) => {
   }
 });
 
-// החזרת כל מה שהמשתמש עשה לו Like/Dislike
+// Return all items the user liked/disliked
 router.get('/my', requireAuth, async (req, res) => {
   try {
     const userId = req.user.id;

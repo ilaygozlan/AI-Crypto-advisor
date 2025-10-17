@@ -15,10 +15,10 @@ if (!REDDIT_CLIENT_ID || !REDDIT_CLIENT_SECRET || !REDDIT_REDIRECT_URI || !REDDI
   process.exit(1);
 }
 
-// 1) ניצור לינק הרשאה ונבקש ממך לפתוח אותו בדפדפן
+// 1) Create authorization link and ask you to open it in browser
 const state = crypto.randomBytes(16).toString('hex');
-const scope = encodeURIComponent('read');               // אפשר להוסיף עוד סקופים אם תרצה
-const duration = 'permanent';                           // כדי לקבל refresh_token
+const scope = encodeURIComponent('read');               // Can add more scopes if needed
+const duration = 'permanent';                           // To get refresh_token
 const authorizeUrl =
   `https://www.reddit.com/api/v1/authorize` +
   `?client_id=${encodeURIComponent(REDDIT_CLIENT_ID)}` +
@@ -34,7 +34,7 @@ console.log('\n👉 After approval, you will be redirected to:',
   REDDIT_REDIRECT_URI,
   '\nCopy the full URL from your browser address bar.\n');
 
-// 2) נקבל ממך את ה-URL שחזרת אליו, ונחלץ ממנו את ה-code
+// 2) Get the URL you returned to and extract the code from it
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 rl.question('Paste the FULL redirect URL here:\n> ', async (redirectedUrl) => {
   try {
@@ -44,7 +44,7 @@ rl.question('Paste the FULL redirect URL here:\n> ', async (redirectedUrl) => {
     if (!code) throw new Error('Missing ?code= in the pasted URL');
     if (returnedState !== state) throw new Error('State mismatch (CSRF protection)');
 
-    // 3) מחליפים את ה-code ב-access_token + refresh_token
+    // 3) Exchange the code for access_token + refresh_token
     const basic = Buffer.from(`${REDDIT_CLIENT_ID}:${REDDIT_CLIENT_SECRET}`).toString('base64');
     const tokenRes = await fetch('https://www.reddit.com/api/v1/access_token', {
       method: 'POST',

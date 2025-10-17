@@ -1,14 +1,14 @@
 import 'dotenv/config';
 import fetch from 'node-fetch';
 
-const TOKEN_URL = 'https://www.reddit.com/api/v1/access_token'; // זה תמיד www
-const OAUTH_BASE = 'https://oauth.reddit.com';                  // שים לב: בלי www
+const TOKEN_URL = 'https://www.reddit.com/api/v1/access_token'; // This is always www
+const OAUTH_BASE = 'https://oauth.reddit.com';                  // Note: without www
 
 function ensureEnv(keys) {
   for (const k of keys) if (!process.env[k]) throw new Error(`Missing env ${k}`);
 }
 ensureEnv(['REDDIT_CLIENT_ID','REDDIT_USER_AGENT','REDDIT_REFRESH_TOKEN']);
-// secret יכול להיות ריק אם האפליקציה היא "installed app"
+// secret can be empty if the application is an "installed app"
 const useBasicAuth = !!process.env.REDDIT_CLIENT_SECRET;
 
 let cached = { accessToken: null, exp: 0 };

@@ -23,7 +23,7 @@ function buildCryptoPanicUrl(params = {}) {
   } = params;
 
   const urlParams = new URLSearchParams();
-  urlParams.append('auth_token', process.env.CRYPTOPANIC_TOKEN);
+  urlParams.append('auth_token', process.env.VITE_CRYPTOPANIC_TOKEN);
   urlParams.append('filter', filter);
   urlParams.append('kind', kind);
   urlParams.append('public', isPublic);

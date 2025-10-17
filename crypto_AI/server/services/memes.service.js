@@ -9,7 +9,7 @@ const LIMIT_PER_SUB = 40;
 const looksLikeImageUrl = (url='') => /\.(png|jpe?g|gif|webp)$/i.test((url.split('?')[0]||''));
 
 function extractBestImageUrl(p) {
-  // 1️⃣ תמונה ישירה
+  // 1️⃣ Direct image
   if (p.url && /\.(png|jpe?g|gif|webp)$/i.test(p.url)) {
     return p.url.replace(/&amp;/g, '&');
   }
@@ -20,7 +20,7 @@ function extractBestImageUrl(p) {
     return preview.replace(/&amp;/g, '&');
   }
 
-  // 3️⃣ גלריה (gallery)
+  // 3️⃣ Gallery
   if (p.is_gallery && p.media_metadata) {
     const firstKey = Object.keys(p.media_metadata)[0];
     const item = p.media_metadata[firstKey];
@@ -28,12 +28,12 @@ function extractBestImageUrl(p) {
     if (s) return String(s).replace(/&amp;/g, '&');
   }
 
-  // 4️⃣ i.redd.it (תמונות ישירות בלי סיומת)
+  // 4️⃣ i.redd.it (direct images without extension)
   if (p.url && /i\.redd\.it/.test(p.url)) {
     return p.url.replace(/&amp;/g, '&');
   }
 
-  // 5️⃣ preview.redd.it (תמונה באיכות נמוכה יותר)
+  // 5️⃣ preview.redd.it (lower quality image)
   if (p.url && /preview\.redd\.it/.test(p.url)) {
     return `${p.url.replace(/&amp;/g, '&')}`;
   }
@@ -110,7 +110,7 @@ export async function fetchMemes({ limitPerSub = LIMIT_PER_SUB } = {}) {
 }
 
 export function startMemesCron() {
-    //run this func once a day at 00:00 to import new memes :)
+  // Run this function once a day at 00:00 to import new memes :)
   cron.schedule('0 0 * * *', async () => {
     try {
       console.log('[cron] fetching memes…');

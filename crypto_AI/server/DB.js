@@ -131,14 +131,14 @@ export async function initDb() {
   END $$;`);
 
 await pool.query(`CREATE TABLE IF NOT EXISTS user_reactions (
-  user_id       TEXT         NOT NULL REFERENCES users(id) ON DELETE CASCADE,  -- מזהה המשתמש שלך
+  user_id       TEXT         NOT NULL REFERENCES users(id) ON DELETE CASCADE,  -- Your user identifier
   content_type  TEXT         NOT NULL,                -- 'meme' | 'news' | 'coin' | 'ai_daily_news' | ...
-  external_id   TEXT         NOT NULL,                -- מזהה הפריט במקור (מם=redditId, חדשות=url-hash וכו')
+  external_id   TEXT         NOT NULL,                -- Item identifier in source (meme=redditId, news=url-hash etc.)
   reaction      reaction_value NOT NULL,              -- like | dislike
-  content       JSONB        NOT NULL,                -- Snapshot מינימלי של התוכן בזמן הפעולה
+  content       JSONB        NOT NULL,                -- Minimal snapshot of content at time of action
   created_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
   updated_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
-  PRIMARY KEY (user_id, content_type, external_id)    -- ← מונע כפילויות לאותו פריט אצל אותו משתמש
+  PRIMARY KEY (user_id, content_type, external_id)    -- ← Prevents duplicates for same item by same user
 );`);
 
 await pool.query(`CREATE OR REPLACE FUNCTION touch_user_reactions_updated_at()

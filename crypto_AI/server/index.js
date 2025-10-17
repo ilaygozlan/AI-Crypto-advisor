@@ -32,7 +32,7 @@ const app = express();
 // Trust proxy for proper rate limiting behind load balancers (Render, etc.)
 app.set('trust proxy', 1);
 
-// middlewares
+// Middlewares
 app.use(helmet());
 
 const allowedOrigins = [
@@ -52,7 +52,7 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 
-// basic health
+// Basic health
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
 // CORS test endpoint
@@ -65,7 +65,7 @@ app.get('/cors-test', (_req, res) => {
   });
 });
 
-// routes
+// Routes
 app.use('/auth', authRoutes);
 app.use('/', meRoutes);
 
@@ -84,17 +84,17 @@ app.use('/api/reactions', reactionsRouter);
 // Dashboard API
 app.use('/dashboard', dashboardRouter);
 
-// start
+// Start
 const PORT = process.env.PORT || 3000;
 
 (async () => {
-  await initDb(); // ensure tables exist
+  await initDb(); // Ensure tables exist
 
-  // start the cron jobs
+  // Start the cron jobs
   startMemesCron();
   startNewsCron();
 
-  // initial seed for news if empty
+  // Initial seed for news if empty
   await initialSeedIfEmpty();
 
   app.listen(PORT, () => {

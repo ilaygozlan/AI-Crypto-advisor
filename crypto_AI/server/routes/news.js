@@ -37,6 +37,8 @@ router.get('/', requireAuth, async (req, res) => {
       important
     });
 
+    console.log(`[GET /api/news] About to fetch news from service...`);
+    
     // Get news from service
     const newsItems = await getNews({
       filter,

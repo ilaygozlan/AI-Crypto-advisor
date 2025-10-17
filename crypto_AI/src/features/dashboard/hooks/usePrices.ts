@@ -26,8 +26,6 @@ export function usePrices() {
           throw new Error('No valid assets to fetch prices for')
         }
         
-      
-        
         // Fetch market data from CoinGecko
         const marketData = await getMarkets(coinGeckoIds, 'usd')
         

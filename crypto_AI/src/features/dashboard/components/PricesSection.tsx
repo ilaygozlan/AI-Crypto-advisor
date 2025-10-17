@@ -92,8 +92,8 @@ export function PricesSection() {
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Overall sentiment</span>
             <VoteButtons
-            upVotes={prices.reduce((acc: any, p: any) => acc + p.votes.up, 0)}
-            downVotes={prices.reduce((acc: any, p: any) => acc + p.votes.down, 0)}
+              upVotes={prices.reduce((acc: any, p: any) => acc + p.votes.up, 0)}
+              downVotes={prices.reduce((acc: any, p: any) => acc + p.votes.down, 0)}
               onVote={(voteType) => vote({ section: 'prices', itemId: 'overall', vote: voteType })}
             />
           </div>
