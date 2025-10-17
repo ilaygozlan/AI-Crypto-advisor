@@ -62,7 +62,7 @@ export default function DashboardView() {
     switch (tab) {
       case 'news':   return <MarketNewsPanel />;
       case 'prices': return <CoinPricesPanel />;
-      case 'ai':     return <AiInsightPanel />;
+      case 'ai':     return <AiInsightPanel autoFetch={true} />;
       case 'meme':   return <MemePanel />;
       default:       return null;
     }

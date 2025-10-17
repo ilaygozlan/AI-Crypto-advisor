@@ -7,7 +7,6 @@ import { Card } from '@/components/common/Card'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePrefsStore } from '@/lib/state/prefs.store'
 import { useToast } from '@/hooks/useToast'
-import { useInsightFetch } from '@/hooks/useInsightFetch'
 import { useNavigate } from 'react-router-dom'
 
 const investorTypes = [
@@ -38,7 +37,6 @@ export function EnhancedSignupForm() {
   const navigate = useNavigate()
   const { doSignup } = useAuth()
   const { toast } = useToast()
-  const { fetchInsightAndNavigate } = useInsightFetch()
   const { assets, contentTypes: selectedContentTypes, setAssets, setContentTypes } = usePrefsStore()
   
   // Use local state for investor type during signup
@@ -171,8 +169,8 @@ export function EnhancedSignupForm() {
       setErrors({})
       setCurrentStep(0)
       
-      // Fetch insight and navigate to dashboard with AI tab
-      await fetchInsightAndNavigate(user.id, '/dashboard?tab=ai')
+      // Navigate to dashboard
+      navigate('/dashboard')
     } catch (error) {
       console.error('Signup failed:', error)
       const errorMessage = error instanceof Error ? error.message : 'Signup failed. Please try again.'

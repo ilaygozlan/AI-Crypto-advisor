@@ -1,10 +1,9 @@
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { AuthForm } from '../components/AuthForm'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/useToast'
 import { useAuthLockout } from '@/hooks/useAuthLockout'
-import { useInsightFetch } from '@/hooks/useInsightFetch'
 import { registerFailedAttempt, registerSuccess, shouldIncrementAttempt } from '@/lib/authLockout'
 import { useState } from 'react'
 
@@ -12,21 +11,21 @@ export function LoginPage() {
   const { doLogin } = useAuth()
   const { toast } = useToast()
   const { lockout, isDisabled, formattedTime, updateLockoutState } = useAuthLockout()
-  const { fetchInsightAndNavigate } = useInsightFetch()
+  const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
 
 
   const handleLogin = async (data: { email: string; password: string }) => {
     setIsLoading(true)
     try {
-      const user = await doLogin(data.email, data.password)
+      await doLogin(data.email, data.password)
       
       // Reset lockout on successful login
       registerSuccess()
       updateLockoutState()
       
-      // Fetch insight and navigate to dashboard with AI tab
-      await fetchInsightAndNavigate(user.id, '/dashboard?tab=ai')
+      // Navigate to dashboard
+      navigate('/dashboard')
     } catch (error: any) {
       console.error('Login failed:', error)
       

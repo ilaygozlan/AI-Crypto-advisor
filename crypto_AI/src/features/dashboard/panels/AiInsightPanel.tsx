@@ -1,13 +1,50 @@
 import { Skeleton } from '@/components/common/Skeleton'
+import { BrainLoader } from '@/components/common/BrainLoader'
 import { useTodayInsight } from '../hooks/useTodayInsight'
 import { Brain, Clock, RefreshCw, TrendingUp, Compass, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useState, useEffect } from 'react'
 
-export default function AiInsightPanel() {
-  const { data: insight, isLoading, error, refetch, isRefetching } = useTodayInsight()
+interface AiInsightPanelProps {
+  autoFetch?: boolean
+}
+
+export default function AiInsightPanel({ autoFetch = false }: AiInsightPanelProps) {
+  const [shouldFetch, setShouldFetch] = useState(false)
+  const { data: insight, isLoading, error, refetch, isRefetching } = useTodayInsight(shouldFetch)
+
+  // Auto-fetch when the panel is mounted with autoFetch prop
+  useEffect(() => {
+    if (autoFetch && !shouldFetch) {
+      setShouldFetch(true)
+    }
+  }, [autoFetch, shouldFetch])
 
   const handleRefresh = () => {
     refetch()
+  }
+
+  const handleInitialFetch = () => {
+    setShouldFetch(true)
+  }
+
+  // Show initial state when no fetch has been initiated
+  if (!shouldFetch && !insight) {
+    return (
+      <div className="text-center py-12">
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <div className="h-8 w-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+            <Brain className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+          </div>
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">AI Insight</h2>
+        </div>
+        <p className="text-slate-600 dark:text-slate-400 mb-6">Get your personalized AI-powered crypto insights</p>
+        <Button onClick={handleInitialFetch} className="bg-purple-600 hover:bg-purple-700 text-white">
+          <Brain className="h-4 w-4 mr-2" />
+          Generate AI Insight
+        </Button>
+      </div>
+    )
   }
 
   if (isLoading) {
@@ -16,11 +53,11 @@ export default function AiInsightPanel() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-              <Brain className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              <BrainLoader size="sm" />
             </div>
             <div>
               <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">AI Insight</h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400">AI-powered market analysis</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Generating your personalized analysis...</p>
             </div>
           </div>
         </div>
@@ -54,7 +91,7 @@ export default function AiInsightPanel() {
     )
   }
 
-  if (!insight) {
+  if (!insight && shouldFetch) {
     return (
       <div className="text-center py-12">
         <div className="flex items-center justify-center gap-3 mb-4">
