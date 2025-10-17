@@ -45,7 +45,7 @@ function buildCryptoPanicUrl(params = {}) {
  */
 export async function fetchNewsFromUpstream(params = {}) {
   const url = buildCryptoPanicUrl(params);
-  
+  console.log('url: ',url);
   console.log(`[news] Fetching from CryptoPanic: ${url.split('?')[0]}...`);
   
   try {
