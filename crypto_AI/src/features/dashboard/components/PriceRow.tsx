@@ -32,6 +32,8 @@ export function PriceRow({
   userVote = null, 
 }: PriceRowProps) {
   const [isExpanded, setIsExpanded] = useState(false)
+  const[isLike,SetIsLike]=useState(false);
+  const[isUnLike,SetIsUnLike]=useState(false);
 
   const formatPrice = (price: number) => {
     if (price < 0.01) return `$${price.toFixed(6)}`
@@ -120,13 +122,15 @@ export function PriceRow({
             variant="ghost"
             size="sm"
             className={`h-8 w-8 p-0 ${
-              userVote === 'like' 
+              isLike
                 ? 'text-green-600 bg-green-50 hover:bg-green-100 dark:text-green-400 dark:bg-green-900/20' 
                 : 'text-slate-500 hover:text-green-600 hover:bg-green-50 dark:text-slate-400 dark:hover:text-green-400'
             }`}
             onClick={(e) => {
               e.stopPropagation()
               onVote?.(coin.id, 'like')
+              SetIsLike(true);
+              SetIsUnLike(false);
             }}
           >
             <ThumbsUp className="h-4 w-4" />
@@ -137,14 +141,15 @@ export function PriceRow({
             variant="ghost"
             size="sm"
             className={`h-8 w-8 p-0 ${
-              userVote === 'like' 
+              isUnLike 
                 ? 'text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-900/20' 
                 : 'text-slate-500 hover:text-red-600 hover:bg-red-50 dark:text-slate-400 dark:hover:text-red-400'
             }`}
             onClick={(e) => {
               e.stopPropagation()
               onVote?.(coin.id, 'dislike')
-              
+               SetIsLike(false);
+              SetIsUnLike(true);
             }}
           >
             <ThumbsDown className="h-4 w-4" />
