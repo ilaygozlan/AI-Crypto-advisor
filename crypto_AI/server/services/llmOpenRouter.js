@@ -1,5 +1,5 @@
 export async function callOpenRouter(messages) {
-  const apiKey = process.env.OPENROUTER_API_KEY;
+  const apiKey = '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';
   if (!apiKey) throw new Error('Missing OPENROUTER_API_KEY');
 
   const model = process.env.OPENROUTER_MODEL || 'openrouter/auto';
