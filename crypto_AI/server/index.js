@@ -17,7 +17,10 @@ const app = express();
 // middlewares
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: [
+    process.env.FRONTEND_URL ||
+    'https://crypto-ai-advisore.s3.us-east-1.amazonaws.com'
+  ],
   credentials: true
 }));
 app.use(cookieParser());

@@ -483,8 +483,8 @@ REDDIT_REFRESH_TOKEN=your-reddit-refresh-token
 # Server Configuration
 PORT=3000
 NODE_ENV=development
-FRONTEND_URL=http://localhost:5173
-ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
+FRONTEND_URL=https://crypto-ai-advisore.s3.us-east-1.amazonaws.com
+ALLOWED_ORIGINS=https://crypto-ai-advisore.s3.us-east-1.amazonaws.com,http://localhost:3000
 ```
 
 #### Frontend (env.development / env.production)

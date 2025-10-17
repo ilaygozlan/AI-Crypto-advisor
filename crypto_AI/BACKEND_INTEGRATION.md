@@ -61,7 +61,7 @@ Ensure your backend is configured with:
 1. **CORS** with credentials enabled:
 ```javascript
 cors({ 
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173', 
+  origin: process.env.FRONTEND_URL || 'https://crypto-ai-advisore.s3.us-east-1.amazonaws.com', 
   credentials: true 
 })
 ```

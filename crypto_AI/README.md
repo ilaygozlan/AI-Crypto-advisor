@@ -62,7 +62,7 @@ Start the development server:
 npm run dev
 ```
 
-The app will be available at `http://localhost:5173`
+The app will be available at `https://crypto-ai-advisore.s3.us-east-1.amazonaws.com`
 
 ## 🏗 Build
 
