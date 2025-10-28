@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Crypto Advisor - Project Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .toc {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .toc h2 {
+            color: #667eea;
+            margin-top: 0;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .toc li {
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .toc li:before {
+            content: "▶";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+        
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        
+        .section h3 {
+            color: #495057;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        .section h4 {
+            color: #6c757d;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .file-tree {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        
+        .file-tree .folder {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .file-tree .file {
+            color: #28a745;
+        }
+        
+        .file-tree .config {
+            color: #fd7e14;
+        }
+        
+        .file-tree .doc {
+            color: #6f42c1;
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .tech-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .tech-card h4 {
+            color: #667eea;
+            margin: 0 0 10px 0;
+        }
+        
+        .endpoint-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .endpoint-table th,
+        .endpoint-table td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .endpoint-table th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .endpoint-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .feature-card h4 {
+            color: #667eea;
+            margin: 0 0 10px 0;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-in-progress {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-pending {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .page-break {
+            page-break-before: always;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .section {
+                box-shadow: none;
+                border: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>AI Crypto Advisor</h1>
+        <p>Complete Project Documentation & Folder Structure Guide</p>
+        <p>Full-Stack React + Node.js Cryptocurrency Investment Platform</p>
+    </div>
+
+    <div class="toc">
+        <h2>📋 Table of Contents</h2>
+        <ul>
+            <li><a href="#overview">Project Overview</a></li>
+            <li><a href="#architecture">System Architecture</a></li>
+            <li><a href="#tech-stack">Technology Stack</a></li>
+            <li><a href="#folder-structure">Complete Folder Structure</a></li>
+            <li><a href="#backend-structure">Backend Structure (server/)</a></li>
+            <li><a href="#frontend-structure">Frontend Structure (src/)</a></li>
+            <li><a href="#api-endpoints">API Endpoints Documentation</a></li>
+            <li><a href="#features">Key Features & Components</a></li>
+            <li><a href="#database-schema">Database Schema</a></li>
+            <li><a href="#deployment">Deployment & Configuration</a></li>
+            <li><a href="#troubleshooting">Troubleshooting Guide</a></li>
+        </ul>
+    </div>
+
+    <div class="section" id="overview">
+        <h2>🎯 Project Overview</h2>
+        <p>The <strong>AI Crypto Advisor</strong> is a production-grade full-stack web application that provides personalized cryptocurrency investment insights and real-time market data. The application combines real-time crypto market data from CoinGecko with AI-powered insights to help users make informed investment decisions.</p>
+        
+        <div class="highlight">
+            <h4>🚀 Key Features</h4>
+            <ul>
+                <li><strong>User Authentication:</strong> Secure JWT-based login/signup system with rate limiting</li>
+                <li><strong>Enhanced Onboarding:</strong> 3-step wizard for user preferences (investor type, assets, content types)</li>
+                <li><strong>Real-time Crypto Data:</strong> Live prices, charts, and market data via CoinGecko API</li>
+                <li><strong>CryptoPanic News Integration:</strong> Real-time cryptocurrency news with personalized filtering</li>
+                <li><strong>AI Insights Service:</strong> Daily AI-generated market analysis using OpenRouter API</li>
+                <li><strong>Reddit Memes Integration:</strong> Automated meme fetching from crypto subreddits</li>
+                <li><strong>Interactive Voting System:</strong> Like/dislike functionality for all content types</li>
+                <li><strong>Personalized Dashboard:</strong> Customizable crypto portfolio tracking</li>
+                <li><strong>Dark Mode Support:</strong> System preference detection with manual toggle</li>
+                <li><strong>Responsive Design:</strong> Mobile-first design with smooth animations</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section" id="architecture">
+        <h2>🏗️ System Architecture</h2>
+        <div class="file-tree">
+<strong>crypto_AI/</strong>                           # Root project directory
+├── <span class="folder">server/</span>                    # Backend Node.js/Express application
+│   ├── <span class="file">index.js</span>                 # Main server entry point with middleware setup
+│   ├── <span class="file">DB.js</span>                     # PostgreSQL connection and schema initialization
+│   ├── <span class="config">package.json</span>           # Backend dependencies and scripts
+│   ├── <span class="folder">routes/</span>                # API route definitions
+│   │   ├── <span class="file">auth.js</span>              # Authentication endpoints (login, signup, refresh, logout)
+│   │   ├── <span class="file">me.js</span>                # User data endpoints (/me, /me/data)
+│   │   ├── <span class="file">insights.js</span>           # AI insights endpoints (/api/insights)
+│   │   ├── <span class="file">memes.js</span>             # Memes API endpoints (/api/memes)
+│   │   ├── <span class="file">news.js</span>              # News API endpoints (/api/news)
+│   │   ├── <span class="file">dashboard.js</span>         # Dashboard API endpoints (/dashboard/*)
+│   │   └── <span class="file">reactions.js</span>         # User reactions API endpoints (/api/reactions)
+│   ├── <span class="folder">services/</span>              # Business logic layer
+│   │   ├── <span class="file">user.service.js</span>     # User CRUD operations
+│   │   ├── <span class="file">userData.service.js</span>  # User preferences management
+│   │   ├── <span class="file">token.service.js</span>     # JWT token handling
+│   │   ├── <span class="file">insightService.js</span>    # AI insights generation and management
+│   │   ├── <span class="file">llmOpenRouter.js</span>      # OpenRouter API integration for LLM calls
+│   │   ├── <span class="file">memes.service.js</span>     # Reddit memes fetching and processing
+│   │   ├── <span class="file">news.service.js</span>      # CryptoPanic news integration
+│   │   └── <span class="file">redditClient.js</span>       # Reddit API client and authentication
+│   ├── <span class="folder">middlewares/</span>          # Express middleware
+│   │   └── <span class="file">auth.js</span>              # JWT authentication middleware
+│   ├── <span class="folder">security/</span>             # Security utilities
+│   │   └── <span class="file">rateLimit.js</span>        # Rate limiting configuration
+│   ├── <span class="folder">repos/</span>                # Data access layer
+│   │   ├── <span class="file">refresh-token.repo.js</span> # Refresh token repository
+│   │   ├── <span class="file">userDataRepo.js</span>     # User data repository
+│   │   └── <span class="file">insightsRepo.js</span>      # AI insights repository
+│   ├── <span class="folder">memeDB/</span>               # Memes database management
+│   │   └── <span class="file">memeDB.js</span>           # Memes database connection
+│   ├── <span class="folder">scripts/</span>              # Utility scripts
+│   │   ├── <span class="file">get-reddit-refresh-token.js</span> # Reddit OAuth token generation
+│   │   └── <span class="file">testReddit.js</span>       # Reddit API testing script
+│   └── <span class="folder">utils/</span>                # Backend utilities
+│       └── <span class="file">crypto.js</span>           # Cryptographic helpers
+├── <span class="folder">src/</span>                       # Frontend React application
+│   ├── <span class="folder">app/</span>                  # Main app configuration
+│   │   ├── <span class="file">App.tsx</span>             # Root component
+│   │   ├── <span class="file">main.tsx</span>           # React entry point
+│   │   ├── <span class="file">providers.tsx</span>      # Context providers (QueryClient, Auth)
+│   │   ├── <span class="file">router.tsx</span>          # React Router configuration
+│   │   └── <span class="folder">data/</span>             # Mock data for development
+│   ├── <span class="folder">components/</span>            # Reusable UI components
+│   │   ├── <span class="folder">layout/</span>           # Layout components
+│   │   │   ├── <span class="file">AppLayout.tsx</span>   # Main app layout
+│   │   │   ├── <span class="file">Navbar.tsx</span>      # Navigation bar with dark mode toggle
+│   │   │   ├── <span class="file">Footer.tsx</span>      # Footer component
+│   │   │   └── <span class="file">ProtectedRoute.tsx</span> # Route protection
+│   │   ├── <span class="folder">ui/</span>               # Shadcn/ui components
+│   │   │   ├── <span class="file">button.tsx</span>       # Button component
+│   │   │   ├── <span class="file">card.tsx</span>        # Card components
+│   │   │   ├── <span class="file">input.tsx</span>       # Input component
+│   │   │   ├── <span class="file">select.tsx</span>      # Select component
+│   │   │   ├── <span class="file">toast.tsx</span>       # Toast notifications
+│   │   │   └── <span class="file">IconTabs.tsx</span>     # Custom tab component
+│   │   ├── <span class="folder">common/</span>           # Common components
+│   │   │   ├── <span class="file">Card.tsx</span>        # Custom card wrapper
+│   │   │   ├── <span class="file">Skeleton.tsx</span>    # Loading skeletons
+│   │   │   ├── <span class="file">EmptyState.tsx</span>   # Empty state component
+│   │   │   ├── <span class="file">VoteButtons.tsx</span> # Voting interface
+│   │   │   └── <span class="file">SectionHeader.tsx</span> # Section headers
+│   │   ├── <span class="file">Brand.tsx</span>           # Brand/logo component
+│   │   ├── <span class="file">Protected.tsx</span>       # Protected content wrapper
+│   │   └── <span class="file">PreferencesIndicator.tsx</span> # User preferences display
+│   ├── <span class="folder">features/</span>             # Feature-based modules
+│   │   ├── <span class="folder">auth/</span>              # Authentication features
+│   │   │   ├── <span class="folder">components/</span>    # Auth components
+│   │   │   │   ├── <span class="file">AuthForm.tsx</span> # Login form
+│   │   │   │   └── <span class="file">EnhancedSignupForm.tsx</span> # 3-step signup wizard
+│   │   │   └── <span class="folder">pages/</span>        # Auth pages
+│   │   │       ├── <span class="file">LoginPage.tsx</span> # Login page
+│   │   │       └── <span class="file">SignupPage.tsx</span> # Signup page
+│   │   ├── <span class="folder">dashboard/</span>        # Dashboard features
+│   │   │   ├── <span class="file">DashboardView.tsx</span> # Main dashboard view with tabs
+│   │   │   ├── <span class="folder">components/</span>   # Dashboard components
+│   │   │   │   ├── <span class="file">AIInsightSection.tsx</span> # AI insights display
+│   │   │   │   ├── <span class="file">CoinChart.tsx</span> # Price charts
+│   │   │   │   ├── <span class="file">MemeSection.tsx</span> # Meme display
+│   │   │   │   ├── <span class="file">NewsSection.tsx</span> # News display
+│   │   │   │   ├── <span class="file">PricesSection.tsx</span> # Prices display
+│   │   │   │   └── <span class="file">PriceRow.tsx</span> # Individual price row
+│   │   │   ├── <span class="folder">hooks/</span>        # Data fetching hooks
+│   │   │   │   ├── <span class="file">useAIInsight.ts</span> # AI insights hook
+│   │   │   │   ├── <span class="file">useChart.ts</span>  # Chart data hook
+│   │   │   │   ├── <span class="file">useMeme.ts</span>   # Meme data hook
+│   │   │   │   ├── <span class="file">useNews.ts</span>   # News data hook
+│   │   │   │   ├── <span class="file">usePrices.ts</span> # Prices data hook
+│   │   │   │   ├── <span class="file">useTodayInsight.ts</span> # Today's AI insight hook
+│   │   │   │   └── <span class="file">useVote.ts</span>  # Voting hook
+│   │   │   ├── <span class="folder">panels/</span>       # Dashboard panels
+│   │   │   │   ├── <span class="file">AiInsightPanel.tsx</span> # AI insights panel
+│   │   │   │   ├── <span class="file">CoinPricesPanel.tsx</span> # Prices panel
+│   │   │   │   ├── <span class="file">MarketNewsPanel.tsx</span> # News panel
+│   │   │   │   └── <span class="file">MemePanel.tsx</span> # Meme panel
+│   │   │   └── <span class="folder">pages/</span>        # Dashboard pages
+│   │   │       └── <span class="file">DashboardPage.tsx</span> # Dashboard page wrapper
+│   │   ├── <span class="folder">news/</span>             # News features
+│   │   │   ├── <span class="folder">components/</span>    # News components
+│   │   │   │   ├── <span class="file">NewsCard.tsx</span> # Individual news card
+│   │   │   │   └── <span class="file">NewsFeed.tsx</span> # News feed with filtering
+│   │   │   ├── <span class="folder">hooks/</span>         # News hooks
+│   │   │   │   └── <span class="file">useCryptoPanicPosts.ts</span> # CryptoPanic integration
+│   │   │   └── <span class="folder">pages/</span>        # News pages
+│   │   │       └── <span class="file">NewsPage.tsx</span> # News page
+│   │   └── <span class="folder">settings/</span>         # Settings features
+│   │       ├── <span class="folder">components/</span>   # Settings components
+│   │       │   ├── <span class="file">PreferencesForm.tsx</span> # Preferences display
+│   │       │   └── <span class="file">ProfileForm.tsx</span> # Profile management
+│   │       └── <span class="folder">pages/</span>        # Settings pages
+│   │           └── <span class="file">SettingsPage.tsx</span> # Settings page
+│   ├── <span class="folder">lib/</span>                  # Frontend utilities
+│   │   ├── <span class="folder">api/</span>              # API client and endpoints
+│   │   │   ├── <span class="file">api.ts</span>          # Main API client
+│   │   │   ├── <span class="file">coinGecko.ts</span>    # CoinGecko API integration
+│   │   │   ├── <span class="file">cryptopanic.ts</span>  # CryptoPanic API service
+│   │   │   └── <span class="file">newEndpoints.ts</span> # New API endpoints
+│   │   ├── <span class="folder">query/</span>           # TanStack Query configuration
+│   │   │   └── <span class="file">queryClient.ts</span>  # Query client setup
+│   │   ├── <span class="folder">state/</span>           # State management
+│   │   │   └── <span class="file">prefs.store.ts</span>  # Preferences store
+│   │   ├── <span class="folder">services/</span>        # Frontend services
+│   │   └── <span class="folder">utils/</span>            # Frontend utilities
+│   │       ├── <span class="file">coinMapping.ts</span>  # Coin ID mapping
+│   │       ├── <span class="file">cryptoPanic.ts</span>   # CryptoPanic utilities
+│   │       ├── <span class="file">cryptoPrefs.ts</span>   # Crypto preferences
+│   │       ├── <span class="file">format.ts</span>       # Formatting utilities
+│   │       ├── <span class="file">guards.ts</span>       # Type guards
+│   │       ├── <span class="file">scoring.ts</span>      # Content scoring algorithm
+│   │       └── <span class="file">utils.ts</span>        # General utilities
+│   ├── <span class="folder">contexts/</span>            # React contexts
+│   │   └── <span class="file">AuthContext.tsx</span>     # Authentication context
+│   ├── <span class="folder">hooks/</span>                # Custom hooks
+│   │   ├── <span class="file">useAuthLockout.ts</span>  # Authentication lockout hook
+│   │   └── <span class="file">useToast.ts</span>        # Toast notifications hook
+│   ├── <span class="folder">state/</span>               # State management
+│   │   └── <span class="file">useAuth.ts</span>          # Authentication state
+│   ├── <span class="folder">types/</span>               # TypeScript type definitions
+│   │   ├── <span class="file">auth.ts</span>            # Authentication types
+│   │   ├── <span class="file">common.ts</span>           # Common types
+│   │   └── <span class="file">dashboard.ts</span>        # Dashboard types
+│   ├── <span class="folder">styles/</span>              # Global styles
+│   │   └── <span class="file">globals.css</span>        # Global CSS with Tailwind
+│   └── <span class="file">vite-env.d.ts</span>           # Vite environment types
+├── <span class="folder">public/</span>                  # Static assets
+│   ├── <span class="file">favicon.svg</span>            # Favicon
+│   └── <span class="file">vite.svg</span>              # Vite logo
+├── <span class="folder">dist/</span>                    # Build output
+│   ├── <span class="folder">assets/</span>              # Bundled assets
+│   └── <span class="file">index.html</span>            # Built HTML
+├── <span class="config">package.json</span>            # Frontend dependencies
+├── <span class="config">vite.config.ts</span>          # Vite configuration
+├── <span class="config">tailwind.config.ts</span>       # Tailwind CSS configuration
+├── <span class="config">tsconfig.json</span>           # TypeScript configuration
+├── <span class="config">components.json</span>         # Shadcn/ui configuration
+├── <span class="config">postcss.config.js</span>       # PostCSS configuration
+├── <span class="config">env.development</span>         # Development environment
+├── <span class="config">env.production</span>          # Production environment
+├── <span class="config">env.example</span>             # Environment template
+├── <span class="config">docker-compose.dev.yml</span>  # Docker development setup
+├── <span class="config">nixpacks.toml</span>           # Nixpacks configuration
+├── <span class="doc">CRYPTOPANIC_SETUP.md</span>      # CryptoPanic setup guide
+├── <span class="doc">BACKEND_INTEGRATION.md</span>     # Backend integration guide
+├── <span class="doc">PROJECT_OVERVIEW.md</span>        # Project overview
+├── <span class="doc">S3-DEPLOYMENT-GUIDE.md</span>    # S3 deployment guide
+└── <span class="doc">README.md</span>                   # Main project documentation
+        </div>
+    </div>
+
+    <div class="section" id="tech-stack">
+        <h2>🛠️ Technology Stack</h2>
+        <div class="tech-stack">
+            <div class="tech-card">
+                <h4>Frontend</h4>
+                <ul>
+                    <li>React 18 + TypeScript</li>
+                    <li>Vite (Build Tool)</li>
+                    <li>Tailwind CSS + Shadcn/ui</li>
+                    <li>React Router v6</li>
+                    <li>TanStack Query</li>
+                    <li>Framer Motion</li>
+                    <li>Zustand (State)</li>
+                </ul>
+            </div>
+            <div class="tech-card">
+                <h4>Backend</h4>
+                <ul>
+                    <li>Node.js + Express.js</li>
+                    <li>PostgreSQL Database</li>
+                    <li>JWT Authentication</li>
+                    <li>bcryptjs (Password Hashing)</li>
+                    <li>Helmet (Security)</li>
+                    <li>CORS + Rate Limiting</li>
+                </ul>
+            </div>
+            <div class="tech-card">
+                <h4>External APIs</h4>
+                <ul>
+                    <li>CoinGecko API (Crypto Data)</li>
+                    <li>CryptoPanic API (News)</li>
+                    <li>OpenRouter API (AI Insights)</li>
+                    <li>Reddit API (Memes)</li>
+                </ul>
+            </div>
+            <div class="tech-card">
+                <h4>Development</h4>
+                <ul>
+                    <li>ESLint + Prettier</li>
+                    <li>Vitest (Testing)</li>
+                    <li>Docker Support</li>
+                    <li>Railway Deployment</li>
+                    <li>S3 Static Hosting</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <div class="section" id="backend-structure">
+        <h2>🔧 Backend Structure (server/)</h2>
+        
+        <h3>📁 Core Files</h3>
+        <div class="file-tree">
+<strong>server/</strong>
+├── <span class="file">index.js</span>                    # Main server entry point
+├── <span class="file">DB.js</span>                      # Database connection & schema
+├── <span class="config">package.json</span>             # Backend dependencies
+└── <span class="folder">routes/</span>                  # API route definitions
+        </div>
+
+        <h4>🔑 Key Backend Files</h4>
+        <ul>
+            <li><strong>index.js:</strong> Main server file with Express setup, middleware configuration, CORS setup, and route mounting</li>
+            <li><strong>DB.js:</strong> PostgreSQL connection pool, database schema initialization, table creation, and index setup</li>
+            <li><strong>package.json:</strong> Backend dependencies including Express, PostgreSQL, JWT, bcryptjs, and external API clients</li>
+        </ul>
+
+        <h3>🛣️ Routes Directory (server/routes/)</h3>
+        <div class="file-tree">
+<strong>routes/</strong>
+├── <span class="file">auth.js</span>                    # Authentication endpoints
+├── <span class="file">me.js</span>                      # User data endpoints
+├── <span class="file">insights.js</span>                # AI insights API
+├── <span class="file">memes.js</span>                   # Memes API endpoints
+├── <span class="file">news.js</span>                    # News API endpoints
+├── <span class="file">dashboard.js</span>               # Dashboard API endpoints
+└── <span class="file">reactions.js</span>               # User reactions API
+        </div>
+
+        <h4>📋 Route Responsibilities</h4>
+        <ul>
+            <li><strong>auth.js:</strong> Handles user login, signup, token refresh, and logout with rate limiting</li>
+            <li><strong>me.js:</strong> Returns user information and onboarding data</li>
+            <li><strong>insights.js:</strong> Manages AI-generated insights and daily market analysis</li>
+            <li><strong>memes.js:</strong> Fetches and manages Reddit memes with pagination</li>
+            <li><strong>news.js:</strong> Handles CryptoPanic news integration and filtering</li>
+            <li><strong>dashboard.js:</strong> Dashboard-specific endpoints for voting and content management</li>
+            <li><strong>reactions.js:</strong> Manages user reactions (likes/dislikes) for all content types</li>
+        </ul>
+
+        <h3>⚙️ Services Directory (server/services/)</h3>
+        <div class="file-tree">
+<strong>services/</strong>
+├── <span class="file">user.service.js</span>            # User CRUD operations
+├── <span class="file">userData.service.js</span>        # User preferences management
+├── <span class="file">token.service.js</span>           # JWT token handling
+├── <span class="file">insightService.js</span>          # AI insights generation
+├── <span class="file">llmOpenRouter.js</span>           # OpenRouter API integration
+├── <span class="file">memes.service.js</span>           # Reddit memes fetching
+├── <span class="file">news.service.js</span>             # CryptoPanic news integration
+└── <span class="file">redditClient.js</span>            # Reddit API client
+        </div>
+
+        <h4>🔧 Service Responsibilities</h4>
+        <ul>
+            <li><strong>user.service.js:</strong> User registration, authentication, and profile management</li>
+            <li><strong>userData.service.js:</strong> Manages user onboarding data and preferences</li>
+            <li><strong>token.service.js:</strong> JWT token generation, validation, and refresh logic</li>
+            <li><strong>insightService.js:</strong> AI insights generation using OpenRouter API with structured prompts</li>
+            <li><strong>llmOpenRouter.js:</strong> Direct integration with OpenRouter API for LLM calls</li>
+            <li><strong>memes.service.js:</strong> Automated Reddit meme fetching with content filtering</li>
+            <li><strong>news.service.js:</strong> CryptoPanic API integration for real-time news</li>
+            <li><strong>redditClient.js:</strong> Reddit API authentication and content fetching</li>
+        </ul>
+
+        <h3>🛡️ Security & Middleware</h3>
+        <div class="file-tree">
+<strong>middlewares/</strong>
+└── <span class="file">auth.js</span>                     # JWT authentication middleware
+
+<strong>security/</strong>
+└── <span class="file">rateLimit.js</span>               # Rate limiting configuration
+        </div>
+
+        <h3>🗄️ Data Access Layer</h3>
+        <div class="file-tree">
+<strong>repos/</strong>
+├── <span class="file">refresh-token.repo.js</span>       # Refresh token repository
+├── <span class="file">userDataRepo.js</span>            # User data repository
+└── <span class="file">insightsRepo.js</span>            # AI insights repository
+
+<strong>memeDB/</strong>
+└── <span class="file">memeDB.js</span>                  # Memes database management
+        </div>
+    </div>
+
+    <div class="section" id="frontend-structure">
+        <h2>⚛️ Frontend Structure (src/)</h2>
+        
+        <h3>📱 App Configuration (src/app/)</h3>
+        <div class="file-tree">
+<strong>app/</strong>
+├── <span class="file">App.tsx</span>                    # Root component
+├── <span class="file">main.tsx</span>                   # React entry point
+├── <span class="file">providers.tsx</span>               # Context providers
+├── <span class="file">router.tsx</span>                  # React Router configuration
+└── <span class="folder">data/</span>                     # Mock data for development
+        </div>
+
+        <h4>🔧 App Files</h4>
+        <ul>
+            <li><strong>App.tsx:</strong> Root component that renders the router with providers</li>
+            <li><strong>main.tsx:</strong> React entry point that mounts the app</li>
+            <li><strong>providers.tsx:</strong> Context providers for authentication and React Query</li>
+            <li><strong>router.tsx:</strong> React Router configuration with protected routes</li>
+        </ul>
+
+        <h3>🧩 Components Directory (src/components/)</h3>
+        <div class="file-tree">
+<strong>components/</strong>
+├── <span class="folder">layout/</span>                   # Layout components
+│   ├── <span class="file">AppLayout.tsx</span>         # Main app layout
+│   ├── <span class="file">Navbar.tsx</span>            # Navigation bar
+│   ├── <span class="file">Footer.tsx</span>             # Footer component
+│   └── <span class="file">ProtectedRoute.tsx</span>     # Route protection
+├── <span class="folder">ui/</span>                      # Shadcn/ui components
+│   ├── <span class="file">button.tsx</span>             # Button component
+│   ├── <span class="file">card.tsx</span>              # Card components
+│   ├── <span class="file">input.tsx</span>              # Input component
+│   ├── <span class="file">select.tsx</span>             # Select component
+│   ├── <span class="file">toast.tsx</span>               # Toast notifications
+│   └── <span class="file">IconTabs.tsx</span>           # Custom tab component
+├── <span class="folder">common/</span>                   # Common components
+│   ├── <span class="file">Card.tsx</span>               # Custom card wrapper
+│   ├── <span class="file">Skeleton.tsx</span>           # Loading skeletons
+│   ├── <span class="file">EmptyState.tsx</span>        # Empty state component
+│   ├── <span class="file">VoteButtons.tsx</span>        # Voting interface
+│   └── <span class="file">SectionHeader.tsx</span>     # Section headers
+├── <span class="file">Brand.tsx</span>                 # Brand/logo component
+├── <span class="file">Protected.tsx</span>              # Protected content wrapper
+└── <span class="file">PreferencesIndicator.tsx</span>  # User preferences display
+        </div>
+
+        <h3>🎯 Features Directory (src/features/)</h3>
+        <div class="file-tree">
+<strong>features/</strong>
+├── <span class="folder">auth/</span>                    # Authentication features
+│   ├── <span class="folder">components/</span>          # Auth components
+│   │   ├── <span class="file">AuthForm.tsx</span>       # Login form
+│   │   └── <span class="file">EnhancedSignupForm.tsx</span> # 3-step signup wizard
+│   └── <span class="folder">pages/</span>              # Auth pages
+│       ├── <span class="file">LoginPage.tsx</span>      # Login page
+│       └── <span class="file">SignupPage.tsx</span>     # Signup page
+├── <span class="folder">dashboard/</span>               # Dashboard features
+│   ├── <span class="file">DashboardView.tsx</span>      # Main dashboard view
+│   ├── <span class="folder">components/</span>          # Dashboard components
+│   ├── <span class="folder">hooks/</span>               # Data fetching hooks
+│   ├── <span class="folder">panels/</span>             # Dashboard panels
+│   └── <span class="folder">pages/</span>               # Dashboard pages
+├── <span class="folder">news/</span>                    # News features
+│   ├── <span class="folder">components/</span>          # News components
+│   ├── <span class="folder">hooks/</span>               # News hooks
+│   └── <span class="folder">pages/</span>               # News pages
+└── <span class="folder">settings/</span>                 # Settings features
+    ├── <span class="folder">components/</span>          # Settings components
+    └── <span class="folder">pages/</span>                # Settings pages
+        </div>
+
+        <h4>🎯 Feature Responsibilities</h4>
+        <ul>
+            <li><strong>auth/:</strong> User authentication, login/signup forms, and onboarding</li>
+            <li><strong>dashboard/:</strong> Main dashboard with crypto prices, news, AI insights, and memes</li>
+            <li><strong>news/:</strong> News feed with CryptoPanic integration and filtering</li>
+            <li><strong>settings/:</strong> User profile management and preferences</li>
+        </ul>
+
+        <h3>📚 Libraries & Utilities (src/lib/)</h3>
+        <div class="file-tree">
+<strong>lib/</strong>
+├── <span class="folder">api/</span>                     # API client and endpoints
+│   ├── <span class="file">api.ts</span>                 # Main API client
+│   ├── <span class="file">coinGecko.ts</span>           # CoinGecko API integration
+│   ├── <span class="file">cryptopanic.ts</span>         # CryptoPanic API service
+│   └── <span class="file">newEndpoints.ts</span>        # New API endpoints
+├── <span class="folder">query/</span>                   # TanStack Query configuration
+│   └── <span class="file">queryClient.ts</span>        # Query client setup
+├── <span class="folder">state/</span>                    # State management
+│   └── <span class="file">prefs.store.ts</span>        # Preferences store
+├── <span class="folder">services/</span>                # Frontend services
+└── <span class="folder">utils/</span>                   # Frontend utilities
+    ├── <span class="file">coinMapping.ts</span>         # Coin ID mapping
+    ├── <span class="file">cryptoPanic.ts</span>          # CryptoPanic utilities
+    ├── <span class="file">cryptoPrefs.ts</span>         # Crypto preferences
+    ├── <span class="file">format.ts</span>               # Formatting utilities
+    ├── <span class="file">guards.ts</span>               # Type guards
+    ├── <span class="file">scoring.ts</span>              # Content scoring algorithm
+    └── <span class="file">utils.ts</span>                # General utilities
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <div class="section" id="api-endpoints">
+        <h2>🔌 API Endpoints Documentation</h2>
+        
+        <h3>🔐 Authentication Endpoints</h3>
+        <table class="endpoint-table">
+            <thead>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Method</th>
+                    <th>Auth Required</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>/auth/login</td>
+                    <td>POST</td>
+                    <td>No</td>
+                    <td>User login with email/password, returns JWT tokens</td>
+                </tr>
+                <tr>
+                    <td>/auth/signup</td>
+                    <td>POST</td>
+                    <td>No</td>
+                    <td>New user registration with preferences (3-step onboarding)</td>
+                </tr>
+                <tr>
+                    <td>/auth/refresh</td>
+                    <td>POST</td>
+                    <td>No</td>
+                    <td>Refresh expired JWT token using refresh token</td>
+                </tr>
+                <tr>
+                    <td>/auth/logout</td>
+                    <td>POST</td>
+                    <td>Yes</td>
+                    <td>Logout and invalidate all tokens</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>👤 User Data Endpoints</h3>
+        <table class="endpoint-table">
+            <thead>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Method</th>
+                    <th>Auth Required</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>/me</td>
+                    <td>GET</td>
+                    <td>Yes</td>
+                    <td>Returns logged-in user basic information</td>
+                </tr>
+                <tr>
+                    <td>/me/data</td>
+                    <td>GET</td>
+                    <td>Yes</td>
+                    <td>Returns user investment preferences and onboarding data</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>🤖 AI Insights Endpoints</h3>
+        <table class="endpoint-table">
+            <thead>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Method</th>
+                    <th>Auth Required</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>/api/insights/today</td>
+                    <td>GET</td>
+                    <td>Yes</td>
+                    <td>Fetches today's AI insight for user (with user_id query param)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>🎭 Memes Endpoints</h3>
+        <table class="endpoint-table">
+            <thead>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Method</th>
+                    <th>Auth Required</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>/api/memes</td>
+                    <td>GET</td>
+                    <td>Yes</td>
+                    <td>Fetches memes with pagination and filtering (limit, sub, cursor params)</td>
+                </tr>
+                <tr>
+                    <td>/api/memes/refresh</td>
+                    <td>POST</td>
+                    <td>Yes</td>
+                    <td>Manually triggers meme fetching from Reddit</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>📰 News Endpoints</h3>
+        <table class="endpoint-table">
+            <thead>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Method</th>
+                    <th>Auth Required</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>/api/news</td>
+                    <td>GET</td>
+                    <td>Yes</td>
+                    <td>Fetches personalized crypto news from CryptoPanic</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>👍 Reactions Endpoints</h3>
+        <table class="endpoint-table">
+            <thead>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Method</th>
+                    <th>Auth Required</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>/api/reactions</td>
+                    <td>POST</td>
+                    <td>Yes</td>
+                    <td>Save/update user reaction for any content type</td>
+                </tr>
+                <tr>
+                    <td>/dashboard/vote</td>
+                    <td>POST</td>
+                    <td>Yes</td>
+                    <td>Submit vote for content (like/dislike) with rich metadata</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>🏥 System Endpoints</h3>
+        <table class="endpoint-table">
+            <thead>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Method</th>
+                    <th>Auth Required</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>/health</td>
+                    <td>GET</td>
+                    <td>No</td>
+                    <td>Server health check</td>
+                </tr>
+                <tr>
+                    <td>/cors-test</td>
+                    <td>GET</td>
+                    <td>No</td>
+                    <td>CORS configuration test endpoint</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section" id="features">
+        <h2>✨ Key Features & Components</h2>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>🔐 Authentication System</h4>
+                <ul>
+                    <li>JWT-based authentication with httpOnly cookies</li>
+                    <li>Rate limiting and lockout protection</li>
+                    <li>Automatic token refresh</li>
+                    <li>3-step onboarding wizard</li>
+                    <li>Secure password hashing with bcryptjs</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h4>📊 Dashboard Interface</h4>
+                <ul>
+                    <li>Tabbed interface with 4 main sections</li>
+                    <li>Real-time crypto prices with charts</li>
+                    <li>Personalized news feed</li>
+                    <li>AI-generated market insights</li>
+                    <li>Daily crypto memes</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h4>🤖 AI Insights Service</h4>
+                <ul>
+                    <li>OpenRouter API integration</li>
+                    <li>Daily personalized market analysis</li>
+                    <li>Structured prompt engineering</li>
+                    <li>User-specific recommendations</li>
+                    <li>Content regeneration capability</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h4>📰 News Integration</h4>
+                <ul>
+                    <li>CryptoPanic API integration</li>
+                    <li>Personalized filtering by investor type</li>
+                    <li>Sentiment analysis</li>
+                    <li>Real-time updates</li>
+                    <li>Fallback to mock data</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h4>🎭 Memes System</h4>
+                <ul>
+                    <li>Automated Reddit meme fetching</li>
+                    <li>Content filtering and NSFW protection</li>
+                    <li>Scheduled updates with cron jobs</li>
+                    <li>Pagination support</li>
+                    <li>Community voting system</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h4>👍 Voting System</h4>
+                <ul>
+                    <li>Universal like/dislike functionality</li>
+                    <li>Optimistic UI updates</li>
+                    <li>Persistent vote storage</li>
+                    <li>Rich content metadata</li>
+                    <li>Real-time vote counts</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="database-schema">
+        <h2>🗄️ Database Schema</h2>
+        
+        <h3>📋 Core Tables</h3>
+        <div class="code-block">
+-- Users table
+CREATE TABLE users (
+  id TEXT PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  first_name TEXT,
+  last_name TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- User data table (onboarding preferences)
+CREATE TABLE user_data (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  investor_type TEXT CHECK (
+    investor_type IN ('day_trader', 'investor', 'conservative')
+  ) NOT NULL,
+  selected_assets TEXT[] NOT NULL,
+  selected_content_types TEXT[] NOT NULL,
+  completed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Refresh tokens table
+CREATE TABLE refresh_tokens (
+  id BIGSERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token_hash TEXT NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  revoked_at TIMESTAMPTZ
+);
+        </div>
+
+        <h3>🤖 AI Insights Table</h3>
+        <div class="code-block">
+-- AI insights table
+CREATE TABLE insights (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  generated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  date_key DATE NOT NULL,
+  provider TEXT,
+  model TEXT,
+  prompt_tokens INT,
+  completion_tokens INT,
+  title TEXT,
+  tl_dr TEXT,
+  content_md TEXT,
+  content_json JSONB,
+  sources JSONB
+);
+        </div>
+
+        <h3>🎭 Memes Table</h3>
+        <div class="code-block">
+-- Memes table
+CREATE TABLE memes (
+  id TEXT PRIMARY KEY,         -- redditId
+  subreddit TEXT NOT NULL,
+  title TEXT NOT NULL,
+  score INTEGER NOT NULL DEFAULT 0,
+  num_comments INTEGER NOT NULL DEFAULT 0,
+  permalink TEXT NOT NULL,
+  source_url TEXT NOT NULL,    -- direct image if available
+  cdn_url TEXT,                -- optional if you later mirror to S3
+  is_nsfw BOOLEAN NOT NULL DEFAULT FALSE,
+  flair TEXT,
+  author_name TEXT,
+  created_utc TIMESTAMPTZ NOT NULL,
+  fetched_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+        </div>
+
+        <h3>👍 User Reactions Table</h3>
+        <div class="code-block">
+-- User reactions table
+CREATE TABLE user_reactions (
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  content_type TEXT NOT NULL,                -- 'meme' | 'news' | 'coin' | 'ai_daily_news'
+  external_id TEXT NOT NULL,                 -- Item identifier in source
+  reaction reaction_value NOT NULL,          -- like | dislike
+  content JSONB NOT NULL,                    -- Minimal snapshot of content
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (user_id, content_type, external_id)
+);
+        </div>
+
+        <h3>📰 News Items Table</h3>
+        <div class="code-block">
+-- News items table
+CREATE TABLE news_items (
+  id BIGSERIAL PRIMARY KEY,
+  source_id TEXT,               -- upstream unique id if exists
+  title TEXT NOT NULL,
+  url TEXT NOT NULL,
+  published_at TIMESTAMPTZ NOT NULL,
+  currencies TEXT[] DEFAULT '{}',
+  is_important BOOLEAN DEFAULT FALSE,
+  source TEXT,                  -- e.g., "cryptopanic"
+  raw JSONB,                    -- full upstream payload
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <div class="section" id="deployment">
+        <h2>🚀 Deployment & Configuration</h2>
+        
+        <h3>🔧 Environment Variables</h3>
+        
+        <h4>Backend (.env)</h4>
+        <div class="code-block">
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/crypto_advisor
+
+# JWT Secrets
+JWT_ACCESS_SECRET=your-access-secret-key
+JWT_REFRESH_SECRET=your-refresh-secret-key
+
+# External APIs
+CG_API_KEY=your-coingecko-api-key
+OPENROUTER_API_KEY=your-openrouter-api-key
+OPENROUTER_MODEL=openrouter/auto
+
+# Reddit API Configuration
+REDDIT_CLIENT_ID=your-reddit-client-id
+REDDIT_CLIENT_SECRET=your-reddit-client-secret
+REDDIT_USER_AGENT=your-app-name/1.0.0
+REDDIT_REFRESH_TOKEN=your-reddit-refresh-token
+
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+FRONTEND_URL=http://crypto-ai-advisore.s3-website-us-east-1.amazonaws.com
+ALLOWED_ORIGINS=http://crypto-ai-advisore.s3-website-us-east-1.amazonaws.com,http://localhost:3000
+        </div>
+
+        <h4>Frontend (env.development / env.production)</h4>
+        <div class="code-block">
+# Server Configuration
+VITE_SERVER_URL=http://localhost:3000
+
+# CryptoPanic API
+VITE_CRYPTOPANIC_API_KEY=your_cryptopanic_api_key
+
+# App Configuration
+VITE_APP_NAME=AI Crypto Advisor
+VITE_API_BASE_URL=https://api.example.com
+        </div>
+
+        <h3>🏗️ Build & Development</h3>
+        
+        <h4>Frontend Development</h4>
+        <div class="code-block">
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+        </div>
+
+        <h4>Backend Development</h4>
+        <div class="code-block">
+# Navigate to server directory
+cd server
+
+# Install dependencies
+npm install
+
+# Start development server
+npm start
+        </div>
+
+        <h3>🐳 Docker Support</h3>
+        <div class="file-tree">
+<strong>docker-compose.dev.yml</strong>                   # Docker development setup
+<strong>nixpacks.toml</strong>                           # Nixpacks configuration for Railway
+        </div>
+
+        <h3>☁️ Deployment Platforms</h3>
+        <ul>
+            <li><strong>Backend:</strong> Railway, Render, or AWS with PostgreSQL</li>
+            <li><strong>Frontend:</strong> Vercel, Netlify, or S3 static hosting</li>
+            <li><strong>Database:</strong> Managed PostgreSQL (Railway, Render, AWS RDS)</li>
+            <li><strong>Domain:</strong> Configure CORS for production domains</li>
+        </ul>
+    </div>
+
+    <div class="section" id="troubleshooting">
+        <h2>🔧 Troubleshooting Guide</h2>
+        
+        <h3>🚨 Common Issues</h3>
+        
+        <h4>Authentication Issues</h4>
+        <ul>
+            <li><strong>Login fails:</strong> Check JWT secrets and database connection</li>
+            <li><strong>Token refresh fails:</strong> Verify httpOnly cookie settings</li>
+            <li><strong>Rate limiting:</strong> Check rate limit configuration and user lockout</li>
+        </ul>
+
+        <h4>API Integration Issues</h4>
+        <ul>
+            <li><strong>CryptoPanic API:</strong> Verify API key and rate limits</li>
+            <li><strong>CoinGecko API:</strong> Check API key and request limits</li>
+            <li><strong>OpenRouter API:</strong> Verify API key and model configuration</li>
+            <li><strong>Reddit API:</strong> Check OAuth tokens and client credentials</li>
+        </ul>
+
+        <h4>Database Issues</h4>
+        <ul>
+            <li><strong>Connection fails:</strong> Verify DATABASE_URL and SSL settings</li>
+            <li><strong>Schema errors:</strong> Check table creation and migrations</li>
+            <li><strong>Query errors:</strong> Verify table structure and indexes</li>
+        </ul>
+
+        <h4>Frontend Issues</h4>
+        <ul>
+            <li><strong>Build fails:</strong> Check TypeScript errors and dependencies</li>
+            <li><strong>API calls fail:</strong> Verify CORS settings and server URL</li>
+            <li><strong>Styling issues:</strong> Check Tailwind configuration and imports</li>
+        </ul>
+
+        <h3>🔍 Debugging Steps</h3>
+        <ol>
+            <li>Check server logs for errors</li>
+            <li>Verify environment variables are set correctly</li>
+            <li>Test API endpoints individually</li>
+            <li>Check database connection and schema</li>
+            <li>Verify external API credentials</li>
+            <li>Check CORS configuration</li>
+            <li>Review rate limiting settings</li>
+        </ol>
+
+        <h3>📞 Support Resources</h3>
+        <ul>
+            <li><strong>Documentation:</strong> README.md, PROJECT_OVERVIEW.md</li>
+            <li><strong>API Guides:</strong> CRYPTOPANIC_SETUP.md, BACKEND_INTEGRATION.md</li>
+            <li><strong>Deployment:</strong> S3-DEPLOYMENT-GUIDE.md</li>
+            <li><strong>Code Comments:</strong> Inline documentation throughout codebase</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>📝 Summary</h2>
+        <p>This comprehensive documentation covers the complete structure and functionality of the AI Crypto Advisor project. The application is a production-ready full-stack platform that combines modern web technologies with AI-powered insights to provide users with personalized cryptocurrency investment guidance.</p>
+        
+        <div class="highlight">
+            <h4>🎯 Key Takeaways</h4>
+            <ul>
+                <li><strong>Full-Stack Architecture:</strong> React frontend with Node.js backend and PostgreSQL database</li>
+                <li><strong>AI Integration:</strong> OpenRouter API for intelligent market analysis</li>
+                <li><strong>Real-time Data:</strong> CoinGecko and CryptoPanic APIs for live market information</li>
+                <li><strong>User Experience:</strong> Personalized dashboard with voting system and dark mode</li>
+                <li><strong>Security:</strong> JWT authentication with rate limiting and secure token storage</li>
+                <li><strong>Scalability:</strong> Modular architecture with clear separation of concerns</li>
+            </ul>
+        </div>
+        
+        <p>This documentation serves as a complete reference for understanding, maintaining, and extending the AI Crypto Advisor platform. Each section provides detailed information about the project's structure, components, and functionality, making it easy to locate and understand any part of the codebase.</p>
+    </div>
+</body>
+</html>
+
+
